@@ -22,6 +22,7 @@ public static class ServiceCollectionExtension
         .AddScoped<IDeviceRepository, DeviceRepository>()
         .AddScoped<IFieldRepository, FieldRepository>()
         .AddScoped<ICompanyFarmUserRepository, CompanyFarmUserRepository>()
+        .AddScoped<IThresholdRepository, ThresholdRepository>()
 
         .AddScoped<IJwtUtils, JwtUtils>()
         // services
