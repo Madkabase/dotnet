@@ -17,7 +17,7 @@ public class FarmUserController : ControllerBase, IBaseController
     private readonly ILogger<FarmUserController> _logger;
     private readonly IConfiguration _configuration;
     private readonly IFarmUserService _farmUserService;
-    private readonly IIoDitRepository _repository;
+    private readonly IUtilsRepository _utilsRepository;
     private readonly IUserRepository _userRepository;
     private readonly ICompanyUserRepository _companyUserRepository;
 
@@ -25,14 +25,14 @@ public class FarmUserController : ControllerBase, IBaseController
         ILogger<FarmUserController> logger,
         IConfiguration configuration,
         IFarmUserService farmUserService,
-        IIoDitRepository repository,
+        IUtilsRepository repository,
         IUserRepository userRepository,
         ICompanyUserRepository companyUserRepository)
     {
         _logger = logger;
         _configuration = configuration;
         _farmUserService = farmUserService;
-        _repository = repository;
+        _utilsRepository = repository;
         _userRepository = userRepository;
         _companyUserRepository = companyUserRepository;
     }

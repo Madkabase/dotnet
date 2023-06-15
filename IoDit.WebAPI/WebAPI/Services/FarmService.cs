@@ -8,18 +8,18 @@ namespace IoDit.WebAPI.WebAPI.Services;
 
 public class FarmService : IFarmService
 {
-    private readonly IIoDitRepository _repository;
+    private readonly IUtilsRepository _utilsRepository;
     private readonly ICompanyRepository _companyRepository;
     private readonly ICompanyUserRepository _companyUserRepository;
     private readonly IFarmRepository _farmRepository;
 
-    public FarmService(IIoDitRepository repository,
+    public FarmService(IUtilsRepository repository,
         ICompanyRepository companyRepository,
         ICompanyUserRepository companyUserRepository,
         IFarmRepository farmRepository
         )
     {
-        _repository = repository;
+        _utilsRepository = repository;
         _companyRepository = companyRepository;
         _companyUserRepository = companyUserRepository;
         _farmRepository = farmRepository;
@@ -38,7 +38,7 @@ public class FarmService : IFarmService
             Name = request.Name,
             CompanyId = company.Id,
         };
-        var createdCompanyFarm = await _repository.CreateAsync(companyFarm);
+        var createdCompanyFarm = await _utilsRepository.CreateAsync(companyFarm);
         var companyAdmins = (await _companyUserRepository.GetCompanyAdmins(company.Id)).ToList();
         var companyAdminsFarmUsers = new List<CompanyFarmUser>();
         if (companyAdmins.Any())
@@ -56,7 +56,7 @@ public class FarmService : IFarmService
                     CompanyUserId = companyAdmin.Id
                 });
             }
-            await _repository.CreateRangeAsync(companyAdminsFarmUsers);
+            await _utilsRepository.CreateRangeAsync(companyAdminsFarmUsers);
         }
 
         return new CompanyFarmsResponseDto()

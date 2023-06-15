@@ -13,17 +13,17 @@ namespace IoDit.WebAPI.WebAPI.Services;
 public class AuthService : IAuthService
 {
     //todo create logic to renew ur password
-    private readonly IIoDitRepository _repository;
+    private readonly IUtilsRepository _utilsRepository;
     private readonly IJwtUtils _jwtUtils;
     private readonly IEmailService _emailService;
     private readonly IUserRepository _userRepository;
 
-    public AuthService(IIoDitRepository repository,
+    public AuthService(IUtilsRepository repository,
     IJwtUtils jwtUtils,
     IEmailService emailService,
     IUserRepository userRepository)
     {
-        _repository = repository;
+        _utilsRepository = repository;
         _jwtUtils = jwtUtils;
         _emailService = emailService;
         _userRepository = userRepository;
@@ -112,7 +112,7 @@ public class AuthService : IAuthService
         if (user.ConfirmationCode != request.Code)
         {
             user.ConfirmationTriesCounter++;
-            await _repository.SaveChangesAsync();
+            await _utilsRepository.SaveChangesAsync();
             return new ConfirmCodeResponseDto()
             {
                 Message = "Invalid code",
@@ -121,7 +121,7 @@ public class AuthService : IAuthService
         }
 
         user.IsVerified = true;
-        await _repository.SaveChangesAsync();
+        await _utilsRepository.SaveChangesAsync();
         return new ConfirmCodeResponseDto()
         {
             Message = "success",
@@ -181,7 +181,7 @@ public class AuthService : IAuthService
             ConfirmationExpirationDate = DateTime.UtcNow.AddHours(24),
             ConfirmationTriesCounter = 0,
         };
-        await _repository.CreateAsync(user);
+        await _utilsRepository.CreateAsync(user);
     }
 
     private async Task UpdateConfirmation(RegistrationRequestDto request)
@@ -193,7 +193,7 @@ public class AuthService : IAuthService
         user.ConfirmationExpirationDate = DateTime.UtcNow.AddHours(24);
         user.ConfirmationTriesCounter++;
 
-        await _repository.SaveChangesAsync();
+        await _utilsRepository.SaveChangesAsync();
         await SendConfirmationCode(request.Email, genConfirmation);
     }
 

@@ -13,20 +13,20 @@ namespace IoDit.WebAPI.WebAPI.Controllers;
 public class UserController : ControllerBase, IBaseController
 {
     private readonly ILogger<UserController> _logger;
-    private readonly IIoDitRepository _repository;
+    private readonly IUtilsRepository _utilsRepository;
     private readonly IUserService _userService;
     private readonly IConfiguration _configuration;
     private readonly IUserRepository _userRepository;
 
     public UserController(
         ILogger<UserController> logger,
-        IIoDitRepository repository,
+        IUtilsRepository repository,
         IUserService userService,
         IConfiguration configuration,
         IUserRepository userRepository)
     {
         _logger = logger;
-        _repository = repository;
+        _utilsRepository = repository;
         _userService = userService;
         _configuration = configuration;
         _userRepository = userRepository;

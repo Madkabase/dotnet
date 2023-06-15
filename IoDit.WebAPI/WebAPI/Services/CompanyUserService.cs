@@ -8,7 +8,7 @@ namespace IoDit.WebAPI.WebAPI.Services;
 
 public class CompanyUserService : ICompanyUserService
 {
-    private readonly IIoDitRepository _repository;
+    private readonly IUtilsRepository _utilsRepository;
     private readonly IUserRepository _userRepository;
     private readonly ICompanyRepository _companyRepository;
     private readonly ICompanyUserRepository _companyUserRepository;
@@ -16,13 +16,13 @@ public class CompanyUserService : ICompanyUserService
 
 
     public CompanyUserService(
-        IIoDitRepository repository,
+        IUtilsRepository repository,
         IUserRepository userRepository,
         ICompanyRepository companyRepository,
         ICompanyUserRepository companyUserRepository,
         IFarmRepository farmRepository)
     {
-        _repository = repository;
+        _utilsRepository = repository;
         _userRepository = userRepository;
         _companyRepository = companyRepository;
         _companyUserRepository = companyUserRepository;
@@ -98,7 +98,7 @@ public class CompanyUserService : ICompanyUserService
             UserId = invitedUser.Id,
             IsDefault = isDefault,
         };
-        var createdCompanyUser = await _repository.CreateAsync(companyUser);
+        var createdCompanyUser = await _utilsRepository.CreateAsync(companyUser);
         if (request.CompanyRole != CompanyRoles.CompanyUser)
         {
             var farms = await _farmRepository.GetCompanyFarms(request.CompanyId);
@@ -117,7 +117,7 @@ public class CompanyUserService : ICompanyUserService
                 });
             }
 
-            await _repository.CreateRangeAsync(farmUsers);
+            await _utilsRepository.CreateRangeAsync(farmUsers);
         }
 
         return new GetCompanyUsersResponseDto()

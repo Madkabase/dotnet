@@ -7,17 +7,17 @@ namespace IoDit.WebAPI.WebAPI.Services;
 
 public class FieldService : IFieldService
 {
-    private readonly IIoDitRepository _repository;
+    private readonly IUtilsRepository _utilsRepository;
     private readonly ICompanyRepository _companyRepository;
     private readonly IFarmRepository _farmRepository;
     private readonly IFieldRepository _fieldRepository;
 
-    public FieldService(IIoDitRepository repository,
+    public FieldService(IUtilsRepository repository,
         ICompanyRepository companyRepository,
         IFarmRepository farmRepository,
         IFieldRepository fieldRepository)
     {
-        _repository = repository;
+        _utilsRepository = repository;
         _companyRepository = companyRepository;
         _farmRepository = farmRepository;
         _fieldRepository = fieldRepository;
@@ -37,7 +37,7 @@ public class FieldService : IFieldService
             CompanyId = request.CompanyId,
             CompanyFarmId = request.CompanyFarmId
         };
-        var createdField = await _repository.CreateAsync(companyField);
+        var createdField = await _utilsRepository.CreateAsync(companyField);
         return new FieldResponseDto()
         {
             Id = createdField.Id,
@@ -54,7 +54,7 @@ public class FieldService : IFieldService
         if (companyField != null)
         {
             companyField.Geofence = request.Geofence;
-            var updated = await _repository.UpdateAsync(companyField);
+            var updated = await _utilsRepository.UpdateAsync(companyField);
             return new FieldResponseDto()
             {
                 Id = updated.Id,

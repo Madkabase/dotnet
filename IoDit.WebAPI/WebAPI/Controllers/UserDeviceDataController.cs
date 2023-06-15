@@ -15,7 +15,7 @@ public class UserDeviceDataController : ControllerBase, IBaseController
     private readonly ILogger<UserDeviceDataController> _logger;
     private readonly IConfiguration _configuration;
     private readonly IUserDeviceDataService _userDeviceDataService;
-    private readonly IIoDitRepository _repository;
+    private readonly IUtilsRepository _utilsRepository;
     private readonly IUserRepository _userRepository;
     private readonly ICompanyUserRepository _companyUserRepository;
 
@@ -23,14 +23,14 @@ public class UserDeviceDataController : ControllerBase, IBaseController
         ILogger<UserDeviceDataController> logger,
         IConfiguration configuration,
         IUserDeviceDataService userDeviceDataService,
-        IIoDitRepository repository,
+        IUtilsRepository repository,
         IUserRepository userRepository,
         ICompanyUserRepository companyUserRepository)
     {
         _logger = logger;
         _configuration = configuration;
         _userDeviceDataService = userDeviceDataService;
-        _repository = repository;
+        _utilsRepository = repository;
         _userRepository = userRepository;
         _companyUserRepository = companyUserRepository;
     }

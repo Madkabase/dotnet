@@ -5,7 +5,7 @@ using IoDit.WebAPI.Persistence.Entities.Company;
 
 namespace IoDit.WebAPI.Utilities.Repositories;
 
-public interface IIoDitRepository
+public interface IUtilsRepository
 {
     IoDitDbContext DbContext { get; }
 

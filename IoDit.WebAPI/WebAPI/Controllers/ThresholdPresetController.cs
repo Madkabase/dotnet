@@ -17,7 +17,7 @@ public class ThresholdPresetController : ControllerBase, IBaseController
     private readonly ILogger<ThresholdPresetController> _logger;
     private readonly IConfiguration _configuration;
     private readonly IThresholdPresetService _thresholdPresetService;
-    private readonly IIoDitRepository _repository;
+    private readonly IUtilsRepository _utilsRepository;
     private readonly IUserRepository _userRepository;
     private readonly ICompanyUserRepository _companyUserRepository;
 
@@ -25,14 +25,14 @@ public class ThresholdPresetController : ControllerBase, IBaseController
         ILogger<ThresholdPresetController> logger,
         IConfiguration configuration,
         IThresholdPresetService thresholdPresetService,
-        IIoDitRepository repository,
+        IUtilsRepository repository,
         IUserRepository userRepository,
         ICompanyUserRepository companyUserRepository)
     {
         _logger = logger;
         _configuration = configuration;
         _thresholdPresetService = thresholdPresetService;
-        _repository = repository;
+        _utilsRepository = repository;
         _userRepository = userRepository;
         _companyUserRepository = companyUserRepository;
     }

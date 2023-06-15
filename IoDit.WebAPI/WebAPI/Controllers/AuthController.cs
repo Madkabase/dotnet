@@ -17,20 +17,20 @@ namespace IoDit.WebAPI.WebAPI.Controllers;
 public class AuthController : ControllerBase, IBaseController
 {
     private readonly ILogger<AuthController> _logger;
-    private readonly IIoDitRepository _repository;
+    private readonly IUtilsRepository _utilsRepository;
     private readonly IUserRepository _userRepository;
     private readonly IAuthService _authService;
     private readonly IJwtUtils _jwtUtils;
 
     public AuthController(
         ILogger<AuthController> logger,
-        IIoDitRepository repository,
+        IUtilsRepository repository,
         IUserRepository userRepository,
         IAuthService authService,
         IJwtUtils jwtUtils)
     {
         _logger = logger;
-        _repository = repository;
+        _utilsRepository = repository;
         _userRepository = userRepository;
         _authService = authService;
         _jwtUtils = jwtUtils;

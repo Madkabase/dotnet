@@ -15,20 +15,20 @@ public class TestController : ControllerBase, IBaseController
 {
     private readonly ILogger<TestController> _logger;
     private readonly ITestService _testService;
-    private readonly IIoDitRepository _repository;
+    private readonly IUtilsRepository _utilsRepository;
     private readonly IConfiguration _configuration;
     private readonly IUserRepository _userRepository;
 
     public TestController(
         ILogger<TestController> logger,
         ITestService testService,
-        IIoDitRepository repository,
+        IUtilsRepository repository,
         IConfiguration configuration,
         IUserRepository userRepository)
     {
         _logger = logger;
         _testService = testService;
-        _repository = repository;
+        _utilsRepository = repository;
         _configuration = configuration;
         _userRepository = userRepository;
     }

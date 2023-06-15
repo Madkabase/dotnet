@@ -15,19 +15,19 @@ namespace IoDit.WebAPI.WebAPI.Services;
 
 public class TestService : ITestService
 {
-    private readonly IIoDitRepository _repository;
+    private readonly IUtilsRepository _utilsRepository;
     private readonly LoriotApiClient _loriotApiClient;
     private readonly IAzureApiClient _azureApiClient;
     private readonly IEmailService _emailService;
     private readonly ICompanyUserRepository _companyUserRepository;
 
-    public TestService(IIoDitRepository repository,
+    public TestService(IUtilsRepository repository,
         LoriotApiClient loriotApiClient,
         IAzureApiClient azureApiClient,
         IEmailService emailService,
         ICompanyUserRepository companyRepository)
     {
-        _repository = repository;
+        _utilsRepository = repository;
         _loriotApiClient = loriotApiClient;
         _azureApiClient = azureApiClient;
         _emailService = emailService;
@@ -63,7 +63,7 @@ public class TestService : ITestService
 
     public async Task<string> ClearAllDataAsync()
     {
-        var dbContext = _repository.DbContext;
+        var dbContext = _utilsRepository.DbContext;
 
         // Remove data from all tables
         dbContext.CompanyUserDeviceData.RemoveRange(dbContext.CompanyUserDeviceData);
@@ -76,7 +76,7 @@ public class TestService : ITestService
         dbContext.Companies.RemoveRange(dbContext.Companies);
         dbContext.RefreshTokens.RemoveRange(dbContext.RefreshTokens);
         dbContext.Users.RemoveRange(dbContext.Users);
-        await _repository.SaveChangesAsync();
+        await _utilsRepository.SaveChangesAsync();
         return "success";
     }
 
@@ -92,7 +92,7 @@ public class TestService : ITestService
             LastName = "Zhuk",
             AppRole = AppRoles.AppAdmin
         };
-        var createdUser = await _repository.CreateAsync(user);
+        var createdUser = await _utilsRepository.CreateAsync(user);
 
         var loriotApp = await _loriotApiClient.CreateLoriotApp(createdUser.Email, 10);
         var company = new Company()
@@ -104,7 +104,7 @@ public class TestService : ITestService
             AppId = loriotApp.appHexId,
             AppName = loriotApp.name
         };
-        var createdCompany = await _repository.CreateAsync(company);
+        var createdCompany = await _utilsRepository.CreateAsync(company);
 
         var thresholdPreset = new CompanyThresholdPreset()
         {
@@ -120,7 +120,7 @@ public class TestService : ITestService
             DefaultBatteryLevelMax = 100,
             DefaultBatteryLevelMin = 15
         };
-        var createdThresholdPreset = await _repository.CreateAsync(thresholdPreset);
+        var createdThresholdPreset = await _utilsRepository.CreateAsync(thresholdPreset);
 
         var companyUsers = await _companyUserRepository.GetUserCompanyUsers(createdUser.Email);
         var isDefault = false;
@@ -138,7 +138,7 @@ public class TestService : ITestService
             UserId = createdUser.Id,
             IsDefault = isDefault
         };
-        var createdCompanyUser = await _repository.CreateAsync(companyUser);
+        var createdCompanyUser = await _utilsRepository.CreateAsync(companyUser);
 
         var companyFarm = new CompanyFarm()
         {
@@ -146,7 +146,7 @@ public class TestService : ITestService
             Name = "Viktor Test Farm",
             CompanyId = createdCompany.Id,
         };
-        var createdCompanyFarm = await _repository.CreateAsync(companyFarm);
+        var createdCompanyFarm = await _utilsRepository.CreateAsync(companyFarm);
 
         var companyFarmUser = new CompanyFarmUser()
         {
@@ -158,7 +158,7 @@ public class TestService : ITestService
             CompanyUserId = createdCompanyUser.Id,
             CompanyFarmRole = CompanyFarmRoles.FarmAdmin
         };
-        var createdCompanyFarmUser = await _repository.CreateAsync(companyFarmUser);
+        var createdCompanyFarmUser = await _utilsRepository.CreateAsync(companyFarmUser);
 
         var loriotAppDevice = new LoriotCreateAppDeviceRequestDto()
         {
@@ -189,7 +189,7 @@ public class TestService : ITestService
             DefaultBatteryLevelMax = 100,
             DefaultBatteryLevelMin = 15,
         };
-        var createdDevice = await _repository.CreateAsync(device);
+        var createdDevice = await _utilsRepository.CreateAsync(device);
 
         var coordinates = new[]
         {
@@ -215,8 +215,8 @@ public class TestService : ITestService
             CompanyFarmId = createdCompanyFarm.Id,
             Company = createdCompany
         };
-        var createdField = await _repository.CreateAsync(field);
-        var res = await _repository.DbContext.Companies
+        var createdField = await _utilsRepository.CreateAsync(field);
+        var res = await _utilsRepository.DbContext.Companies
             .Include(x => x.Users)
             .ThenInclude(x => x.CompanyFarmUsers)
             .ThenInclude(x => x.CompanyFarm)

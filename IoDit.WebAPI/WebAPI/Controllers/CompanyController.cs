@@ -17,7 +17,7 @@ public class CompanyController : ControllerBase, IBaseController
     private readonly ILogger<CompanyController> _logger;
     private readonly IConfiguration _configuration;
     private readonly ICompanyService _companyService;
-    private readonly IIoDitRepository _repository;
+    private readonly IUtilsRepository _utilsRepository;
     private readonly IUserRepository _userRepository;
     private readonly ICompanyUserRepository _companyUserRepository;
 
@@ -25,14 +25,14 @@ public class CompanyController : ControllerBase, IBaseController
         ILogger<CompanyController> logger,
         IConfiguration configuration,
         ICompanyService companyService,
-        IIoDitRepository repository,
+        IUtilsRepository repository,
         IUserRepository userRepository,
         ICompanyUserRepository companyUserRepository)
     {
         _logger = logger;
         _configuration = configuration;
         _companyService = companyService;
-        _repository = repository;
+        _utilsRepository = repository;
         _userRepository = userRepository;
         _companyUserRepository = companyUserRepository;
     }

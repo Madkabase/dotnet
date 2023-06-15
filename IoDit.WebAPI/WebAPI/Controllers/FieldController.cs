@@ -17,7 +17,7 @@ public class FieldController : ControllerBase, IBaseController
     private readonly ILogger<FieldController> _logger;
     private readonly IConfiguration _configuration;
     private readonly IFieldService _fieldService;
-    private readonly IIoDitRepository _repository;
+    private readonly IUtilsRepository _utilsRepository;
     private readonly IUserRepository _userRepository;
     private readonly ICompanyUserRepository _companyUserRepository;
     private readonly ICompanyFarmUserRepository _companyFarmUserRepository;
@@ -26,7 +26,7 @@ public class FieldController : ControllerBase, IBaseController
         ILogger<FieldController> logger,
         IConfiguration configuration,
         IFieldService fieldService,
-        IIoDitRepository repository,
+        IUtilsRepository repository,
         IUserRepository userRepository,
         ICompanyUserRepository companyUserRepository,
         ICompanyFarmUserRepository companyFarmUserRepository)
@@ -34,7 +34,7 @@ public class FieldController : ControllerBase, IBaseController
         _logger = logger;
         _configuration = configuration;
         _fieldService = fieldService;
-        _repository = repository;
+        _utilsRepository = repository;
         _userRepository = userRepository;
         _companyUserRepository = companyUserRepository;
         _companyFarmUserRepository = companyFarmUserRepository;

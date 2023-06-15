@@ -14,7 +14,7 @@ public static class ServiceCollectionExtension
         .AddSingleton<IAzureApiClient, AzureApiClient>()
         .AddSingleton<IEmailService, EmailService>()
         // reposoitories
-        .AddScoped<IIoDitRepository, IoDitRepository>()
+        .AddScoped<IUtilsRepository, UtilsRepository>()
         .AddScoped<IUserRepository, UserRepository>()
         .AddScoped<ICompanyRepository, CompanyRepository>()
         .AddScoped<ICompanyUserRepository, CompanyUserRepository>()

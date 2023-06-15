@@ -6,11 +6,11 @@ using Microsoft.EntityFrameworkCore;
 
 namespace IoDit.WebAPI.Utilities.Repositories;
 
-public class IoDitRepository : IIoDitRepository
+public class UtilsRepository : IUtilsRepository
 {
     public IoDitDbContext DbContext { get; }
 
-    public IoDitRepository(IoDitDbContext context)
+    public UtilsRepository(IoDitDbContext context)
     {
         DbContext = context;
     }

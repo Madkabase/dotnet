@@ -10,14 +10,14 @@ namespace IoDit.WebAPI.Utilities;
 
 public class JwtUtils : IJwtUtils
 {
-    private readonly IIoDitRepository _repository;
+    private readonly IUtilsRepository _utilsRepository;
 
     private readonly IUserRepository _userRepository;
     private readonly IConfiguration _configuration;
 
-    public JwtUtils(IIoDitRepository repository, IUserRepository userRepository, IConfiguration configuration)
+    public JwtUtils(IUtilsRepository repository, IUserRepository userRepository, IConfiguration configuration)
     {
-        _repository = repository;
+        _utilsRepository = repository;
         _userRepository = userRepository;
         _configuration = configuration;
     }
@@ -61,7 +61,7 @@ public class JwtUtils : IJwtUtils
         var expiredTokens = userTokens.Where(t => t.Expires < DateTime.UtcNow).ToList();
         if (expiredTokens.Any())
         {
-            await _repository.DeleteRangeAsync(expiredTokens);
+            await _utilsRepository.DeleteRangeAsync(expiredTokens);
         }
         var currentToken = userTokens.FirstOrDefault(x => x.DeviceIdentifier == deviceIdentifier);
 
@@ -79,7 +79,7 @@ public class JwtUtils : IJwtUtils
         {
             currentToken.Token = newToken;
             currentToken.Expires = DateTime.UtcNow.AddDays(7);
-            await _repository.UpdateAsync(currentToken);
+            await _utilsRepository.UpdateAsync(currentToken);
             return currentToken;
         }
 
@@ -92,7 +92,7 @@ public class JwtUtils : IJwtUtils
             User = user,
         };
 
-        await _repository.CreateAsync(refreshToken);
+        await _utilsRepository.CreateAsync(refreshToken);
         return refreshToken;
     }
 }

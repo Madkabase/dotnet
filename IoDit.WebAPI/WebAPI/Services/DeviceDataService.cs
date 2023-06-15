@@ -6,14 +6,14 @@ namespace IoDit.WebAPI.WebAPI.Services;
 
 public class DeviceDataService : IDeviceDataService
 {
-    private readonly IIoDitRepository _repository;
+    private readonly IUtilsRepository _utilsRepository;
     private readonly IDeviceRepository _deviceRepository;
 
 
-    public DeviceDataService(IIoDitRepository repository,
+    public DeviceDataService(IUtilsRepository repository,
         IDeviceRepository deviceRepository)
     {
-        _repository = repository;
+        _utilsRepository = repository;
         _deviceRepository = deviceRepository;
     }
 

@@ -11,7 +11,7 @@ namespace IoDit.WebAPI.WebAPI.Services;
 
 public class DeviceService : IDeviceService
 {
-    private readonly IIoDitRepository _repository;
+    private readonly IUtilsRepository _utilsRepository;
     private readonly LoriotApiClient _loriotApiClient;
     private readonly IAzureApiClient _azureApiClient;
     private readonly ICompanyRepository _companyRepository;
@@ -21,7 +21,7 @@ public class DeviceService : IDeviceService
 
 
     public DeviceService(
-        IIoDitRepository repository,
+        IUtilsRepository repository,
         LoriotApiClient loriotApiClient,
         IAzureApiClient azureApiClient,
         ICompanyRepository companyRepository,
@@ -30,7 +30,7 @@ public class DeviceService : IDeviceService
         IFieldRepository fieldRepository
     )
     {
-        _repository = repository;
+        _utilsRepository = repository;
         _loriotApiClient = loriotApiClient;
         _azureApiClient = azureApiClient;
         _companyRepository = companyRepository;
@@ -70,7 +70,7 @@ public class DeviceService : IDeviceService
 
         var azureDevice = await _azureApiClient.CreateDevice(loriotDevice.deveui);
 
-        var createdDevice = await _repository.CreateAsync(new CompanyDevice()
+        var createdDevice = await _utilsRepository.CreateAsync(new CompanyDevice()
         {
             Farm = farm,
             FarmId = farm.Id,
@@ -176,7 +176,7 @@ public class DeviceService : IDeviceService
 
         device.Field = field;
         device.FieldId = field.Id;
-        var updated = await _repository.UpdateAsync(device);
+        var updated = await _utilsRepository.UpdateAsync(device);
 
         return new GetDevicesResponseDto()
         {

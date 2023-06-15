@@ -7,15 +7,15 @@ namespace IoDit.WebAPI.WebAPI.Services;
 
 public class ThresholdPresetService : IThresholdPresetService
 {
-    private readonly IIoDitRepository _repository;
+    private readonly IUtilsRepository _utilsRepository;
     private readonly ICompanyRepository _companyRepository;
     private readonly IThresholdRepository _thresholdRepository;
 
-    public ThresholdPresetService(IIoDitRepository repository,
+    public ThresholdPresetService(IUtilsRepository repository,
         ICompanyRepository companyRepository,
         IThresholdRepository thresholdRepository)
     {
-        _repository = repository;
+        _utilsRepository = repository;
         _companyRepository = companyRepository;
         _thresholdRepository = thresholdRepository;
     }
@@ -41,7 +41,7 @@ public class ThresholdPresetService : IThresholdPresetService
             DefaultBatteryLevelMax = request.DefaultBatteryLevelMax,
             DefaultBatteryLevelMin = request.DefaultBatteryLevelMin
         };
-        var createdThresholdPreset = await _repository.CreateAsync(companyThresholdPreset);
+        var createdThresholdPreset = await _utilsRepository.CreateAsync(companyThresholdPreset);
 
 
         return new GetThresholdPresetsResponseDto()
