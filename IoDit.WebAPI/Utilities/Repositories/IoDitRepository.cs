@@ -15,22 +15,6 @@ public class IoDitRepository : IIoDitRepository
         DbContext = context;
     }
 
-    //*******************************************************************************************
-    //COMPANY FARM USERS
-    public async Task<IQueryable<CompanyFarmUser>> GetCompanyFarmUsers(long companyId) =>
-        await Task.Run(() =>
-            DbContext.Companies.Include(x => x.FarmUsers).Where(x => x.Id == companyId).SelectMany(x => x.FarmUsers));
-
-    public async Task<IQueryable<CompanyFarmUser>> GetCompanyUserFarmUsers(long companyUserId) =>
-        await Task.Run(() =>
-            DbContext.CompanyFarmUsers.Where(x => x.CompanyUserId == companyUserId));
-
-    public async Task<CompanyFarmUser?> GetCompanyUserFarmUser(long companyFarmId, long companyUserId) =>
-        await Task.Run(() =>
-            DbContext.CompanyFarmUsers.FirstOrDefault(x =>
-                x.CompanyUserId == companyUserId && x.CompanyFarmId == companyFarmId));
-
-    //*******************************************************************************************
     //THRESHOLD PRESETS
     public async Task<IQueryable<CompanyThresholdPreset>> GetCompanyThresholdPresetsByCompanyId(long companyId) =>
         await Task.Run(() =>

@@ -9,11 +9,6 @@ public interface IIoDitRepository
 {
     IoDitDbContext DbContext { get; }
 
-    //COMPANY FARM USERS
-    Task<IQueryable<CompanyFarmUser>> GetCompanyFarmUsers(long companyId);
-    Task<IQueryable<CompanyFarmUser>> GetCompanyUserFarmUsers(long companyUserId);
-    Task<CompanyFarmUser?> GetCompanyUserFarmUser(long companyFarmId, long companyUserId);
-
     //THRESHOLD PRESETS
     Task<IQueryable<CompanyThresholdPreset>> GetCompanyThresholdPresetsByCompanyId(long companyId);
 

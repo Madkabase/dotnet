@@ -11,21 +11,24 @@ public class FarmUserService : IFarmUserService
     private readonly ICompanyRepository _companyRepository;
     private readonly ICompanyUserRepository _companyUserRepository;
     private readonly IFarmRepository _farmRepository;
+    private readonly ICompanyFarmUserRepository _companyFarmUserRepository;
 
     public FarmUserService(IIoDitRepository repository,
         ICompanyRepository companyRepository,
         ICompanyUserRepository companyUserRepository,
-        IFarmRepository farmRepository)
+        IFarmRepository farmRepository,
+        ICompanyFarmUserRepository companyFarmUserRepository)
     {
         _repository = repository;
         _companyRepository = companyRepository;
         _companyUserRepository = companyUserRepository;
         _farmRepository = farmRepository;
+        _companyFarmUserRepository = companyFarmUserRepository;
     }
 
     public async Task<List<GetFarmUsersResponseDto>?> GetUserFarmUsers(long companyUserId)
     {
-        var farmUsers = await _repository.GetCompanyUserFarmUsers(companyUserId);
+        var farmUsers = await _companyFarmUserRepository.GetCompanyUserFarmUsers(companyUserId);
 
         if (!farmUsers.Any())
         {
@@ -44,7 +47,7 @@ public class FarmUserService : IFarmUserService
 
     public async Task<List<GetFarmUsersResponseDto>?> GetFarmUsers(long companyId)
     {
-        var farmUsers = await _repository.GetCompanyFarmUsers(companyId);
+        var farmUsers = await _companyFarmUserRepository.GetUsersOfCompanyByCompanyId(companyId);
 
         if (!farmUsers.Any())
         {
@@ -63,7 +66,7 @@ public class FarmUserService : IFarmUserService
 
     public async Task<GetFarmUsersResponseDto?> AssignUserToFarm(AssignUserToFarmRequestDto request)
     {
-        var farmUser = await _repository.GetCompanyUserFarmUser(request.FarmId, request.CompanyUserId);
+        var farmUser = await _companyFarmUserRepository.GetCompanyUserFarmUser(request.FarmId, request.CompanyUserId);
         if (farmUser != null) return null;
 
         var farm = await _farmRepository.GetCompanyFarmById(request.FarmId);

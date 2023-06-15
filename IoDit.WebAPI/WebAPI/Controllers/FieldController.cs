@@ -20,6 +20,7 @@ public class FieldController : ControllerBase, IBaseController
     private readonly IIoDitRepository _repository;
     private readonly IUserRepository _userRepository;
     private readonly ICompanyUserRepository _companyUserRepository;
+    private readonly ICompanyFarmUserRepository _companyFarmUserRepository;
 
     public FieldController(
         ILogger<FieldController> logger,
@@ -27,7 +28,8 @@ public class FieldController : ControllerBase, IBaseController
         IFieldService fieldService,
         IIoDitRepository repository,
         IUserRepository userRepository,
-        ICompanyUserRepository companyUserRepository)
+        ICompanyUserRepository companyUserRepository,
+        ICompanyFarmUserRepository companyFarmUserRepository)
     {
         _logger = logger;
         _configuration = configuration;
@@ -35,6 +37,7 @@ public class FieldController : ControllerBase, IBaseController
         _repository = repository;
         _userRepository = userRepository;
         _companyUserRepository = companyUserRepository;
+        _companyFarmUserRepository = companyFarmUserRepository;
     }
 
     [HttpPost("createField")]
@@ -53,7 +56,7 @@ public class FieldController : ControllerBase, IBaseController
         }
 
         var companyFarmUser =
-            await _repository.GetCompanyUserFarmUser(request.CompanyFarmId, request.CompanyUserId);
+            await _companyFarmUserRepository.GetCompanyUserFarmUser(request.CompanyFarmId, request.CompanyUserId);
         if (companyFarmUser == null)
         {
             return BadRequest("Cannot access this feature, please contact your company owner or company admin");
@@ -93,7 +96,7 @@ public class FieldController : ControllerBase, IBaseController
         }
 
         var companyFarmUser =
-            await _repository.GetCompanyUserFarmUser(request.CompanyFarmId, request.CompanyUserId);
+            await _companyFarmUserRepository.GetCompanyUserFarmUser(request.CompanyFarmId, request.CompanyUserId);
         if (companyFarmUser == null || companyFarmUser.CompanyFarmRole == CompanyFarmRoles.FarmUser)
         {
             return BadRequest("Cannot access this feature, please contact your company owner or company admin");

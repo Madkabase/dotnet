@@ -21,6 +21,7 @@ public static class ServiceCollectionExtension
         .AddScoped<IFarmRepository, FarmRepository>()
         .AddScoped<IDeviceRepository, DeviceRepository>()
         .AddScoped<IFieldRepository, FieldRepository>()
+        .AddScoped<ICompanyFarmUserRepository, CompanyFarmUserRepository>()
 
         .AddScoped<IJwtUtils, JwtUtils>()
         // services
