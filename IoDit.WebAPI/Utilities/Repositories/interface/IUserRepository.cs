@@ -10,4 +10,9 @@ public interface IUserRepository
     Task<User?> GetUserById(long userId);
 
 
+    //APP
+    Task<RefreshToken?> GetRefreshToken(string token);
+    Task<bool> CheckIfRefreshTokenExist(string token);
+    Task<IQueryable<RefreshToken>> GetRefreshTokensForUser(long userId);
+
 }

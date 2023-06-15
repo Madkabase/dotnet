@@ -44,15 +44,6 @@ public class IoDitRepository : IIoDitRepository
                 .SelectMany(x => x.CompanyUserDeviceData));
 
     //*******************************************************************************************
-    //APP
-    public async Task<RefreshToken?> GetRefreshToken(string token) =>
-        await Task.Run(() => DbContext.RefreshTokens.FirstOrDefault(x => x.Token == token));
-
-    public async Task<bool> CheckIfRefreshTokenExist(string token) =>
-        await Task.Run(() => DbContext.RefreshTokens.FirstOrDefault(x => x.Token == token) == null);
-
-    public async Task<IQueryable<RefreshToken>> GetRefreshTokensForUser(long userId) =>
-        await Task.Run(() => DbContext.RefreshTokens.Select(x => x).Where(x => x.UserId == userId));
 
     //*******************************************************************************************
     //REPO UTILS

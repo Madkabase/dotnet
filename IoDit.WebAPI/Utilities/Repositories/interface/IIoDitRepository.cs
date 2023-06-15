@@ -17,14 +17,8 @@ public interface IIoDitRepository
     //THRESHOLD PRESETS
     Task<IQueryable<CompanyThresholdPreset>> GetCompanyThresholdPresetsByCompanyId(long companyId);
 
-
     //USER THRESHOLDS
     Task<IQueryable<CompanyUserDeviceData>> GetCompanyUserThresholds(long companyUserId);
-
-    //APP
-    Task<RefreshToken?> GetRefreshToken(string token);
-    Task<bool> CheckIfRefreshTokenExist(string token);
-    Task<IQueryable<RefreshToken>> GetRefreshTokensForUser(long userId);
 
     //REPO UTILS
     Task<T> CreateAsync<T>(T entity) where T : class, IEntity;
