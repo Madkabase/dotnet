@@ -29,13 +29,13 @@ public class DeviceService : IDeviceService
         {
             throw new Exception("Company doesnt exist");
         }
-        
+
         var device = await _repository.GetDeviceByEui(request.DeviceEUI);
         if (device != null)
         {
             throw new Exception("Device already exist");
         }
-        
+
         var farm = await _repository.GetCompanyFarmById(request.FarmId);
         if (farm == null)
         {
@@ -50,7 +50,7 @@ public class DeviceService : IDeviceService
             title = request.DeviceName,
             appeui = request.JoinEUI
         }, company.AppId);
-        
+
         var azureDevice = await _azureApiClient.CreateDevice(loriotDevice.deveui);
 
         var createdDevice = await _repository.CreateAsync(new CompanyDevice()
@@ -72,7 +72,7 @@ public class DeviceService : IDeviceService
             DefaultBatteryLevelMax = request.DefaultBatteryLevelMax,
             DefaultBatteryLevelMin = request.DefaultBatteryLevelMin
         });
-        
+
         return new GetDevicesResponseDto()
         {
             Id = createdDevice.Id,
@@ -142,7 +142,7 @@ public class DeviceService : IDeviceService
             JoinEUI = device.JoinEUI
         }).ToList();
     }
-    
+
     public async Task<GetDevicesResponseDto?> AssignToField(AssignToFieldRequestDto dto)
     {
         var device = await _repository.GetDeviceByEui(dto.DeviceEui);

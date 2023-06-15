@@ -16,15 +16,6 @@ public class IoDitRepository : IIoDitRepository
         DbContext = context;
     }
 
-    //*******************************************************************************************
-    //USERS
-    public async Task<IQueryable<User>> GetUsers() => await Task.Run(() => DbContext.Users);
-
-    public async Task<User?> GetUserById(long userId) =>
-        await Task.Run(() => DbContext.Users.FirstOrDefault(x => x.Id == userId));
-
-    public async Task<User?> GetUserByEmail(string email) =>
-        await Task.Run(() => DbContext.Users.FirstOrDefault(x => x.Email == email));
 
     //*******************************************************************************************
     //COMPANY
@@ -66,7 +57,7 @@ public class IoDitRepository : IIoDitRepository
     public async Task<CompanyUser?> GetCompanyUserForUserByCompanyId(string email, long companyId) =>
         await Task.Run(() =>
             DbContext.CompanyUsers.FirstOrDefault(x => x.User.Email == email && x.CompanyId == companyId));
-    
+
     public async Task<CompanyUser?> GetCompanyUserById(long companyUserId) =>
         await Task.Run(() =>
             DbContext.CompanyUsers.FirstOrDefault(x => x.Id == companyUserId));
@@ -138,7 +129,7 @@ public class IoDitRepository : IIoDitRepository
 
     public async Task<CompanyDevice?> GetDeviceByEui(string deviceEUI) =>
         await Task.Run(() => DbContext.CompanyDevices.FirstOrDefault(x => x.DevEUI == deviceEUI));
-    
+
     //*******************************************************************************************
     //DEVICE DATA
     public async Task<CompanyDevice?> GetDeviceWithDataByEui(string deviceEUI) =>

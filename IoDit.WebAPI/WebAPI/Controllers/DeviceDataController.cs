@@ -17,19 +17,24 @@ public class DeviceDataController : ControllerBase, IBaseController
     private readonly IConfiguration _configuration;
     private readonly IDeviceDataService _deviceDataService;
     private readonly IIoDitRepository _repository;
+    private readonly IUserRepository _userRepository;
 
     public DeviceDataController(
         ILogger<DeviceDataController> logger,
-        IConfiguration configuration, IDeviceDataService deviceDataService, IIoDitRepository repository)
+        IConfiguration configuration,
+        IDeviceDataService deviceDataService,
+        IIoDitRepository repository,
+        IUserRepository userRepository)
     {
         _logger = logger;
         _configuration = configuration;
         _deviceDataService = deviceDataService;
         _repository = repository;
+        _userRepository = userRepository;
     }
-    
+
     [HttpPost("getDevicesData")]
-    public async Task<IActionResult> GetDevicesData([FromBody]long companyUserId)
+    public async Task<IActionResult> GetDevicesData([FromBody] long companyUserId)
     {
         var user = await GetRequestDetails();
         if (user == null)
@@ -45,9 +50,9 @@ public class DeviceDataController : ControllerBase, IBaseController
 
         return Ok(await _deviceDataService.GetDevicesData(companyUser.CompanyId));
     }
-    
+
     [HttpPost("loadMoreDeviceData")]
-    public async Task<IActionResult> LoadMoreDeviceData([FromBody]GetRangedDeviceDataRequestDto request)
+    public async Task<IActionResult> LoadMoreDeviceData([FromBody] GetRangedDeviceDataRequestDto request)
     {
         var user = await GetRequestDetails();
         if (user == null)
@@ -63,8 +68,8 @@ public class DeviceDataController : ControllerBase, IBaseController
 
         return Ok(await _deviceDataService.GetRangedDevicesData(request));
     }
-    
-    
+
+
     [ApiExplorerSettings(IgnoreApi = true)]
     public async Task<User?> GetRequestDetails()
     {
@@ -76,7 +81,7 @@ public class DeviceDataController : ControllerBase, IBaseController
             return null;
         }
 
-        var user = await _repository.GetUserByEmail(userId);
+        var user = await _userRepository.GetUserByEmail(userId);
         if (user != null)
         {
             return user;

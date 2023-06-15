@@ -12,18 +12,22 @@ public class CompanyService : ICompanyService
 {
     private readonly IIoDitRepository _repository;
     private readonly LoriotApiClient _loriotApiClient;
+    private readonly IUserRepository _userRepository;
 
 
-    public CompanyService(IIoDitRepository repository, LoriotApiClient loriotApiClient)
+    public CompanyService(IIoDitRepository repository,
+    LoriotApiClient loriotApiClient,
+    IUserRepository userRepository)
     {
         _repository = repository;
         _loriotApiClient = loriotApiClient;
+        _userRepository = userRepository;
     }
 
     public async Task<GetCompanyResponseDto> CreateCompany(CreateCompanyRequestDto request)
     {
         //todo check sub requests and fulfill 
-        var owner = await _repository.GetUserByEmail(request.Email);
+        var owner = await _userRepository.GetUserByEmail(request.Email);
         if (owner == null)
         {
             return null;
@@ -93,7 +97,7 @@ public class CompanyService : ICompanyService
         }
         return null;
     }
-    
+
     public async Task<List<GetCompanyResponseDto>?> GetCompanies()
     {
         var companies = await _repository.GetCompanies();
@@ -112,8 +116,9 @@ public class CompanyService : ICompanyService
         }
         return null;
     }
-    
-    public async Task<List<SubscriptionRequestResponseDto>?> GetSubscriptionRequests(){
+
+    public async Task<List<SubscriptionRequestResponseDto>?> GetSubscriptionRequests()
+    {
         var requests = await _repository.GetSubscriptionRequests();
         if (requests.Any())
         {
@@ -129,10 +134,10 @@ public class CompanyService : ICompanyService
         }
         return null;
     }
-    
+
     public async Task<SubscriptionRequestResponseDto?> CreateSubscriptionRequest(CreateRequestSubscriptionRequestDto request)
     {
-        var user = await _repository.GetUserByEmail(request.Email);
+        var user = await _userRepository.GetUserByEmail(request.Email);
 
         var sub = new SubscriptionRequest()
         {
@@ -144,7 +149,7 @@ public class CompanyService : ICompanyService
             MaxDevices = request.MaxDevices
         };
         var createdSub = await _repository.CreateAsync(sub);
-        
+
         return new SubscriptionRequestResponseDto()
         {
             Email = createdSub.Email,

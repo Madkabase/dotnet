@@ -18,15 +18,21 @@ public class CompanyUserController : ControllerBase, IBaseController
     private readonly IConfiguration _configuration;
     private readonly ICompanyUserService _companyUserService;
     private readonly IIoDitRepository _repository;
+    private readonly IUserRepository _userRepository;
 
     public CompanyUserController(
         ILogger<CompanyUserController> logger,
-        IConfiguration configuration, ICompanyUserService companyUserService, IIoDitRepository repository)
+        IConfiguration configuration,
+         ICompanyUserService companyUserService,
+        IIoDitRepository repository,
+        IUserRepository userRepository
+        )
     {
         _logger = logger;
         _configuration = configuration;
         _companyUserService = companyUserService;
         _repository = repository;
+        _userRepository = userRepository;
     }
 
     [HttpGet("getUserCompanyUsers")]
@@ -78,8 +84,8 @@ public class CompanyUserController : ControllerBase, IBaseController
         {
             return BadRequest("Cannot invite users with same or higher role set");
         }
-        
-        var invitedUser = await _repository.GetUserByEmail(request.Email);
+
+        var invitedUser = await _userRepository.GetUserByEmail(request.Email);
         if (invitedUser == null)
         {
             return NotFound("Cannot find user with this email on app");
@@ -105,7 +111,7 @@ public class CompanyUserController : ControllerBase, IBaseController
             return null;
         }
 
-        var user = await _repository.GetUserByEmail(userId);
+        var user = await _userRepository.GetUserByEmail(userId);
         if (user != null)
         {
             return user;

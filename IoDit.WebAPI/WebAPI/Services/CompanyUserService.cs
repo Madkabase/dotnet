@@ -6,13 +6,18 @@ using IoDit.WebAPI.WebAPI.Services.Interfaces;
 
 namespace IoDit.WebAPI.WebAPI.Services;
 
-public class CompanyUserService: ICompanyUserService
+public class CompanyUserService : ICompanyUserService
 {
     private readonly IIoDitRepository _repository;
+    private readonly IUserRepository _userRepository;
 
-    public CompanyUserService(IIoDitRepository repository)
+
+    public CompanyUserService(
+        IIoDitRepository repository,
+        IUserRepository userRepository)
     {
         _repository = repository;
+        _userRepository = userRepository;
     }
 
     public async Task<List<GetCompanyUsersResponseDto>?> GetUserCompanyUsers(string email)
@@ -24,18 +29,18 @@ public class CompanyUserService: ICompanyUserService
         }
         return companyUsers.Select(x => new GetCompanyUsersResponseDto()
         {
-                Id = x.Id,
-                CompanyId = x.CompanyId,
-                CompanyName = x.Company.CompanyName,
-                CompanyRole = x.CompanyRole,
-                IsDefault = x.IsDefault,
-                UserId = x.UserId,
-                FirstName = x.User.FirstName,
-                LastName = x.User.LastName,
-                Email = x.User.Email
+            Id = x.Id,
+            CompanyId = x.CompanyId,
+            CompanyName = x.Company.CompanyName,
+            CompanyRole = x.CompanyRole,
+            IsDefault = x.IsDefault,
+            UserId = x.UserId,
+            FirstName = x.User.FirstName,
+            LastName = x.User.LastName,
+            Email = x.User.Email
         }).ToList();
     }
-    
+
     public async Task<List<GetCompanyUsersResponseDto>?> GetCompanyUsers(long companyId)
     {
         var companyUsers = await _repository.GetCompanyUsers(companyId);
@@ -60,7 +65,7 @@ public class CompanyUserService: ICompanyUserService
     public async Task<GetCompanyUsersResponseDto?> InviteUser(InviteUserRequestDto request)
     {
         //todo send email?
-        
+
         var invitedUserCompanyUsers = await _repository.GetUserCompanyUsers(request.Email);
         var isDefault = false;
         if (invitedUserCompanyUsers.FirstOrDefault(x => x.IsDefault == true) == null)
@@ -73,8 +78,8 @@ public class CompanyUserService: ICompanyUserService
         {
             return null;
         }
-        var invitedUser = await _repository.GetUserByEmail(request.Email);
-        
+        var invitedUser = await _userRepository.GetUserByEmail(request.Email);
+
         var companyUser = new CompanyUser()
         {
             Company = company,
@@ -105,7 +110,7 @@ public class CompanyUserService: ICompanyUserService
 
             await _repository.CreateRangeAsync(farmUsers);
         }
-        
+
         return new GetCompanyUsersResponseDto()
         {
             Id = createdCompanyUser.Id,

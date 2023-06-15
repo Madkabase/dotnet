@@ -18,21 +18,26 @@ public class ThresholdPresetController : ControllerBase, IBaseController
     private readonly IConfiguration _configuration;
     private readonly IThresholdPresetService _thresholdPresetService;
     private readonly IIoDitRepository _repository;
+    private readonly IUserRepository _userRepository;
 
     public ThresholdPresetController(
         ILogger<ThresholdPresetController> logger,
-        IConfiguration configuration, IThresholdPresetService thresholdPresetService, IIoDitRepository repository)
+        IConfiguration configuration,
+        IThresholdPresetService thresholdPresetService,
+        IIoDitRepository repository,
+        IUserRepository userRepository)
     {
         _logger = logger;
         _configuration = configuration;
         _thresholdPresetService = thresholdPresetService;
         _repository = repository;
+        _userRepository = userRepository;
     }
-    
+
     //CreateThresholdPresetRequestDto
-    
+
     [HttpPost("createThresholdPreset")]
-    public async Task<IActionResult> CreateThresholdPreset([FromBody]CreateThresholdPresetRequestDto request)
+    public async Task<IActionResult> CreateThresholdPreset([FromBody] CreateThresholdPresetRequestDto request)
     {
         var user = await GetRequestDetails();
         if (user == null)
@@ -45,7 +50,7 @@ public class ThresholdPresetController : ControllerBase, IBaseController
         {
             return BadRequest("Cannot access this feature, please contact your company owner or company admin");
         }
-        
+
         return Ok(await _thresholdPresetService.CreateThresholdPreset(new CreateThresholdPreset()
         {
             Name = request.Name,
@@ -60,9 +65,9 @@ public class ThresholdPresetController : ControllerBase, IBaseController
             DefaultBatteryLevelMin = request.DefaultBatteryLevelMin
         }));
     }
-    
+
     [HttpPost("getThresholdPresets")]
-    public async Task<IActionResult> GetThresholdPresets([FromBody]long companyId)
+    public async Task<IActionResult> GetThresholdPresets([FromBody] long companyId)
     {
         var user = await GetRequestDetails();
         if (user == null)
@@ -75,11 +80,11 @@ public class ThresholdPresetController : ControllerBase, IBaseController
         {
             return BadRequest("Cannot access this feature, please contact your company owner or company admin");
         }
-        
+
         return Ok(await _thresholdPresetService.GetThresholdPresets(companyId));
     }
-    
-        [ApiExplorerSettings(IgnoreApi = true)]
+
+    [ApiExplorerSettings(IgnoreApi = true)]
     public async Task<User?> GetRequestDetails()
     {
         var claimsIdentity = User.Identity as ClaimsIdentity;
@@ -90,7 +95,7 @@ public class ThresholdPresetController : ControllerBase, IBaseController
             return null;
         }
 
-        var user = await _repository.GetUserByEmail(userId);
+        var user = await _userRepository.GetUserByEmail(userId);
         if (user != null)
         {
             return user;

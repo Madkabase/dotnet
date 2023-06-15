@@ -16,19 +16,24 @@ public class UserDeviceDataController : ControllerBase, IBaseController
     private readonly IConfiguration _configuration;
     private readonly IUserDeviceDataService _userDeviceDataService;
     private readonly IIoDitRepository _repository;
+    private readonly IUserRepository _userRepository;
 
     public UserDeviceDataController(
         ILogger<UserDeviceDataController> logger,
-        IConfiguration configuration, IUserDeviceDataService userDeviceDataService, IIoDitRepository repository)
+        IConfiguration configuration,
+        IUserDeviceDataService userDeviceDataService,
+        IIoDitRepository repository,
+        IUserRepository userRepository)
     {
         _logger = logger;
         _configuration = configuration;
         _userDeviceDataService = userDeviceDataService;
         _repository = repository;
+        _userRepository = userRepository;
     }
-    
+
     [HttpPost("getUserThresholds")]
-    public async Task<IActionResult> GetUserThresholds([FromBody]long companyUserId)
+    public async Task<IActionResult> GetUserThresholds([FromBody] long companyUserId)
     {
         var user = await GetRequestDetails();
         if (user == null)
@@ -44,7 +49,7 @@ public class UserDeviceDataController : ControllerBase, IBaseController
 
         return Ok(await _userDeviceDataService.GetCompanyUserThresholds(companyUserId));
     }
-    
+
     [ApiExplorerSettings(IgnoreApi = true)]
     public async Task<User?> GetRequestDetails()
     {
@@ -56,7 +61,7 @@ public class UserDeviceDataController : ControllerBase, IBaseController
             return null;
         }
 
-        var user = await _repository.GetUserByEmail(userId);
+        var user = await _userRepository.GetUserByEmail(userId);
         if (user != null)
         {
             return user;

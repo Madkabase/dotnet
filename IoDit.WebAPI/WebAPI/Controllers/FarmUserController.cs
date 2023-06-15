@@ -18,19 +18,24 @@ public class FarmUserController : ControllerBase, IBaseController
     private readonly IConfiguration _configuration;
     private readonly IFarmUserService _farmUserService;
     private readonly IIoDitRepository _repository;
+    private readonly IUserRepository _userRepository;
 
     public FarmUserController(
         ILogger<FarmUserController> logger,
-        IConfiguration configuration, IFarmUserService farmUserService, IIoDitRepository repository)
+        IConfiguration configuration,
+        IFarmUserService farmUserService,
+        IIoDitRepository repository,
+        IUserRepository userRepository)
     {
         _logger = logger;
         _configuration = configuration;
         _farmUserService = farmUserService;
         _repository = repository;
+        _userRepository = userRepository;
     }
-    
+
     [HttpPost("getUserFarmUsers")]
-    public async Task<IActionResult> GetUserFarmUsers([FromBody]long companyUserId)
+    public async Task<IActionResult> GetUserFarmUsers([FromBody] long companyUserId)
     {
         var user = await GetRequestDetails();
         if (user == null)
@@ -43,12 +48,12 @@ public class FarmUserController : ControllerBase, IBaseController
         {
             return BadRequest("Cannot access this feature, please contact your company owner or company admin");
         }
-        
+
         return Ok(await _farmUserService.GetUserFarmUsers(companyUserId));
     }
 
     [HttpPost("getFarmUsers")]
-    public async Task<IActionResult> GetFarmUsers([FromBody]long companyUserId)
+    public async Task<IActionResult> GetFarmUsers([FromBody] long companyUserId)
     {
         var user = await GetRequestDetails();
         if (user == null)
@@ -61,11 +66,11 @@ public class FarmUserController : ControllerBase, IBaseController
         {
             return BadRequest("Cannot access this feature, please contact your company owner or company admin");
         }
-        
+
         return Ok(await _farmUserService.GetFarmUsers(companyUser.CompanyId));
     }
     [HttpPost("assignUserToFarm")]
-    public async Task<IActionResult> AssignUserToFarm([FromBody]AssignUserToFarmRequestDto request)
+    public async Task<IActionResult> AssignUserToFarm([FromBody] AssignUserToFarmRequestDto request)
     {
         var user = await GetRequestDetails();
         if (user == null)
@@ -78,7 +83,7 @@ public class FarmUserController : ControllerBase, IBaseController
         {
             return BadRequest("Cannot access this feature, please contact your company owner or company admin");
         }
-        
+
         return Ok(await _farmUserService.AssignUserToFarm(request));
     }
 
@@ -93,7 +98,7 @@ public class FarmUserController : ControllerBase, IBaseController
             return null;
         }
 
-        var user = await _repository.GetUserByEmail(userId);
+        var user = await _userRepository.GetUserByEmail(userId);
         if (user != null)
         {
             return user;

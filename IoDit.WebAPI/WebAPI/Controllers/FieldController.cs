@@ -18,19 +18,24 @@ public class FieldController : ControllerBase, IBaseController
     private readonly IConfiguration _configuration;
     private readonly IFieldService _fieldService;
     private readonly IIoDitRepository _repository;
+    private readonly IUserRepository _userRepository;
 
     public FieldController(
         ILogger<FieldController> logger,
-        IConfiguration configuration, IFieldService fieldService, IIoDitRepository repository)
+        IConfiguration configuration,
+        IFieldService fieldService,
+        IIoDitRepository repository,
+        IUserRepository userRepository)
     {
         _logger = logger;
         _configuration = configuration;
         _fieldService = fieldService;
         _repository = repository;
+        _userRepository = userRepository;
     }
-    
+
     [HttpPost("createField")]
-    public async Task<IActionResult> CreateCompanyField([FromBody]CreateCompanyFieldRequestDto request)
+    public async Task<IActionResult> CreateCompanyField([FromBody] CreateCompanyFieldRequestDto request)
     {
         var user = await GetRequestDetails();
         if (user == null)
@@ -51,22 +56,26 @@ public class FieldController : ControllerBase, IBaseController
             return BadRequest("Cannot access this feature, please contact your company owner or company admin");
         }
 
-        if (companyUser.CompanyRole == CompanyRoles.CompanyOwner || 
+        if (companyUser.CompanyRole == CompanyRoles.CompanyOwner ||
             companyUser.CompanyRole == CompanyRoles.CompanyAdmin ||
             companyFarmUser.CompanyFarmRole == CompanyFarmRoles.FarmAdmin)
         {
             return Ok(await _fieldService.CreateCompanyField(new CreateCompanyField()
             {
-                Email = user.Email, Name = request.Name, CompanyUserId = companyUser.Id, Geofence = request.Geofence,
-                CompanyId = companyUser.CompanyId, CompanyFarmId = request.CompanyFarmId
+                Email = user.Email,
+                Name = request.Name,
+                CompanyUserId = companyUser.Id,
+                Geofence = request.Geofence,
+                CompanyId = companyUser.CompanyId,
+                CompanyFarmId = request.CompanyFarmId
             }));
         }
-        
+
         return BadRequest("Cannot access this feature, please contact your company owner or company admin");
     }
-    
+
     [HttpPost("updateGeofence")]
-    public async Task<IActionResult> UpdateGeofence([FromBody]UpdateGeofenceRequestDto request)
+    public async Task<IActionResult> UpdateGeofence([FromBody] UpdateGeofenceRequestDto request)
     {
         var user = await GetRequestDetails();
         if (user == null)
@@ -89,13 +98,16 @@ public class FieldController : ControllerBase, IBaseController
 
         return Ok(await _fieldService.UpdateGeofence(new UpdateGeofence()
         {
-            Email = user.Email, CompanyUserId = companyUser.Id, Geofence = request.Geofence,
-            FieldId = request.FieldId, CompanyFarmId = request.CompanyFarmId
+            Email = user.Email,
+            CompanyUserId = companyUser.Id,
+            Geofence = request.Geofence,
+            FieldId = request.FieldId,
+            CompanyFarmId = request.CompanyFarmId
         }));
     }
-    
+
     [HttpPost("getFields")]
-    public async Task<IActionResult> GetFields([FromBody]long companyUserId)
+    public async Task<IActionResult> GetFields([FromBody] long companyUserId)
     {
         var user = await GetRequestDetails();
         if (user == null)
@@ -108,7 +120,7 @@ public class FieldController : ControllerBase, IBaseController
         {
             return BadRequest("Cannot access this feature, please contact your company owner or company admin");
         }
-        
+
 
         return Ok(await _fieldService.GetFields(companyUser.CompanyId));
     }
@@ -124,7 +136,7 @@ public class FieldController : ControllerBase, IBaseController
             return null;
         }
 
-        var user = await _repository.GetUserByEmail(userId);
+        var user = await _userRepository.GetUserByEmail(userId);
         if (user != null)
         {
             return user;

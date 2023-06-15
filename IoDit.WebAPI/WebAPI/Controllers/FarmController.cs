@@ -18,15 +18,20 @@ public class FarmController : ControllerBase, IBaseController
     private readonly IConfiguration _configuration;
     private readonly IFarmService _farmService;
     private readonly IIoDitRepository _repository;
+    private readonly IUserRepository _userRepository;
 
     public FarmController(
         ILogger<FarmController> logger,
-        IConfiguration configuration, IFarmService farmService, IIoDitRepository repository)
+        IConfiguration configuration,
+        IFarmService farmService,
+        IIoDitRepository repository,
+        IUserRepository userRepository)
     {
         _logger = logger;
         _configuration = configuration;
         _farmService = farmService;
         _repository = repository;
+        _userRepository = userRepository;
     }
 
     [HttpPost("createFarm")]
@@ -45,12 +50,12 @@ public class FarmController : ControllerBase, IBaseController
         }
 
         return Ok(await _farmService.CreateCompanyFarm(new CreateCompanyFarm()
-            {Email = user.Email, Name = request.Name, CompanyId = companyUser.CompanyId}));
+        { Email = user.Email, Name = request.Name, CompanyId = companyUser.CompanyId }));
     }
 
 
     [HttpPost("getFarms")]
-    public async Task<IActionResult> GetCompanyFarms([FromBody]long companyUserId)
+    public async Task<IActionResult> GetCompanyFarms([FromBody] long companyUserId)
     {
         var user = await GetRequestDetails();
         if (user == null)
@@ -78,7 +83,7 @@ public class FarmController : ControllerBase, IBaseController
             return null;
         }
 
-        var user = await _repository.GetUserByEmail(userId);
+        var user = await _userRepository.GetUserByEmail(userId);
         if (user != null)
         {
             return user;

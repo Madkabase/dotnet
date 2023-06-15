@@ -11,11 +11,14 @@ namespace IoDit.WebAPI.Utilities;
 public class JwtUtils : IJwtUtils
 {
     private readonly IIoDitRepository _repository;
+
+    private readonly IUserRepository _userRepository;
     private readonly IConfiguration _configuration;
 
-    public JwtUtils(IIoDitRepository repository, IConfiguration configuration)
+    public JwtUtils(IIoDitRepository repository, IUserRepository userRepository, IConfiguration configuration)
     {
         _repository = repository;
+        _userRepository = userRepository;
         _configuration = configuration;
     }
 
@@ -48,12 +51,12 @@ public class JwtUtils : IJwtUtils
 
     public async Task<RefreshToken?> GenerateRefreshToken(string email, string deviceIdentifier)
     {
-        var user = await _repository.GetUserByEmail(email);
+        var user = await _userRepository.GetUserByEmail(email);
         if (user == null)
         {
             return null;
         }
-        
+
         var userTokens = await _repository.GetRefreshTokensForUser(user.Id);
         var expiredTokens = userTokens.Where(t => t.Expires < DateTime.UtcNow).ToList();
         if (expiredTokens.Any())
