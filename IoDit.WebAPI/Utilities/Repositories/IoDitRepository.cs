@@ -2,7 +2,6 @@
 using IoDit.WebAPI.Persistence.Entities;
 using IoDit.WebAPI.Persistence.Entities.Base;
 using IoDit.WebAPI.Persistence.Entities.Company;
-using IoDit.WebAPI.Utilities.Types;
 using Microsoft.EntityFrameworkCore;
 
 namespace IoDit.WebAPI.Utilities.Repositories;
@@ -91,19 +90,6 @@ public class IoDitRepository : IIoDitRepository
             DbContext.CompanyDevices.Include(x => x.DeviceData).FirstOrDefault(x => x.DevEUI == deviceEUI));
 
     //*******************************************************************************************
-    //FARM
-    public async Task<IQueryable<CompanyFarm>> GetCompanyFarms(long companyId) =>
-        await Task.Run(() =>
-            DbContext.Companies.Include(x => x.Farms).Where(x => x.Id == companyId).SelectMany(x => x.Farms));
-
-    public async Task<CompanyUser?> GetCompanyUserFarms(long companyUserId) =>
-        await Task.Run(() => DbContext.CompanyUsers
-            .Include(x => x.CompanyFarmUsers).ThenInclude(x => x.CompanyFarm)
-            .FirstOrDefault(x => x.Id == companyUserId));
-
-    public async Task<CompanyFarm?> GetCompanyFarmById(long companyFarmId) =>
-        await Task.Run(() => DbContext.CompanyFarms.FirstOrDefault(x => x.Id == companyFarmId));
-
     //*******************************************************************************************
     //FIELD 
     public async Task<IQueryable<CompanyField>> GetCompanyFields(long companyId) =>

@@ -11,15 +11,18 @@ public class FarmService : IFarmService
     private readonly IIoDitRepository _repository;
     private readonly ICompanyRepository _companyRepository;
     private readonly ICompanyUserRepository _companyUserRepository;
+    private readonly IFarmRepository _farmRepository;
 
     public FarmService(IIoDitRepository repository,
         ICompanyRepository companyRepository,
-        ICompanyUserRepository companyUserRepository
+        ICompanyUserRepository companyUserRepository,
+        IFarmRepository farmRepository
         )
     {
         _repository = repository;
         _companyRepository = companyRepository;
         _companyUserRepository = companyUserRepository;
+        _farmRepository = farmRepository;
     }
 
     public async Task<CompanyFarmsResponseDto> CreateCompanyFarm(CreateCompanyFarm request)
@@ -66,7 +69,7 @@ public class FarmService : IFarmService
 
     public async Task<List<CompanyFarmsResponseDto>?> GetCompanyFarms(long companyId)
     {
-        var farms = await _repository.GetCompanyFarms(companyId);
+        var farms = await _farmRepository.GetCompanyFarms(companyId);
         if (!farms.Any())
         {
             return new List<CompanyFarmsResponseDto>();

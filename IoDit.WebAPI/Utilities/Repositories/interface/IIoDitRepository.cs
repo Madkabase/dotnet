@@ -17,11 +17,6 @@ public interface IIoDitRepository
     //DEVICE DATA
     Task<CompanyDevice?> GetDeviceWithDataByEui(string deviceEUI);
 
-    //FARM
-    Task<IQueryable<CompanyFarm>> GetCompanyFarms(long companyId);
-    Task<CompanyUser?> GetCompanyUserFarms(long companyUserId);
-    Task<CompanyFarm?> GetCompanyFarmById(long companyFarmId);
-
     //COMPANY FARM USERS
     Task<IQueryable<CompanyFarmUser>> GetCompanyFarmUsers(long companyId);
     Task<IQueryable<CompanyFarmUser>> GetCompanyUserFarmUsers(long companyUserId);

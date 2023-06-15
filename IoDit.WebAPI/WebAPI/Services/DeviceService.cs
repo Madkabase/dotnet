@@ -15,19 +15,22 @@ public class DeviceService : IDeviceService
     private readonly LoriotApiClient _loriotApiClient;
     private readonly IAzureApiClient _azureApiClient;
     private readonly ICompanyRepository _companyRepository;
+    private readonly IFarmRepository _farmRepository;
 
 
     public DeviceService(
         IIoDitRepository repository,
         LoriotApiClient loriotApiClient,
         IAzureApiClient azureApiClient,
-        ICompanyRepository companyRepository
+        ICompanyRepository companyRepository,
+        IFarmRepository farmRepository
     )
     {
         _repository = repository;
         _loriotApiClient = loriotApiClient;
         _azureApiClient = azureApiClient;
         _companyRepository = companyRepository;
+        _farmRepository = farmRepository;
     }
 
     public async Task<GetDevicesResponseDto> CreateDevice(CreateDeviceRequestDto request)
@@ -44,7 +47,7 @@ public class DeviceService : IDeviceService
             throw new Exception("Device already exist");
         }
 
-        var farm = await _repository.GetCompanyFarmById(request.FarmId);
+        var farm = await _farmRepository.GetCompanyFarmById(request.FarmId);
         if (farm == null)
         {
             throw new Exception("Farm doesnt exist");

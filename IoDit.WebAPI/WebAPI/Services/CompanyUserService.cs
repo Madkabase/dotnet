@@ -12,18 +12,21 @@ public class CompanyUserService : ICompanyUserService
     private readonly IUserRepository _userRepository;
     private readonly ICompanyRepository _companyRepository;
     private readonly ICompanyUserRepository _companyUserRepository;
+    private readonly IFarmRepository _farmRepository;
 
 
     public CompanyUserService(
         IIoDitRepository repository,
         IUserRepository userRepository,
         ICompanyRepository companyRepository,
-        ICompanyUserRepository companyUserRepository)
+        ICompanyUserRepository companyUserRepository,
+        IFarmRepository farmRepository)
     {
         _repository = repository;
         _userRepository = userRepository;
         _companyRepository = companyRepository;
         _companyUserRepository = companyUserRepository;
+        _farmRepository = farmRepository;
     }
 
     public async Task<List<GetCompanyUsersResponseDto>?> GetUserCompanyUsers(string email)
@@ -98,7 +101,7 @@ public class CompanyUserService : ICompanyUserService
         var createdCompanyUser = await _repository.CreateAsync(companyUser);
         if (request.CompanyRole != CompanyRoles.CompanyUser)
         {
-            var farms = await _repository.GetCompanyFarms(request.CompanyId);
+            var farms = await _farmRepository.GetCompanyFarms(request.CompanyId);
             var farmUsers = new List<CompanyFarmUser>();
             foreach (var companyFarm in farms)
             {

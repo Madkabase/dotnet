@@ -9,18 +9,21 @@ public class FieldService : IFieldService
 {
     private readonly IIoDitRepository _repository;
     private readonly ICompanyRepository _companyRepository;
+    private readonly IFarmRepository _farmRepository;
 
     public FieldService(IIoDitRepository repository,
-        ICompanyRepository companyRepository)
+        ICompanyRepository companyRepository,
+        IFarmRepository farmRepository)
     {
         _repository = repository;
         _companyRepository = companyRepository;
+        _farmRepository = farmRepository;
     }
 
     public async Task<FieldResponseDto> CreateCompanyField(CreateCompanyField request)
     {
         var company = await _companyRepository.GetCompanyById(request.CompanyId);
-        var companyFarm = await _repository.GetCompanyFarmById(request.CompanyFarmId);
+        var companyFarm = await _farmRepository.GetCompanyFarmById(request.CompanyFarmId);
 
         var companyField = new CompanyField()
         {

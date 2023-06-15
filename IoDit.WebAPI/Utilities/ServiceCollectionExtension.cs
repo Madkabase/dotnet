@@ -17,6 +17,7 @@ public static class ServiceCollectionExtension
         .AddScoped<IUserRepository, UserRepository>()
         .AddScoped<ICompanyRepository, CompanyRepository>()
         .AddScoped<ICompanyUserRepository, CompanyUserRepository>()
+        .AddScoped<IFarmRepository, FarmRepository>()
         .AddScoped<IJwtUtils, JwtUtils>()
         .AddScoped<ITestService, TestService>()
         .AddScoped<IAuthService, AuthService>()
