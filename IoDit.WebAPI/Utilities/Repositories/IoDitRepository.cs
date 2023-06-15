@@ -15,12 +15,6 @@ public class IoDitRepository : IIoDitRepository
         DbContext = context;
     }
 
-    //THRESHOLD PRESETS
-    public async Task<IQueryable<CompanyThresholdPreset>> GetCompanyThresholdPresetsByCompanyId(long companyId) =>
-        await Task.Run(() =>
-            DbContext.CompanyThresholdPreset.Where(x => x.CompanyId == companyId));
-
-
     //REPO UTILS
     public async Task<T> CreateAsync<T>(T entity) where T : class, IEntity
     {

@@ -9,9 +9,6 @@ public interface IIoDitRepository
 {
     IoDitDbContext DbContext { get; }
 
-    //THRESHOLD PRESETS
-    Task<IQueryable<CompanyThresholdPreset>> GetCompanyThresholdPresetsByCompanyId(long companyId);
-
     //REPO UTILS
     Task<T> CreateAsync<T>(T entity) where T : class, IEntity;
     Task<T> UpdateAsync<T>(T entity) where T : class, IEntity;

@@ -9,12 +9,15 @@ public class ThresholdPresetService : IThresholdPresetService
 {
     private readonly IIoDitRepository _repository;
     private readonly ICompanyRepository _companyRepository;
+    private readonly IThresholdRepository _thresholdRepository;
 
     public ThresholdPresetService(IIoDitRepository repository,
-        ICompanyRepository companyRepository)
+        ICompanyRepository companyRepository,
+        IThresholdRepository thresholdRepository)
     {
         _repository = repository;
         _companyRepository = companyRepository;
+        _thresholdRepository = thresholdRepository;
     }
 
     public async Task<GetThresholdPresetsResponseDto> CreateThresholdPreset(CreateThresholdPreset request)
@@ -59,7 +62,7 @@ public class ThresholdPresetService : IThresholdPresetService
 
     public async Task<List<GetThresholdPresetsResponseDto>?> GetThresholdPresets(long companyId)
     {
-        var presets = await _repository.GetCompanyThresholdPresetsByCompanyId(companyId);
+        var presets = await _thresholdRepository.GetCompanyThresholdPresetsByCompanyId(companyId);
         if (!presets.Any())
         {
             return new List<GetThresholdPresetsResponseDto>();
