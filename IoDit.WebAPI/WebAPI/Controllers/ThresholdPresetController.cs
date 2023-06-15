@@ -17,22 +17,30 @@ public class ThresholdPresetController : ControllerBase, IBaseController
     private readonly ILogger<ThresholdPresetController> _logger;
     private readonly IConfiguration _configuration;
     private readonly IThresholdPresetService _thresholdPresetService;
-    private readonly IIoDitRepository _repository;
+    private readonly IUtilsRepository _utilsRepository;
+    private readonly IUserRepository _userRepository;
+    private readonly ICompanyUserRepository _companyUserRepository;
 
     public ThresholdPresetController(
         ILogger<ThresholdPresetController> logger,
-        IConfiguration configuration, IThresholdPresetService thresholdPresetService, IIoDitRepository repository)
+        IConfiguration configuration,
+        IThresholdPresetService thresholdPresetService,
+        IUtilsRepository repository,
+        IUserRepository userRepository,
+        ICompanyUserRepository companyUserRepository)
     {
         _logger = logger;
         _configuration = configuration;
         _thresholdPresetService = thresholdPresetService;
-        _repository = repository;
+        _utilsRepository = repository;
+        _userRepository = userRepository;
+        _companyUserRepository = companyUserRepository;
     }
-    
+
     //CreateThresholdPresetRequestDto
-    
+
     [HttpPost("createThresholdPreset")]
-    public async Task<IActionResult> CreateThresholdPreset([FromBody]CreateThresholdPresetRequestDto request)
+    public async Task<IActionResult> CreateThresholdPreset([FromBody] CreateThresholdPresetRequestDto request)
     {
         var user = await GetRequestDetails();
         if (user == null)
@@ -40,12 +48,12 @@ public class ThresholdPresetController : ControllerBase, IBaseController
             return BadRequest("Cannot find user identity");
         }
 
-        var companyUser = await _repository.GetCompanyUserForUserSecure(user.Email, request.CompanyUserId);
+        var companyUser = await _companyUserRepository.GetCompanyUserForUserSecure(user.Email, request.CompanyUserId);
         if (companyUser == null || companyUser.CompanyRole == CompanyRoles.CompanyUser)
         {
             return BadRequest("Cannot access this feature, please contact your company owner or company admin");
         }
-        
+
         return Ok(await _thresholdPresetService.CreateThresholdPreset(new CreateThresholdPreset()
         {
             Name = request.Name,
@@ -60,9 +68,9 @@ public class ThresholdPresetController : ControllerBase, IBaseController
             DefaultBatteryLevelMin = request.DefaultBatteryLevelMin
         }));
     }
-    
+
     [HttpPost("getThresholdPresets")]
-    public async Task<IActionResult> GetThresholdPresets([FromBody]long companyId)
+    public async Task<IActionResult> GetThresholdPresets([FromBody] long companyId)
     {
         var user = await GetRequestDetails();
         if (user == null)
@@ -70,16 +78,16 @@ public class ThresholdPresetController : ControllerBase, IBaseController
             return BadRequest("Cannot find user identity");
         }
 
-        var companyUser = await _repository.GetCompanyUserForUserByCompanyId(user.Email, companyId);
+        var companyUser = await _companyUserRepository.GetCompanyUserForUserByCompanyId(user.Email, companyId);
         if (companyUser == null)
         {
             return BadRequest("Cannot access this feature, please contact your company owner or company admin");
         }
-        
+
         return Ok(await _thresholdPresetService.GetThresholdPresets(companyId));
     }
-    
-        [ApiExplorerSettings(IgnoreApi = true)]
+
+    [ApiExplorerSettings(IgnoreApi = true)]
     public async Task<User?> GetRequestDetails()
     {
         var claimsIdentity = User.Identity as ClaimsIdentity;
@@ -90,7 +98,7 @@ public class ThresholdPresetController : ControllerBase, IBaseController
             return null;
         }
 
-        var user = await _repository.GetUserByEmail(userId);
+        var user = await _userRepository.GetUserByEmail(userId);
         if (user != null)
         {
             return user;

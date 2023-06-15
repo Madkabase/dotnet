@@ -15,20 +15,28 @@ public class UserDeviceDataController : ControllerBase, IBaseController
     private readonly ILogger<UserDeviceDataController> _logger;
     private readonly IConfiguration _configuration;
     private readonly IUserDeviceDataService _userDeviceDataService;
-    private readonly IIoDitRepository _repository;
+    private readonly IUtilsRepository _utilsRepository;
+    private readonly IUserRepository _userRepository;
+    private readonly ICompanyUserRepository _companyUserRepository;
 
     public UserDeviceDataController(
         ILogger<UserDeviceDataController> logger,
-        IConfiguration configuration, IUserDeviceDataService userDeviceDataService, IIoDitRepository repository)
+        IConfiguration configuration,
+        IUserDeviceDataService userDeviceDataService,
+        IUtilsRepository repository,
+        IUserRepository userRepository,
+        ICompanyUserRepository companyUserRepository)
     {
         _logger = logger;
         _configuration = configuration;
         _userDeviceDataService = userDeviceDataService;
-        _repository = repository;
+        _utilsRepository = repository;
+        _userRepository = userRepository;
+        _companyUserRepository = companyUserRepository;
     }
-    
+
     [HttpPost("getUserThresholds")]
-    public async Task<IActionResult> GetUserThresholds([FromBody]long companyUserId)
+    public async Task<IActionResult> GetUserThresholds([FromBody] long companyUserId)
     {
         var user = await GetRequestDetails();
         if (user == null)
@@ -36,7 +44,7 @@ public class UserDeviceDataController : ControllerBase, IBaseController
             return BadRequest("Cannot find user identity");
         }
 
-        var companyUser = await _repository.GetCompanyUserForUserSecure(user.Email, companyUserId);
+        var companyUser = await _companyUserRepository.GetCompanyUserForUserSecure(user.Email, companyUserId);
         if (companyUser == null)
         {
             return BadRequest("Cannot access this feature, please contact your company admin");
@@ -44,7 +52,7 @@ public class UserDeviceDataController : ControllerBase, IBaseController
 
         return Ok(await _userDeviceDataService.GetCompanyUserThresholds(companyUserId));
     }
-    
+
     [ApiExplorerSettings(IgnoreApi = true)]
     public async Task<User?> GetRequestDetails()
     {
@@ -56,7 +64,7 @@ public class UserDeviceDataController : ControllerBase, IBaseController
             return null;
         }
 
-        var user = await _repository.GetUserByEmail(userId);
+        var user = await _userRepository.GetUserByEmail(userId);
         if (user != null)
         {
             return user;

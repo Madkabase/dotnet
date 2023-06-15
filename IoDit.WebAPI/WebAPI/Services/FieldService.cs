@@ -7,18 +7,27 @@ namespace IoDit.WebAPI.WebAPI.Services;
 
 public class FieldService : IFieldService
 {
-    private readonly IIoDitRepository _repository;
+    private readonly IUtilsRepository _utilsRepository;
+    private readonly ICompanyRepository _companyRepository;
+    private readonly IFarmRepository _farmRepository;
+    private readonly IFieldRepository _fieldRepository;
 
-    public FieldService(IIoDitRepository repository)
+    public FieldService(IUtilsRepository repository,
+        ICompanyRepository companyRepository,
+        IFarmRepository farmRepository,
+        IFieldRepository fieldRepository)
     {
-        _repository = repository;
+        _utilsRepository = repository;
+        _companyRepository = companyRepository;
+        _farmRepository = farmRepository;
+        _fieldRepository = fieldRepository;
     }
 
     public async Task<FieldResponseDto> CreateCompanyField(CreateCompanyField request)
     {
-        var company = await _repository.GetCompanyById(request.CompanyId);
-        var companyFarm = await _repository.GetCompanyFarmById(request.CompanyFarmId);
-        
+        var company = await _companyRepository.GetCompanyById(request.CompanyId);
+        var companyFarm = await _farmRepository.GetCompanyFarmById(request.CompanyFarmId);
+
         var companyField = new CompanyField()
         {
             Company = company,
@@ -28,7 +37,7 @@ public class FieldService : IFieldService
             CompanyId = request.CompanyId,
             CompanyFarmId = request.CompanyFarmId
         };
-        var createdField = await _repository.CreateAsync(companyField);
+        var createdField = await _utilsRepository.CreateAsync(companyField);
         return new FieldResponseDto()
         {
             Id = createdField.Id,
@@ -41,11 +50,11 @@ public class FieldService : IFieldService
 
     public async Task<FieldResponseDto> UpdateGeofence(UpdateGeofence request)
     {
-        var companyField = await _repository.GetCompanyFieldById(request.FieldId);
+        var companyField = await _fieldRepository.GetFieldById(request.FieldId);
         if (companyField != null)
         {
             companyField.Geofence = request.Geofence;
-            var updated = await _repository.UpdateAsync(companyField);
+            var updated = await _utilsRepository.UpdateAsync(companyField);
             return new FieldResponseDto()
             {
                 Id = updated.Id,
@@ -60,7 +69,7 @@ public class FieldService : IFieldService
 
     public async Task<List<FieldResponseDto>?> GetFields(long companyId)
     {
-        var fields = await _repository.GetCompanyFields(companyId);
+        var fields = await _fieldRepository.GetFieldsByCompanyId(companyId);
         if (!fields.Any())
         {
             return new List<FieldResponseDto>();

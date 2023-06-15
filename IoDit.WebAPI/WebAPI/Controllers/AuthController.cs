@@ -17,18 +17,21 @@ namespace IoDit.WebAPI.WebAPI.Controllers;
 public class AuthController : ControllerBase, IBaseController
 {
     private readonly ILogger<AuthController> _logger;
-    private readonly IIoDitRepository _repository;
+    private readonly IUtilsRepository _utilsRepository;
+    private readonly IUserRepository _userRepository;
     private readonly IAuthService _authService;
     private readonly IJwtUtils _jwtUtils;
 
     public AuthController(
         ILogger<AuthController> logger,
-        IIoDitRepository repository,
+        IUtilsRepository repository,
+        IUserRepository userRepository,
         IAuthService authService,
         IJwtUtils jwtUtils)
     {
         _logger = logger;
-        _repository = repository;
+        _utilsRepository = repository;
+        _userRepository = userRepository;
         _authService = authService;
         _jwtUtils = jwtUtils;
     }
@@ -44,7 +47,7 @@ public class AuthController : ControllerBase, IBaseController
         }
         return Ok(result);
     }
-    
+
     [AllowAnonymous]
     [HttpPost("renewPassword")]
     public async Task<IActionResult> RenewPassword()
@@ -76,7 +79,7 @@ public class AuthController : ControllerBase, IBaseController
             return BadRequest("Refresh token is required.");
         }
 
-        var refreshToken = await _repository.GetRefreshToken(refreshTokenRequest.RefreshToken);
+        var refreshToken = await _userRepository.GetRefreshToken(refreshTokenRequest.RefreshToken);
 
         if (refreshToken == null)
         {
@@ -88,7 +91,7 @@ public class AuthController : ControllerBase, IBaseController
             return BadRequest("Refresh token has expired.");
         }
 
-        var user = await _repository.GetUserById(refreshToken.UserId);
+        var user = await _userRepository.GetUserById(refreshToken.UserId);
 
         if (user == null)
         {
@@ -99,7 +102,7 @@ public class AuthController : ControllerBase, IBaseController
 
         return Ok(new { AccessToken = newAccessToken });
     }
-    
+
     [ApiExplorerSettings(IgnoreApi = true)]
     public async Task<User?> GetRequestDetails()
     {
@@ -110,7 +113,7 @@ public class AuthController : ControllerBase, IBaseController
         {
             return null;
         }
-        var user = await _repository.GetUserByEmail(userId);
+        var user = await _userRepository.GetUserByEmail(userId);
         if (user != null)
         {
             return user;
@@ -118,5 +121,5 @@ public class AuthController : ControllerBase, IBaseController
 
         return null;
     }
-    
+
 }

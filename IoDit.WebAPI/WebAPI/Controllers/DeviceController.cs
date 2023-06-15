@@ -17,75 +17,81 @@ public class DeviceController : ControllerBase, IBaseController
     private readonly ILogger<DeviceController> _logger;
     private readonly IConfiguration _configuration;
     private readonly IDeviceService _deviceService;
-    private readonly IIoDitRepository _repository;
+    private readonly IUtilsRepository _utilsRepository;
+    private readonly IUserRepository _userRepository;
+    private readonly ICompanyUserRepository _companyUserRepository;
 
     public DeviceController(
         ILogger<DeviceController> logger,
-        IConfiguration configuration, 
-        IDeviceService deviceService, 
-        IIoDitRepository repository)
+        IConfiguration configuration,
+        IDeviceService deviceService,
+        IUtilsRepository repository,
+        IUserRepository userRepository,
+        ICompanyUserRepository companyUserRepository)
     {
         _logger = logger;
         _configuration = configuration;
         _deviceService = deviceService;
-        _repository = repository;
+        _utilsRepository = repository;
+        _userRepository = userRepository;
+        _companyUserRepository = companyUserRepository;
     }
-    
+
     [HttpPost("createDevice")]
     public async Task<IActionResult> CreateDevice(CreateDeviceRequestDto request)
     {
         var user = await GetRequestDetails();
-        
+
         if (user == null || user.AppRole == AppRoles.AppUser)
         {
             return BadRequest("Cannot find user entity");
         }
 
-        var companyUser = await _repository.GetCompanyUserForUserSecure(user.Email, request.CompanyUserId);
+        var companyUser = await _companyUserRepository.GetCompanyUserForUserSecure(user.Email, request.CompanyUserId);
 
         if (companyUser == null || companyUser.CompanyRole == CompanyRoles.CompanyUser)//todo change roles?
         {
             return BadRequest("Cannot access this feature, please contact your company owner or company admin");
         }
-        
+
         return Ok(await _deviceService.CreateDevice(request));
     }
-    
+
     [HttpPost("getDevices")]
-    public async Task<IActionResult> GetDevices([FromBody]long companyUserId)
+    public async Task<IActionResult> GetDevices([FromBody] long companyUserId)
     {
         var user = await GetRequestDetails();
-        
+
         if (user == null)
         {
             return BadRequest("Cannot find user entity");
         }
 
-        var companyUser = await _repository.GetCompanyUserForUserSecure(user.Email, companyUserId);
+        var companyUser = await _companyUserRepository.GetCompanyUserForUserSecure(user.Email, companyUserId);
         if (companyUser == null)
         {
             return BadRequest("Cannot find company user entity");
         }
-        
+
         return Ok(await _deviceService.GetDevices(companyUser.CompanyId));
     }
-    
+
     [HttpPost("assignToField")]
-    public async Task<IActionResult> AssignToField([FromBody]AssignToFieldRequestDto request)
+    public async Task<IActionResult> AssignToField([FromBody] AssignToFieldRequestDto request)
     {
         var user = await GetRequestDetails();
-        
+
         if (user == null)
         {
             return BadRequest("Cannot find user entity");
         }
 
-        var companyUser = await _repository.GetCompanyUserForUserSecure(user.Email, request.CompanyUserId);
+        var companyUser = await _companyUserRepository.GetCompanyUserForUserSecure(user.Email, request.CompanyUserId);
         if (companyUser == null)
         {
             return BadRequest("Cannot find company user entity");
         }
-        
+
         return Ok(await _deviceService.AssignToField(request));
     }
 
@@ -99,7 +105,7 @@ public class DeviceController : ControllerBase, IBaseController
         {
             return null;
         }
-        var user = await _repository.GetUserByEmail(userId);
+        var user = await _userRepository.GetUserByEmail(userId);
         if (user != null)
         {
             return user;

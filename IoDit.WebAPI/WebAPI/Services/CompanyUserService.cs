@@ -6,39 +6,53 @@ using IoDit.WebAPI.WebAPI.Services.Interfaces;
 
 namespace IoDit.WebAPI.WebAPI.Services;
 
-public class CompanyUserService: ICompanyUserService
+public class CompanyUserService : ICompanyUserService
 {
-    private readonly IIoDitRepository _repository;
+    private readonly IUtilsRepository _utilsRepository;
+    private readonly IUserRepository _userRepository;
+    private readonly ICompanyRepository _companyRepository;
+    private readonly ICompanyUserRepository _companyUserRepository;
+    private readonly IFarmRepository _farmRepository;
 
-    public CompanyUserService(IIoDitRepository repository)
+
+    public CompanyUserService(
+        IUtilsRepository repository,
+        IUserRepository userRepository,
+        ICompanyRepository companyRepository,
+        ICompanyUserRepository companyUserRepository,
+        IFarmRepository farmRepository)
     {
-        _repository = repository;
+        _utilsRepository = repository;
+        _userRepository = userRepository;
+        _companyRepository = companyRepository;
+        _companyUserRepository = companyUserRepository;
+        _farmRepository = farmRepository;
     }
 
     public async Task<List<GetCompanyUsersResponseDto>?> GetUserCompanyUsers(string email)
     {
-        var companyUsers = await _repository.GetUserCompanyUsers(email);
+        var companyUsers = await _companyUserRepository.GetUserCompanyUsers(email);
         if (!companyUsers.Any())
         {
             return null;
         }
         return companyUsers.Select(x => new GetCompanyUsersResponseDto()
         {
-                Id = x.Id,
-                CompanyId = x.CompanyId,
-                CompanyName = x.Company.CompanyName,
-                CompanyRole = x.CompanyRole,
-                IsDefault = x.IsDefault,
-                UserId = x.UserId,
-                FirstName = x.User.FirstName,
-                LastName = x.User.LastName,
-                Email = x.User.Email
+            Id = x.Id,
+            CompanyId = x.CompanyId,
+            CompanyName = x.Company.CompanyName,
+            CompanyRole = x.CompanyRole,
+            IsDefault = x.IsDefault,
+            UserId = x.UserId,
+            FirstName = x.User.FirstName,
+            LastName = x.User.LastName,
+            Email = x.User.Email
         }).ToList();
     }
-    
+
     public async Task<List<GetCompanyUsersResponseDto>?> GetCompanyUsers(long companyId)
     {
-        var companyUsers = await _repository.GetCompanyUsers(companyId);
+        var companyUsers = await _companyUserRepository.GetCompanyUsers(companyId);
         if (!companyUsers.Any())
         {
             return null;
@@ -60,21 +74,21 @@ public class CompanyUserService: ICompanyUserService
     public async Task<GetCompanyUsersResponseDto?> InviteUser(InviteUserRequestDto request)
     {
         //todo send email?
-        
-        var invitedUserCompanyUsers = await _repository.GetUserCompanyUsers(request.Email);
+
+        var invitedUserCompanyUsers = await _companyUserRepository.GetUserCompanyUsers(request.Email);
         var isDefault = false;
         if (invitedUserCompanyUsers.FirstOrDefault(x => x.IsDefault == true) == null)
         {
             isDefault = true;
         }
 
-        var company = await _repository.GetCompanyById(request.CompanyId);
+        var company = await _companyRepository.GetCompanyById(request.CompanyId);
         if (company == null)
         {
             return null;
         }
-        var invitedUser = await _repository.GetUserByEmail(request.Email);
-        
+        var invitedUser = await _userRepository.GetUserByEmail(request.Email);
+
         var companyUser = new CompanyUser()
         {
             Company = company,
@@ -84,10 +98,10 @@ public class CompanyUserService: ICompanyUserService
             UserId = invitedUser.Id,
             IsDefault = isDefault,
         };
-        var createdCompanyUser = await _repository.CreateAsync(companyUser);
+        var createdCompanyUser = await _utilsRepository.CreateAsync(companyUser);
         if (request.CompanyRole != CompanyRoles.CompanyUser)
         {
-            var farms = await _repository.GetCompanyFarms(request.CompanyId);
+            var farms = await _farmRepository.GetCompanyFarms(request.CompanyId);
             var farmUsers = new List<CompanyFarmUser>();
             foreach (var companyFarm in farms)
             {
@@ -103,9 +117,9 @@ public class CompanyUserService: ICompanyUserService
                 });
             }
 
-            await _repository.CreateRangeAsync(farmUsers);
+            await _utilsRepository.CreateRangeAsync(farmUsers);
         }
-        
+
         return new GetCompanyUsersResponseDto()
         {
             Id = createdCompanyUser.Id,

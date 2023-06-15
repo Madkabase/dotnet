@@ -4,18 +4,18 @@ using IoDit.WebAPI.WebAPI.Services.Interfaces;
 
 namespace IoDit.WebAPI.WebAPI.Services;
 
-public class UserDeviceDataService: IUserDeviceDataService
+public class UserDeviceDataService : IUserDeviceDataService
 {
-    private readonly IIoDitRepository _repository;
+    private readonly ICompanyUserRepository _companyuserRepository;
 
-    public UserDeviceDataService(IIoDitRepository repository)
+    public UserDeviceDataService(ICompanyUserRepository companyuserRepository)
     {
-        _repository = repository;
+        _companyuserRepository = companyuserRepository;
     }
-    
+
     public async Task<List<UserDeviceDataResponseDto>?> GetCompanyUserThresholds(long companyUserId)
     {
-        var userThresholds = await _repository.GetCompanyUserThresholds(companyUserId);
+        var userThresholds = await _companyuserRepository.GetCompanyUserThresholds(companyUserId);
         if (!userThresholds.Any())
         {
             return new List<UserDeviceDataResponseDto>();

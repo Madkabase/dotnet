@@ -7,16 +7,28 @@ namespace IoDit.WebAPI.WebAPI.Services;
 
 public class FarmUserService : IFarmUserService
 {
-    private readonly IIoDitRepository _repository;
+    private readonly IUtilsRepository _utilsRepository;
+    private readonly ICompanyRepository _companyRepository;
+    private readonly ICompanyUserRepository _companyUserRepository;
+    private readonly IFarmRepository _farmRepository;
+    private readonly ICompanyFarmUserRepository _companyFarmUserRepository;
 
-    public FarmUserService(IIoDitRepository repository)
+    public FarmUserService(IUtilsRepository repository,
+        ICompanyRepository companyRepository,
+        ICompanyUserRepository companyUserRepository,
+        IFarmRepository farmRepository,
+        ICompanyFarmUserRepository companyFarmUserRepository)
     {
-        _repository = repository;
+        _utilsRepository = repository;
+        _companyRepository = companyRepository;
+        _companyUserRepository = companyUserRepository;
+        _farmRepository = farmRepository;
+        _companyFarmUserRepository = companyFarmUserRepository;
     }
 
     public async Task<List<GetFarmUsersResponseDto>?> GetUserFarmUsers(long companyUserId)
     {
-        var farmUsers = await _repository.GetCompanyUserFarmUsers(companyUserId);
+        var farmUsers = await _companyFarmUserRepository.GetCompanyUserFarmUsers(companyUserId);
 
         if (!farmUsers.Any())
         {
@@ -35,7 +47,7 @@ public class FarmUserService : IFarmUserService
 
     public async Task<List<GetFarmUsersResponseDto>?> GetFarmUsers(long companyId)
     {
-        var farmUsers = await _repository.GetCompanyFarmUsers(companyId);
+        var farmUsers = await _companyFarmUserRepository.GetUsersOfCompanyByCompanyId(companyId);
 
         if (!farmUsers.Any())
         {
@@ -54,16 +66,16 @@ public class FarmUserService : IFarmUserService
 
     public async Task<GetFarmUsersResponseDto?> AssignUserToFarm(AssignUserToFarmRequestDto request)
     {
-        var farmUser = await _repository.GetCompanyUserFarmUser(request.FarmId, request.CompanyUserId);
+        var farmUser = await _companyFarmUserRepository.GetCompanyUserFarmUser(request.FarmId, request.CompanyUserId);
         if (farmUser != null) return null;
-        
-        var farm = await _repository.GetCompanyFarmById(request.FarmId);
+
+        var farm = await _farmRepository.GetCompanyFarmById(request.FarmId);
         if (farm == null) return null;
-        
-        var company = await _repository.GetCompanyById(request.CompanyId);
+
+        var company = await _companyRepository.GetCompanyById(request.CompanyId);
         if (company == null) return null;
 
-        var companyUser = await _repository.GetCompanyUserById(request.UserId);
+        var companyUser = await _companyUserRepository.GetCompanyUserById(request.UserId);
         if (companyUser == null) return null;
 
         var newFarmUser = new CompanyFarmUser()
@@ -76,7 +88,7 @@ public class FarmUserService : IFarmUserService
             CompanyUserId = companyUser.Id,
             CompanyFarmRole = request.FarmRole
         };
-        var created = await _repository.CreateAsync(newFarmUser);
+        var created = await _utilsRepository.CreateAsync(newFarmUser);
         return new GetFarmUsersResponseDto()
         {
             Id = created.Id,

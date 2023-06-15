@@ -6,16 +6,15 @@ namespace IoDit.WebAPI.WebAPI.Services;
 
 public class UserService : IUserService
 {
-    private readonly IIoDitRepository _repository;
-
-    public UserService(IIoDitRepository repository)
+    private readonly IUserRepository _userRepository;
+    public UserService(IUserRepository repository)
     {
-        _repository = repository;
+        _userRepository = repository;
     }
 
     public async Task<UserResponseDto?> GetUser(string userEmail)
     {
-        var user = await _repository.GetUserByEmail(userEmail);
+        var user = await _userRepository.GetUserByEmail(userEmail);
         if (user == null)
         {
             return null;

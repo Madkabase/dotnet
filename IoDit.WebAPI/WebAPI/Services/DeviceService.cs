@@ -11,32 +11,49 @@ namespace IoDit.WebAPI.WebAPI.Services;
 
 public class DeviceService : IDeviceService
 {
-    private readonly IIoDitRepository _repository;
+    private readonly IUtilsRepository _utilsRepository;
     private readonly LoriotApiClient _loriotApiClient;
     private readonly IAzureApiClient _azureApiClient;
+    private readonly ICompanyRepository _companyRepository;
+    private readonly IFarmRepository _farmRepository;
+    private readonly IDeviceRepository _deviceRepository;
+    private readonly IFieldRepository _fieldRepository;
 
-    public DeviceService(IIoDitRepository repository, LoriotApiClient loriotApiClient, IAzureApiClient azureApiClient)
+
+    public DeviceService(
+        IUtilsRepository repository,
+        LoriotApiClient loriotApiClient,
+        IAzureApiClient azureApiClient,
+        ICompanyRepository companyRepository,
+        IFarmRepository farmRepository,
+        IDeviceRepository deviceRepository,
+        IFieldRepository fieldRepository
+    )
     {
-        _repository = repository;
+        _utilsRepository = repository;
         _loriotApiClient = loriotApiClient;
         _azureApiClient = azureApiClient;
+        _companyRepository = companyRepository;
+        _farmRepository = farmRepository;
+        _deviceRepository = deviceRepository;
+        _fieldRepository = fieldRepository;
     }
 
     public async Task<GetDevicesResponseDto> CreateDevice(CreateDeviceRequestDto request)
     {
-        var company = await _repository.GetCompanyById(request.CompanyId);
+        var company = await _companyRepository.GetCompanyById(request.CompanyId);
         if (company == null)
         {
             throw new Exception("Company doesnt exist");
         }
-        
-        var device = await _repository.GetDeviceByEui(request.DeviceEUI);
+
+        var device = await _deviceRepository.GetDeviceByEui(request.DeviceEUI);
         if (device != null)
         {
             throw new Exception("Device already exist");
         }
-        
-        var farm = await _repository.GetCompanyFarmById(request.FarmId);
+
+        var farm = await _farmRepository.GetCompanyFarmById(request.FarmId);
         if (farm == null)
         {
             throw new Exception("Farm doesnt exist");
@@ -50,10 +67,10 @@ public class DeviceService : IDeviceService
             title = request.DeviceName,
             appeui = request.JoinEUI
         }, company.AppId);
-        
+
         var azureDevice = await _azureApiClient.CreateDevice(loriotDevice.deveui);
 
-        var createdDevice = await _repository.CreateAsync(new CompanyDevice()
+        var createdDevice = await _utilsRepository.CreateAsync(new CompanyDevice()
         {
             Farm = farm,
             FarmId = farm.Id,
@@ -72,7 +89,7 @@ public class DeviceService : IDeviceService
             DefaultBatteryLevelMax = request.DefaultBatteryLevelMax,
             DefaultBatteryLevelMin = request.DefaultBatteryLevelMin
         });
-        
+
         return new GetDevicesResponseDto()
         {
             Id = createdDevice.Id,
@@ -106,7 +123,7 @@ public class DeviceService : IDeviceService
 
     public async Task<List<GetDevicesResponseDto>?> GetDevices(long companyId)
     {
-        var devices = await _repository.GetDevices(companyId);
+        var devices = await _deviceRepository.GetDevices(companyId);
         if (!devices.Any())
         {
             return new List<GetDevicesResponseDto>();
@@ -142,16 +159,16 @@ public class DeviceService : IDeviceService
             JoinEUI = device.JoinEUI
         }).ToList();
     }
-    
+
     public async Task<GetDevicesResponseDto?> AssignToField(AssignToFieldRequestDto dto)
     {
-        var device = await _repository.GetDeviceByEui(dto.DeviceEui);
+        var device = await _deviceRepository.GetDeviceByEui(dto.DeviceEui);
         if (device == null)
         {
             return null;
         }
 
-        var field = await _repository.GetCompanyFieldById(dto.FieldId);
+        var field = await _fieldRepository.GetFieldById(dto.FieldId);
         if (field == null)
         {
             return null;
@@ -159,7 +176,7 @@ public class DeviceService : IDeviceService
 
         device.Field = field;
         device.FieldId = field.Id;
-        var updated = await _repository.UpdateAsync(device);
+        var updated = await _utilsRepository.UpdateAsync(device);
 
         return new GetDevicesResponseDto()
         {

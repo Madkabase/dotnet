@@ -10,12 +10,15 @@ namespace IoDit.WebAPI.Utilities;
 
 public class JwtUtils : IJwtUtils
 {
-    private readonly IIoDitRepository _repository;
+    private readonly IUtilsRepository _utilsRepository;
+
+    private readonly IUserRepository _userRepository;
     private readonly IConfiguration _configuration;
 
-    public JwtUtils(IIoDitRepository repository, IConfiguration configuration)
+    public JwtUtils(IUtilsRepository repository, IUserRepository userRepository, IConfiguration configuration)
     {
-        _repository = repository;
+        _utilsRepository = repository;
+        _userRepository = userRepository;
         _configuration = configuration;
     }
 
@@ -48,17 +51,17 @@ public class JwtUtils : IJwtUtils
 
     public async Task<RefreshToken?> GenerateRefreshToken(string email, string deviceIdentifier)
     {
-        var user = await _repository.GetUserByEmail(email);
+        var user = await _userRepository.GetUserByEmail(email);
         if (user == null)
         {
             return null;
         }
-        
-        var userTokens = await _repository.GetRefreshTokensForUser(user.Id);
+
+        var userTokens = await _userRepository.GetRefreshTokensForUser(user.Id);
         var expiredTokens = userTokens.Where(t => t.Expires < DateTime.UtcNow).ToList();
         if (expiredTokens.Any())
         {
-            await _repository.DeleteRangeAsync(expiredTokens);
+            await _utilsRepository.DeleteRangeAsync(expiredTokens);
         }
         var currentToken = userTokens.FirstOrDefault(x => x.DeviceIdentifier == deviceIdentifier);
 
@@ -68,7 +71,7 @@ public class JwtUtils : IJwtUtils
         do
         {
             newToken = Convert.ToHexString(RandomNumberGenerator.GetBytes(64));
-            isTokenUnique = await _repository.CheckIfRefreshTokenExist(newToken);
+            isTokenUnique = await _userRepository.CheckIfRefreshTokenExist(newToken);
         }
         while (!isTokenUnique);
 
@@ -76,7 +79,7 @@ public class JwtUtils : IJwtUtils
         {
             currentToken.Token = newToken;
             currentToken.Expires = DateTime.UtcNow.AddDays(7);
-            await _repository.UpdateAsync(currentToken);
+            await _utilsRepository.UpdateAsync(currentToken);
             return currentToken;
         }
 
@@ -89,7 +92,7 @@ public class JwtUtils : IJwtUtils
             User = user,
         };
 
-        await _repository.CreateAsync(refreshToken);
+        await _utilsRepository.CreateAsync(refreshToken);
         return refreshToken;
     }
 }

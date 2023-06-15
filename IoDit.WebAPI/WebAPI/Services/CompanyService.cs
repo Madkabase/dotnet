@@ -10,31 +10,41 @@ namespace IoDit.WebAPI.WebAPI.Services;
 
 public class CompanyService : ICompanyService
 {
-    private readonly IIoDitRepository _repository;
+    private readonly IUtilsRepository _utilsRepository;
     private readonly LoriotApiClient _loriotApiClient;
+    private readonly IUserRepository _userRepository;
+    private readonly ICompanyRepository _companyRepository;
+    private readonly ICompanyUserRepository _companyUserRepository;
 
 
-    public CompanyService(IIoDitRepository repository, LoriotApiClient loriotApiClient)
+    public CompanyService(IUtilsRepository repository,
+    LoriotApiClient loriotApiClient,
+    IUserRepository userRepository,
+    ICompanyRepository companyRepository,
+    ICompanyUserRepository companyUserRepository)
     {
-        _repository = repository;
+        _utilsRepository = repository;
         _loriotApiClient = loriotApiClient;
+        _userRepository = userRepository;
+        _companyRepository = companyRepository;
+        _companyUserRepository = companyUserRepository;
     }
 
     public async Task<GetCompanyResponseDto> CreateCompany(CreateCompanyRequestDto request)
     {
         //todo check sub requests and fulfill 
-        var owner = await _repository.GetUserByEmail(request.Email);
+        var owner = await _userRepository.GetUserByEmail(request.Email);
         if (owner == null)
         {
             return null;
         }
 
-        var subRequest = await _repository.DbContext.SubscriptionRequests.FirstOrDefaultAsync(x =>
+        var subRequest = await _utilsRepository.DbContext.SubscriptionRequests.FirstOrDefaultAsync(x =>
             x.IsFulfilled == false && x.CompanyName == request.Name && x.UserId == owner.Id);
         if (subRequest != null)
         {
             subRequest.IsFulfilled = true;
-            await _repository.UpdateAsync(subRequest);
+            await _utilsRepository.UpdateAsync(subRequest);
         }
 
         var loriotApp = await _loriotApiClient.CreateLoriotApp(owner.Email, request.MaxDevices);
@@ -47,8 +57,8 @@ public class CompanyService : ICompanyService
             AppId = loriotApp.appHexId,
             AppName = loriotApp.name
         };
-        var createdCompany = await _repository.CreateAsync(company);
-        var companyUsers = await _repository.GetUserCompanyUsers(owner.Email);
+        var createdCompany = await _utilsRepository.CreateAsync(company);
+        var companyUsers = await _companyUserRepository.GetUserCompanyUsers(owner.Email);
         var isDefault = false;
         if (companyUsers?.FirstOrDefault(x => x.IsDefault == true) == null)
         {
@@ -63,7 +73,7 @@ public class CompanyService : ICompanyService
             UserId = owner.Id,
             IsDefault = isDefault
         };
-        var createdCompanyUser = await _repository.CreateAsync(companyUser);
+        var createdCompanyUser = await _utilsRepository.CreateAsync(companyUser);
         return new GetCompanyResponseDto()
         {
             Id = createdCompany.Id,
@@ -77,7 +87,7 @@ public class CompanyService : ICompanyService
 
     public async Task<GetCompanyResponseDto?> GetCompany(long companyId)
     {
-        var company = await _repository.GetCompanyById(companyId);
+        var company = await _companyRepository.GetCompanyById(companyId);
         if (company != null)
         {
             return new GetCompanyResponseDto()
@@ -93,10 +103,10 @@ public class CompanyService : ICompanyService
         }
         return null;
     }
-    
+
     public async Task<List<GetCompanyResponseDto>?> GetCompanies()
     {
-        var companies = await _repository.GetCompanies();
+        var companies = await _companyRepository.GetCompanies();
         if (companies.Any())
         {
             return companies.Select(company => new GetCompanyResponseDto()
@@ -112,9 +122,10 @@ public class CompanyService : ICompanyService
         }
         return null;
     }
-    
-    public async Task<List<SubscriptionRequestResponseDto>?> GetSubscriptionRequests(){
-        var requests = await _repository.GetSubscriptionRequests();
+
+    public async Task<List<SubscriptionRequestResponseDto>?> GetSubscriptionRequests()
+    {
+        var requests = await _companyRepository.GetSubscriptionRequests();
         if (requests.Any())
         {
             return requests.Select(request => new SubscriptionRequestResponseDto()
@@ -129,10 +140,10 @@ public class CompanyService : ICompanyService
         }
         return null;
     }
-    
+
     public async Task<SubscriptionRequestResponseDto?> CreateSubscriptionRequest(CreateRequestSubscriptionRequestDto request)
     {
-        var user = await _repository.GetUserByEmail(request.Email);
+        var user = await _userRepository.GetUserByEmail(request.Email);
 
         var sub = new SubscriptionRequest()
         {
@@ -143,8 +154,8 @@ public class CompanyService : ICompanyService
             IsFulfilled = false,
             MaxDevices = request.MaxDevices
         };
-        var createdSub = await _repository.CreateAsync(sub);
-        
+        var createdSub = await _utilsRepository.CreateAsync(sub);
+
         return new SubscriptionRequestResponseDto()
         {
             Email = createdSub.Email,

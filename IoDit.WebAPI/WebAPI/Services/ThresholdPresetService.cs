@@ -5,18 +5,24 @@ using IoDit.WebAPI.WebAPI.Services.Interfaces;
 
 namespace IoDit.WebAPI.WebAPI.Services;
 
-public class ThresholdPresetService: IThresholdPresetService
+public class ThresholdPresetService : IThresholdPresetService
 {
-    private readonly IIoDitRepository _repository;
+    private readonly IUtilsRepository _utilsRepository;
+    private readonly ICompanyRepository _companyRepository;
+    private readonly IThresholdRepository _thresholdRepository;
 
-    public ThresholdPresetService(IIoDitRepository repository)
+    public ThresholdPresetService(IUtilsRepository repository,
+        ICompanyRepository companyRepository,
+        IThresholdRepository thresholdRepository)
     {
-        _repository = repository;
+        _utilsRepository = repository;
+        _companyRepository = companyRepository;
+        _thresholdRepository = thresholdRepository;
     }
-    
+
     public async Task<GetThresholdPresetsResponseDto> CreateThresholdPreset(CreateThresholdPreset request)
     {
-        var company = await _repository.GetCompanyById(request.CompanyId);
+        var company = await _companyRepository.GetCompanyById(request.CompanyId);
         if (company == null)
         {
             return null;
@@ -35,8 +41,8 @@ public class ThresholdPresetService: IThresholdPresetService
             DefaultBatteryLevelMax = request.DefaultBatteryLevelMax,
             DefaultBatteryLevelMin = request.DefaultBatteryLevelMin
         };
-        var createdThresholdPreset = await _repository.CreateAsync(companyThresholdPreset);
-        
+        var createdThresholdPreset = await _utilsRepository.CreateAsync(companyThresholdPreset);
+
 
         return new GetThresholdPresetsResponseDto()
         {
@@ -53,10 +59,10 @@ public class ThresholdPresetService: IThresholdPresetService
             DefaultBatteryLevelMin = createdThresholdPreset.DefaultBatteryLevelMin
         };
     }
-    
+
     public async Task<List<GetThresholdPresetsResponseDto>?> GetThresholdPresets(long companyId)
     {
-        var presets = await _repository.GetCompanyThresholdPresetsByCompanyId(companyId);
+        var presets = await _thresholdRepository.GetCompanyThresholdPresetsByCompanyId(companyId);
         if (!presets.Any())
         {
             return new List<GetThresholdPresetsResponseDto>();

@@ -15,21 +15,24 @@ public class TestController : ControllerBase, IBaseController
 {
     private readonly ILogger<TestController> _logger;
     private readonly ITestService _testService;
-    private readonly IIoDitRepository _repository;
+    private readonly IUtilsRepository _utilsRepository;
     private readonly IConfiguration _configuration;
-    
+    private readonly IUserRepository _userRepository;
+
     public TestController(
         ILogger<TestController> logger,
         ITestService testService,
-        IIoDitRepository repository,
-        IConfiguration configuration)
+        IUtilsRepository repository,
+        IConfiguration configuration,
+        IUserRepository userRepository)
     {
         _logger = logger;
         _testService = testService;
-        _repository = repository;
+        _utilsRepository = repository;
         _configuration = configuration;
+        _userRepository = userRepository;
     }
-    
+
     // [AllowAnonymous]//todo delete before pushing
     // [HttpGet("populate")]
     // public async Task<IActionResult> Populate()
@@ -41,14 +44,14 @@ public class TestController : ControllerBase, IBaseController
     //     }
     //     return Ok(await _testService.ClearAllDataAsyncAndPopulate());
     // }
-    
+
     [AllowAnonymous]
     [HttpGet("testmail")]
     public async Task<IActionResult> TestMail()
     {
         return Ok(await _testService.TestMail());
     }
-    
+
     [HttpGet("test")]
     public async Task<IActionResult> Test()
     {
@@ -59,7 +62,7 @@ public class TestController : ControllerBase, IBaseController
         }
         return Ok(await _testService.Test());
     }
-    
+
     [ApiExplorerSettings(IgnoreApi = true)]
     public async Task<User?> GetRequestDetails()
     {
@@ -70,7 +73,7 @@ public class TestController : ControllerBase, IBaseController
         {
             return null;
         }
-        var user = await _repository.GetUserByEmail(userId);
+        var user = await _userRepository.GetUserByEmail(userId);
         if (user != null)
         {
             return user;

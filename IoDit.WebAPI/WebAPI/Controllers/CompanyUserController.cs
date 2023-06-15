@@ -17,16 +17,25 @@ public class CompanyUserController : ControllerBase, IBaseController
     private readonly ILogger<CompanyUserController> _logger;
     private readonly IConfiguration _configuration;
     private readonly ICompanyUserService _companyUserService;
-    private readonly IIoDitRepository _repository;
+    private readonly IUtilsRepository _utilsRepository;
+    private readonly IUserRepository _userRepository;
+    private readonly ICompanyUserRepository _companyUserRepository;
 
     public CompanyUserController(
         ILogger<CompanyUserController> logger,
-        IConfiguration configuration, ICompanyUserService companyUserService, IIoDitRepository repository)
+        IConfiguration configuration,
+         ICompanyUserService companyUserService,
+        IUtilsRepository repository,
+        IUserRepository userRepository,
+        ICompanyUserRepository companyUserRepository
+        )
     {
         _logger = logger;
         _configuration = configuration;
         _companyUserService = companyUserService;
-        _repository = repository;
+        _utilsRepository = repository;
+        _userRepository = userRepository;
+        _companyUserRepository = companyUserRepository;
     }
 
     [HttpGet("getUserCompanyUsers")]
@@ -50,7 +59,7 @@ public class CompanyUserController : ControllerBase, IBaseController
             return BadRequest("Cannot find user identity");
         }
 
-        var companyUser = await _repository.GetCompanyUserForUserSecure(user.Email, companyUserId);
+        var companyUser = await _companyUserRepository.GetCompanyUserForUserSecure(user.Email, companyUserId);
         if (companyUser == null || companyUser.CompanyRole == CompanyRoles.CompanyUser)
         {
             return BadRequest("Cannot access this feature, please contact your company admin");
@@ -68,7 +77,7 @@ public class CompanyUserController : ControllerBase, IBaseController
             return BadRequest("Cannot find user identity");
         }
 
-        var companyUser = await _repository.GetCompanyUserForUserSecure(user.Email, request.CompanyUserId);
+        var companyUser = await _companyUserRepository.GetCompanyUserForUserSecure(user.Email, request.CompanyUserId);
         if (companyUser == null || companyUser.CompanyRole == CompanyRoles.CompanyUser)
         {
             return BadRequest("Cannot access this feature, please contact your company owner");
@@ -78,14 +87,14 @@ public class CompanyUserController : ControllerBase, IBaseController
         {
             return BadRequest("Cannot invite users with same or higher role set");
         }
-        
-        var invitedUser = await _repository.GetUserByEmail(request.Email);
+
+        var invitedUser = await _userRepository.GetUserByEmail(request.Email);
         if (invitedUser == null)
         {
             return NotFound("Cannot find user with this email on app");
         }
 
-        var invitedCompanyUser = await _repository.GetCompanyUserForUserByCompanyId(request.Email, request.CompanyId);
+        var invitedCompanyUser = await _companyUserRepository.GetCompanyUserForUserByCompanyId(request.Email, request.CompanyId);
         if (invitedCompanyUser != null)
         {
             return Conflict("User already part of this company");
@@ -105,7 +114,7 @@ public class CompanyUserController : ControllerBase, IBaseController
             return null;
         }
 
-        var user = await _repository.GetUserByEmail(userId);
+        var user = await _userRepository.GetUserByEmail(userId);
         if (user != null)
         {
             return user;

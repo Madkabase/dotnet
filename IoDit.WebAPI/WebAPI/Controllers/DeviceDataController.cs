@@ -16,20 +16,28 @@ public class DeviceDataController : ControllerBase, IBaseController
     private readonly ILogger<DeviceDataController> _logger;
     private readonly IConfiguration _configuration;
     private readonly IDeviceDataService _deviceDataService;
-    private readonly IIoDitRepository _repository;
+    private readonly IUtilsRepository _utilsRepository;
+    private readonly IUserRepository _userRepository;
+    private readonly ICompanyUserRepository _companyUserRepository;
 
     public DeviceDataController(
         ILogger<DeviceDataController> logger,
-        IConfiguration configuration, IDeviceDataService deviceDataService, IIoDitRepository repository)
+        IConfiguration configuration,
+        IDeviceDataService deviceDataService,
+        IUtilsRepository repository,
+        IUserRepository userRepository,
+        ICompanyUserRepository companyUserRepository)
     {
         _logger = logger;
         _configuration = configuration;
         _deviceDataService = deviceDataService;
-        _repository = repository;
+        _utilsRepository = repository;
+        _userRepository = userRepository;
+        _companyUserRepository = companyUserRepository;
     }
-    
+
     [HttpPost("getDevicesData")]
-    public async Task<IActionResult> GetDevicesData([FromBody]long companyUserId)
+    public async Task<IActionResult> GetDevicesData([FromBody] long companyUserId)
     {
         var user = await GetRequestDetails();
         if (user == null)
@@ -37,7 +45,7 @@ public class DeviceDataController : ControllerBase, IBaseController
             return BadRequest("Cannot find user identity");
         }
 
-        var companyUser = await _repository.GetCompanyUserForUserSecure(user.Email, companyUserId);
+        var companyUser = await _companyUserRepository.GetCompanyUserForUserSecure(user.Email, companyUserId);
         if (companyUser == null)
         {
             return BadRequest("Cannot access this feature, please contact your company owner or company admin");
@@ -45,9 +53,9 @@ public class DeviceDataController : ControllerBase, IBaseController
 
         return Ok(await _deviceDataService.GetDevicesData(companyUser.CompanyId));
     }
-    
+
     [HttpPost("loadMoreDeviceData")]
-    public async Task<IActionResult> LoadMoreDeviceData([FromBody]GetRangedDeviceDataRequestDto request)
+    public async Task<IActionResult> LoadMoreDeviceData([FromBody] GetRangedDeviceDataRequestDto request)
     {
         var user = await GetRequestDetails();
         if (user == null)
@@ -55,7 +63,7 @@ public class DeviceDataController : ControllerBase, IBaseController
             return BadRequest("Cannot find user identity");
         }
 
-        var companyUser = await _repository.GetCompanyUserForUserSecure(user.Email, request.CompanyUserId);
+        var companyUser = await _companyUserRepository.GetCompanyUserForUserSecure(user.Email, request.CompanyUserId);
         if (companyUser == null)
         {
             return BadRequest("Cannot access this feature, please contact your company owner or company admin");
@@ -63,8 +71,8 @@ public class DeviceDataController : ControllerBase, IBaseController
 
         return Ok(await _deviceDataService.GetRangedDevicesData(request));
     }
-    
-    
+
+
     [ApiExplorerSettings(IgnoreApi = true)]
     public async Task<User?> GetRequestDetails()
     {
@@ -76,7 +84,7 @@ public class DeviceDataController : ControllerBase, IBaseController
             return null;
         }
 
-        var user = await _repository.GetUserByEmail(userId);
+        var user = await _userRepository.GetUserByEmail(userId);
         if (user != null)
         {
             return user;
