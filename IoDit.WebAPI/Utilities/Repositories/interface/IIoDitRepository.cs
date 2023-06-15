@@ -31,11 +31,6 @@ public interface IIoDitRepository
     Task<CompanyUser?> GetCompanyUserFarms(long companyUserId);
     Task<CompanyFarm?> GetCompanyFarmById(long companyFarmId);
 
-    //COMPANIES
-    Task<Company?> GetCompanyById(long companyId);
-    Task<IQueryable<Company>> GetCompanies();
-    Task<IQueryable<SubscriptionRequest>> GetSubscriptionRequests();
-
     //COMPANY FARM USERS
     Task<IQueryable<CompanyFarmUser>> GetCompanyFarmUsers(long companyId);
     Task<IQueryable<CompanyFarmUser>> GetCompanyUserFarmUsers(long companyUserId);

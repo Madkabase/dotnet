@@ -8,10 +8,13 @@ namespace IoDit.WebAPI.WebAPI.Services;
 public class FarmUserService : IFarmUserService
 {
     private readonly IIoDitRepository _repository;
+    private readonly ICompanyRepository _companyRepository;
 
-    public FarmUserService(IIoDitRepository repository)
+    public FarmUserService(IIoDitRepository repository,
+        ICompanyRepository companyRepository)
     {
         _repository = repository;
+        _companyRepository = companyRepository;
     }
 
     public async Task<List<GetFarmUsersResponseDto>?> GetUserFarmUsers(long companyUserId)
@@ -56,11 +59,11 @@ public class FarmUserService : IFarmUserService
     {
         var farmUser = await _repository.GetCompanyUserFarmUser(request.FarmId, request.CompanyUserId);
         if (farmUser != null) return null;
-        
+
         var farm = await _repository.GetCompanyFarmById(request.FarmId);
         if (farm == null) return null;
-        
-        var company = await _repository.GetCompanyById(request.CompanyId);
+
+        var company = await _companyRepository.GetCompanyById(request.CompanyId);
         if (company == null) return null;
 
         var companyUser = await _repository.GetCompanyUserById(request.UserId);

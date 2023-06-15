@@ -15,6 +15,7 @@ public static class ServiceCollectionExtension
         .AddSingleton<IEmailService, EmailService>()
         .AddScoped<IIoDitRepository, IoDitRepository>()
         .AddScoped<IUserRepository, UserRepository>()
+        .AddScoped<ICompanyRepository, CompanyRepository>()
         .AddScoped<IJwtUtils, JwtUtils>()
         .AddScoped<ITestService, TestService>()
         .AddScoped<IAuthService, AuthService>()

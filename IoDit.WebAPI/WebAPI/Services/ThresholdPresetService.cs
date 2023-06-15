@@ -5,18 +5,21 @@ using IoDit.WebAPI.WebAPI.Services.Interfaces;
 
 namespace IoDit.WebAPI.WebAPI.Services;
 
-public class ThresholdPresetService: IThresholdPresetService
+public class ThresholdPresetService : IThresholdPresetService
 {
     private readonly IIoDitRepository _repository;
+    private readonly ICompanyRepository _companyRepository;
 
-    public ThresholdPresetService(IIoDitRepository repository)
+    public ThresholdPresetService(IIoDitRepository repository,
+        ICompanyRepository companyRepository)
     {
         _repository = repository;
+        _companyRepository = companyRepository;
     }
-    
+
     public async Task<GetThresholdPresetsResponseDto> CreateThresholdPreset(CreateThresholdPreset request)
     {
-        var company = await _repository.GetCompanyById(request.CompanyId);
+        var company = await _companyRepository.GetCompanyById(request.CompanyId);
         if (company == null)
         {
             return null;
@@ -36,7 +39,7 @@ public class ThresholdPresetService: IThresholdPresetService
             DefaultBatteryLevelMin = request.DefaultBatteryLevelMin
         };
         var createdThresholdPreset = await _repository.CreateAsync(companyThresholdPreset);
-        
+
 
         return new GetThresholdPresetsResponseDto()
         {
@@ -53,7 +56,7 @@ public class ThresholdPresetService: IThresholdPresetService
             DefaultBatteryLevelMin = createdThresholdPreset.DefaultBatteryLevelMin
         };
     }
-    
+
     public async Task<List<GetThresholdPresetsResponseDto>?> GetThresholdPresets(long companyId)
     {
         var presets = await _repository.GetCompanyThresholdPresetsByCompanyId(companyId);

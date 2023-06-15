@@ -14,17 +14,25 @@ public class DeviceService : IDeviceService
     private readonly IIoDitRepository _repository;
     private readonly LoriotApiClient _loriotApiClient;
     private readonly IAzureApiClient _azureApiClient;
+    private readonly ICompanyRepository _companyRepository;
 
-    public DeviceService(IIoDitRepository repository, LoriotApiClient loriotApiClient, IAzureApiClient azureApiClient)
+
+    public DeviceService(
+        IIoDitRepository repository,
+        LoriotApiClient loriotApiClient,
+        IAzureApiClient azureApiClient,
+        ICompanyRepository companyRepository
+    )
     {
         _repository = repository;
         _loriotApiClient = loriotApiClient;
         _azureApiClient = azureApiClient;
+        _companyRepository = companyRepository;
     }
 
     public async Task<GetDevicesResponseDto> CreateDevice(CreateDeviceRequestDto request)
     {
-        var company = await _repository.GetCompanyById(request.CompanyId);
+        var company = await _companyRepository.GetCompanyById(request.CompanyId);
         if (company == null)
         {
             throw new Exception("Company doesnt exist");

@@ -10,14 +10,17 @@ public class CompanyUserService : ICompanyUserService
 {
     private readonly IIoDitRepository _repository;
     private readonly IUserRepository _userRepository;
+    private readonly ICompanyRepository _companyRepository;
 
 
     public CompanyUserService(
         IIoDitRepository repository,
-        IUserRepository userRepository)
+        IUserRepository userRepository,
+        ICompanyRepository companyRepository)
     {
         _repository = repository;
         _userRepository = userRepository;
+        _companyRepository = companyRepository;
     }
 
     public async Task<List<GetCompanyUsersResponseDto>?> GetUserCompanyUsers(string email)
@@ -73,7 +76,7 @@ public class CompanyUserService : ICompanyUserService
             isDefault = true;
         }
 
-        var company = await _repository.GetCompanyById(request.CompanyId);
+        var company = await _companyRepository.GetCompanyById(request.CompanyId);
         if (company == null)
         {
             return null;

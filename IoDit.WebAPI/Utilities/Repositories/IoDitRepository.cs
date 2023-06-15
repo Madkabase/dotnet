@@ -16,18 +16,6 @@ public class IoDitRepository : IIoDitRepository
         DbContext = context;
     }
 
-
-    //*******************************************************************************************
-    //COMPANY
-    public async Task<Company?> GetCompanyById(long companyId) =>
-        await Task.Run(() => DbContext.Companies.Include(x => x.Owner).FirstOrDefault(x => x.Id == companyId));
-
-    public async Task<IQueryable<Company>> GetCompanies() =>
-        await Task.Run(() => DbContext.Companies.Include(x => x.Owner));
-
-    public async Task<IQueryable<SubscriptionRequest>> GetSubscriptionRequests() =>
-        await Task.Run(() => DbContext.SubscriptionRequests);
-
     //*******************************************************************************************
     //COMPANY USERS
     public async Task<IQueryable<CompanyUser>> GetCompanyUsers(long companyId) =>

@@ -13,15 +13,18 @@ public class CompanyService : ICompanyService
     private readonly IIoDitRepository _repository;
     private readonly LoriotApiClient _loriotApiClient;
     private readonly IUserRepository _userRepository;
+    private readonly ICompanyRepository _companyRepository;
 
 
     public CompanyService(IIoDitRepository repository,
     LoriotApiClient loriotApiClient,
-    IUserRepository userRepository)
+    IUserRepository userRepository,
+    ICompanyRepository companyRepository)
     {
         _repository = repository;
         _loriotApiClient = loriotApiClient;
         _userRepository = userRepository;
+        _companyRepository = companyRepository;
     }
 
     public async Task<GetCompanyResponseDto> CreateCompany(CreateCompanyRequestDto request)
@@ -81,7 +84,7 @@ public class CompanyService : ICompanyService
 
     public async Task<GetCompanyResponseDto?> GetCompany(long companyId)
     {
-        var company = await _repository.GetCompanyById(companyId);
+        var company = await _companyRepository.GetCompanyById(companyId);
         if (company != null)
         {
             return new GetCompanyResponseDto()
@@ -100,7 +103,7 @@ public class CompanyService : ICompanyService
 
     public async Task<List<GetCompanyResponseDto>?> GetCompanies()
     {
-        var companies = await _repository.GetCompanies();
+        var companies = await _companyRepository.GetCompanies();
         if (companies.Any())
         {
             return companies.Select(company => new GetCompanyResponseDto()
@@ -119,7 +122,7 @@ public class CompanyService : ICompanyService
 
     public async Task<List<SubscriptionRequestResponseDto>?> GetSubscriptionRequests()
     {
-        var requests = await _repository.GetSubscriptionRequests();
+        var requests = await _companyRepository.GetSubscriptionRequests();
         if (requests.Any())
         {
             return requests.Select(request => new SubscriptionRequestResponseDto()

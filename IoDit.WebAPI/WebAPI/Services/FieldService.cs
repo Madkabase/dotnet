@@ -8,17 +8,20 @@ namespace IoDit.WebAPI.WebAPI.Services;
 public class FieldService : IFieldService
 {
     private readonly IIoDitRepository _repository;
+    private readonly ICompanyRepository _companyRepository;
 
-    public FieldService(IIoDitRepository repository)
+    public FieldService(IIoDitRepository repository,
+        ICompanyRepository companyRepository)
     {
         _repository = repository;
+        _companyRepository = companyRepository;
     }
 
     public async Task<FieldResponseDto> CreateCompanyField(CreateCompanyField request)
     {
-        var company = await _repository.GetCompanyById(request.CompanyId);
+        var company = await _companyRepository.GetCompanyById(request.CompanyId);
         var companyFarm = await _repository.GetCompanyFarmById(request.CompanyFarmId);
-        
+
         var companyField = new CompanyField()
         {
             Company = company,

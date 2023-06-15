@@ -9,15 +9,19 @@ namespace IoDit.WebAPI.WebAPI.Services;
 public class FarmService : IFarmService
 {
     private readonly IIoDitRepository _repository;
+    private readonly ICompanyRepository _companyRepository;
 
-    public FarmService(IIoDitRepository repository)
+    public FarmService(IIoDitRepository repository,
+        ICompanyRepository companyRepository
+        )
     {
         _repository = repository;
+        _companyRepository = companyRepository;
     }
 
     public async Task<CompanyFarmsResponseDto> CreateCompanyFarm(CreateCompanyFarm request)
     {
-        var company = await _repository.GetCompanyById(request.CompanyId);
+        var company = await _companyRepository.GetCompanyById(request.CompanyId);
         if (company == null)
         {
             return null;
