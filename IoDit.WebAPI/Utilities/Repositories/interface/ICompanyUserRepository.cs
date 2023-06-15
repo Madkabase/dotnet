@@ -12,4 +12,8 @@ public interface ICompanyUserRepository
     Task<IQueryable<CompanyUser>> GetCompanyAdmins(long companyId);
     Task<CompanyUser?> GetCompanyUserForUserByCompanyId(string email, long companyId);
     Task<CompanyUser?> GetCompanyUserById(long companyUserId);
+
+    //USER THRESHOLDS
+    Task<IQueryable<CompanyUserDeviceData>> GetCompanyUserThresholds(long companyUserId);
+
 }

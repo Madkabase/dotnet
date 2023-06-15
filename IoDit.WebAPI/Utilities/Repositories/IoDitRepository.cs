@@ -36,16 +36,7 @@ public class IoDitRepository : IIoDitRepository
         await Task.Run(() =>
             DbContext.CompanyThresholdPreset.Where(x => x.CompanyId == companyId));
 
-    //*******************************************************************************************
-    //APP
-    public async Task<IQueryable<CompanyUserDeviceData>> GetCompanyUserThresholds(long companyUserId) =>
-        await Task.Run(() =>
-            DbContext.CompanyUsers.Include(x => x.CompanyUserDeviceData).Where(x => x.Id == companyUserId)
-                .SelectMany(x => x.CompanyUserDeviceData));
 
-    //*******************************************************************************************
-
-    //*******************************************************************************************
     //REPO UTILS
     public async Task<T> CreateAsync<T>(T entity) where T : class, IEntity
     {

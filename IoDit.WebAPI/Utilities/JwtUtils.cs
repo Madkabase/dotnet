@@ -57,7 +57,7 @@ public class JwtUtils : IJwtUtils
             return null;
         }
 
-        var userTokens = await _repository.GetRefreshTokensForUser(user.Id);
+        var userTokens = await _userRepository.GetRefreshTokensForUser(user.Id);
         var expiredTokens = userTokens.Where(t => t.Expires < DateTime.UtcNow).ToList();
         if (expiredTokens.Any())
         {
@@ -71,7 +71,7 @@ public class JwtUtils : IJwtUtils
         do
         {
             newToken = Convert.ToHexString(RandomNumberGenerator.GetBytes(64));
-            isTokenUnique = await _repository.CheckIfRefreshTokenExist(newToken);
+            isTokenUnique = await _userRepository.CheckIfRefreshTokenExist(newToken);
         }
         while (!isTokenUnique);
 

@@ -79,7 +79,7 @@ public class AuthController : ControllerBase, IBaseController
             return BadRequest("Refresh token is required.");
         }
 
-        var refreshToken = await _repository.GetRefreshToken(refreshTokenRequest.RefreshToken);
+        var refreshToken = await _userRepository.GetRefreshToken(refreshTokenRequest.RefreshToken);
 
         if (refreshToken == null)
         {

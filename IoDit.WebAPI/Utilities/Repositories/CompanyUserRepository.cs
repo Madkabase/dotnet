@@ -47,4 +47,10 @@ public class CompanyUserRepository : ICompanyUserRepository
         await Task.Run(() =>
             DbContext.CompanyUsers.FirstOrDefault(x => x.Id == companyUserId));
 
+
+    public async Task<IQueryable<CompanyUserDeviceData>> GetCompanyUserThresholds(long companyUserId) =>
+        await Task.Run(() =>
+            DbContext.CompanyUsers.Include(x => x.CompanyUserDeviceData).Where(x => x.Id == companyUserId)
+                .SelectMany(x => x.CompanyUserDeviceData));
+
 }

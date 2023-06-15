@@ -17,9 +17,6 @@ public interface IIoDitRepository
     //THRESHOLD PRESETS
     Task<IQueryable<CompanyThresholdPreset>> GetCompanyThresholdPresetsByCompanyId(long companyId);
 
-    //USER THRESHOLDS
-    Task<IQueryable<CompanyUserDeviceData>> GetCompanyUserThresholds(long companyUserId);
-
     //REPO UTILS
     Task<T> CreateAsync<T>(T entity) where T : class, IEntity;
     Task<T> UpdateAsync<T>(T entity) where T : class, IEntity;
