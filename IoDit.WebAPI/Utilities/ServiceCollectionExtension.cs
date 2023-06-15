@@ -13,13 +13,17 @@ public static class ServiceCollectionExtension
         .AddSingleton<IKeyVaultSecrets, KeyVaultSecrets>()
         .AddSingleton<IAzureApiClient, AzureApiClient>()
         .AddSingleton<IEmailService, EmailService>()
+        // reposoitories
         .AddScoped<IIoDitRepository, IoDitRepository>()
         .AddScoped<IUserRepository, UserRepository>()
         .AddScoped<ICompanyRepository, CompanyRepository>()
         .AddScoped<ICompanyUserRepository, CompanyUserRepository>()
         .AddScoped<IFarmRepository, FarmRepository>()
         .AddScoped<IDeviceRepository, DeviceRepository>()
+        .AddScoped<IFieldRepository, FieldRepository>()
+
         .AddScoped<IJwtUtils, JwtUtils>()
+        // services
         .AddScoped<ITestService, TestService>()
         .AddScoped<IAuthService, AuthService>()
         .AddScoped<ICompanyService, CompanyService>()

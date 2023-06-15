@@ -10,14 +10,17 @@ public class FieldService : IFieldService
     private readonly IIoDitRepository _repository;
     private readonly ICompanyRepository _companyRepository;
     private readonly IFarmRepository _farmRepository;
+    private readonly IFieldRepository _fieldRepository;
 
     public FieldService(IIoDitRepository repository,
         ICompanyRepository companyRepository,
-        IFarmRepository farmRepository)
+        IFarmRepository farmRepository,
+        IFieldRepository fieldRepository)
     {
         _repository = repository;
         _companyRepository = companyRepository;
         _farmRepository = farmRepository;
+        _fieldRepository = fieldRepository;
     }
 
     public async Task<FieldResponseDto> CreateCompanyField(CreateCompanyField request)
@@ -47,7 +50,7 @@ public class FieldService : IFieldService
 
     public async Task<FieldResponseDto> UpdateGeofence(UpdateGeofence request)
     {
-        var companyField = await _repository.GetCompanyFieldById(request.FieldId);
+        var companyField = await _fieldRepository.GetFieldById(request.FieldId);
         if (companyField != null)
         {
             companyField.Geofence = request.Geofence;
@@ -66,7 +69,7 @@ public class FieldService : IFieldService
 
     public async Task<List<FieldResponseDto>?> GetFields(long companyId)
     {
-        var fields = await _repository.GetCompanyFields(companyId);
+        var fields = await _fieldRepository.GetFieldsByCompanyId(companyId);
         if (!fields.Any())
         {
             return new List<FieldResponseDto>();

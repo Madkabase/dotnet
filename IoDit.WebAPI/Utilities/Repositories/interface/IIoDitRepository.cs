@@ -17,9 +17,6 @@ public interface IIoDitRepository
     //THRESHOLD PRESETS
     Task<IQueryable<CompanyThresholdPreset>> GetCompanyThresholdPresetsByCompanyId(long companyId);
 
-    //COMPANY FIELD 
-    Task<IQueryable<CompanyField>> GetCompanyFields(long companyId);
-    Task<CompanyField?> GetCompanyFieldById(long companyFieldId);
 
     //USER THRESHOLDS
     Task<IQueryable<CompanyUserDeviceData>> GetCompanyUserThresholds(long companyUserId);

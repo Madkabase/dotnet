@@ -17,6 +17,7 @@ public class DeviceService : IDeviceService
     private readonly ICompanyRepository _companyRepository;
     private readonly IFarmRepository _farmRepository;
     private readonly IDeviceRepository _deviceRepository;
+    private readonly IFieldRepository _fieldRepository;
 
 
     public DeviceService(
@@ -25,7 +26,8 @@ public class DeviceService : IDeviceService
         IAzureApiClient azureApiClient,
         ICompanyRepository companyRepository,
         IFarmRepository farmRepository,
-        IDeviceRepository deviceRepository
+        IDeviceRepository deviceRepository,
+        IFieldRepository fieldRepository
     )
     {
         _repository = repository;
@@ -34,6 +36,7 @@ public class DeviceService : IDeviceService
         _companyRepository = companyRepository;
         _farmRepository = farmRepository;
         _deviceRepository = deviceRepository;
+        _fieldRepository = fieldRepository;
     }
 
     public async Task<GetDevicesResponseDto> CreateDevice(CreateDeviceRequestDto request)
@@ -165,7 +168,7 @@ public class DeviceService : IDeviceService
             return null;
         }
 
-        var field = await _repository.GetCompanyFieldById(dto.FieldId);
+        var field = await _fieldRepository.GetFieldById(dto.FieldId);
         if (field == null)
         {
             return null;

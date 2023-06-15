@@ -15,15 +15,6 @@ public class IoDitRepository : IIoDitRepository
         DbContext = context;
     }
 
-    //FIELD 
-    public async Task<IQueryable<CompanyField>> GetCompanyFields(long companyId) =>
-        await Task.Run(() =>
-            DbContext.Companies.Include(x => x.Fields).Where(x => x.Id == companyId).SelectMany(x => x.Fields));
-
-    public async Task<CompanyField?> GetCompanyFieldById(long companyFieldId) =>
-        await Task.Run(() =>
-            DbContext.CompanyFields.FirstOrDefault(x => x.Id == companyFieldId));
-
     //*******************************************************************************************
     //COMPANY FARM USERS
     public async Task<IQueryable<CompanyFarmUser>> GetCompanyFarmUsers(long companyId) =>
