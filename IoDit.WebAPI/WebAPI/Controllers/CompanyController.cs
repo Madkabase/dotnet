@@ -19,19 +19,22 @@ public class CompanyController : ControllerBase, IBaseController
     private readonly ICompanyService _companyService;
     private readonly IIoDitRepository _repository;
     private readonly IUserRepository _userRepository;
+    private readonly ICompanyUserRepository _companyUserRepository;
 
     public CompanyController(
         ILogger<CompanyController> logger,
         IConfiguration configuration,
         ICompanyService companyService,
         IIoDitRepository repository,
-        IUserRepository userRepository)
+        IUserRepository userRepository,
+        ICompanyUserRepository companyUserRepository)
     {
         _logger = logger;
         _configuration = configuration;
         _companyService = companyService;
         _repository = repository;
         _userRepository = userRepository;
+        _companyUserRepository = companyUserRepository;
     }
 
     [HttpPost("createCompany")]
@@ -67,7 +70,7 @@ public class CompanyController : ControllerBase, IBaseController
         {
             return BadRequest("Cannot access this feature, please, contact app administrator");
         }
-        var companyUser = await _repository.GetCompanyUserForUserSecure(user.Email, companyUserId);
+        var companyUser = await _companyUserRepository.GetCompanyUserForUserSecure(user.Email, companyUserId);
         if (companyUser == null || companyUser.CompanyRole != CompanyRoles.CompanyOwner)
         {
             return BadRequest("Cannot access this feature, please, contact app administrator");

@@ -9,15 +9,6 @@ public interface IIoDitRepository
 {
     IoDitDbContext DbContext { get; }
 
-    //COMPANY USERS
-    Task<IQueryable<CompanyUser>> GetCompanyUsers(long companyId);
-    Task<IQueryable<CompanyUser>> GetUserCompanyUsers(string email);
-    Task<bool> CheckIfUserCanAccessCompanyUser(string email, long companyUserId);
-    Task<CompanyUser?> GetCompanyUserForUserSecure(string email, long companyUserId);
-    Task<IQueryable<CompanyUser>> GetCompanyAdmins(long companyId);
-    Task<CompanyUser?> GetCompanyUserForUserByCompanyId(string email, long companyId);
-    Task<CompanyUser?> GetCompanyUserById(long companyUserId);
-
     //DEVICES
     Task<CompanyDevice?> GetDeviceByEui(string deviceEui);
     Task<List<CompanyDevice>> GetDevices(long companyUserId);

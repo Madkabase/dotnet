@@ -11,21 +11,24 @@ public class CompanyUserService : ICompanyUserService
     private readonly IIoDitRepository _repository;
     private readonly IUserRepository _userRepository;
     private readonly ICompanyRepository _companyRepository;
+    private readonly ICompanyUserRepository _companyUserRepository;
 
 
     public CompanyUserService(
         IIoDitRepository repository,
         IUserRepository userRepository,
-        ICompanyRepository companyRepository)
+        ICompanyRepository companyRepository,
+        ICompanyUserRepository companyUserRepository)
     {
         _repository = repository;
         _userRepository = userRepository;
         _companyRepository = companyRepository;
+        _companyUserRepository = companyUserRepository;
     }
 
     public async Task<List<GetCompanyUsersResponseDto>?> GetUserCompanyUsers(string email)
     {
-        var companyUsers = await _repository.GetUserCompanyUsers(email);
+        var companyUsers = await _companyUserRepository.GetUserCompanyUsers(email);
         if (!companyUsers.Any())
         {
             return null;
@@ -46,7 +49,7 @@ public class CompanyUserService : ICompanyUserService
 
     public async Task<List<GetCompanyUsersResponseDto>?> GetCompanyUsers(long companyId)
     {
-        var companyUsers = await _repository.GetCompanyUsers(companyId);
+        var companyUsers = await _companyUserRepository.GetCompanyUsers(companyId);
         if (!companyUsers.Any())
         {
             return null;
@@ -69,7 +72,7 @@ public class CompanyUserService : ICompanyUserService
     {
         //todo send email?
 
-        var invitedUserCompanyUsers = await _repository.GetUserCompanyUsers(request.Email);
+        var invitedUserCompanyUsers = await _companyUserRepository.GetUserCompanyUsers(request.Email);
         var isDefault = false;
         if (invitedUserCompanyUsers.FirstOrDefault(x => x.IsDefault == true) == null)
         {

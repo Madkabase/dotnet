@@ -14,17 +14,20 @@ public class CompanyService : ICompanyService
     private readonly LoriotApiClient _loriotApiClient;
     private readonly IUserRepository _userRepository;
     private readonly ICompanyRepository _companyRepository;
+    private readonly ICompanyUserRepository _companyUserRepository;
 
 
     public CompanyService(IIoDitRepository repository,
     LoriotApiClient loriotApiClient,
     IUserRepository userRepository,
-    ICompanyRepository companyRepository)
+    ICompanyRepository companyRepository,
+    ICompanyUserRepository companyUserRepository)
     {
         _repository = repository;
         _loriotApiClient = loriotApiClient;
         _userRepository = userRepository;
         _companyRepository = companyRepository;
+        _companyUserRepository = companyUserRepository;
     }
 
     public async Task<GetCompanyResponseDto> CreateCompany(CreateCompanyRequestDto request)
@@ -55,7 +58,7 @@ public class CompanyService : ICompanyService
             AppName = loriotApp.name
         };
         var createdCompany = await _repository.CreateAsync(company);
-        var companyUsers = await _repository.GetUserCompanyUsers(owner.Email);
+        var companyUsers = await _companyUserRepository.GetUserCompanyUsers(owner.Email);
         var isDefault = false;
         if (companyUsers?.FirstOrDefault(x => x.IsDefault == true) == null)
         {

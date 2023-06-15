@@ -19,15 +19,19 @@ public class TestService : ITestService
     private readonly LoriotApiClient _loriotApiClient;
     private readonly IAzureApiClient _azureApiClient;
     private readonly IEmailService _emailService;
+    private readonly ICompanyUserRepository _companyUserRepository;
 
     public TestService(IIoDitRepository repository,
         LoriotApiClient loriotApiClient,
-        IAzureApiClient azureApiClient, IEmailService emailService)
+        IAzureApiClient azureApiClient,
+        IEmailService emailService,
+        ICompanyUserRepository companyRepository)
     {
         _repository = repository;
         _loriotApiClient = loriotApiClient;
         _azureApiClient = azureApiClient;
         _emailService = emailService;
+        _companyUserRepository = companyRepository;
     }
 
     public async Task<string> Test()
@@ -37,8 +41,8 @@ public class TestService : ITestService
         await _azureApiClient.GetDevices();
 
         var app = await _loriotApiClient.CreateLoriotApp("viktorzmirnov07", 5);
-        await _loriotApiClient.LoriotAppCapacity(app.appHexId, new LoriotAppCapacityRequestDto() {inc = 5});
-        await _loriotApiClient.LoriotAppCapacity(app.appHexId, new LoriotAppCapacityRequestDto() {dec = 4});
+        await _loriotApiClient.LoriotAppCapacity(app.appHexId, new LoriotAppCapacityRequestDto() { inc = 5 });
+        await _loriotApiClient.LoriotAppCapacity(app.appHexId, new LoriotAppCapacityRequestDto() { dec = 4 });
         var apps = await _loriotApiClient.GetLoriotApps();
         var output = await _loriotApiClient.AddLoriotAppOutput(app.appHexId);
         var newDevice = new LoriotCreateAppDeviceRequestDto()
@@ -89,7 +93,7 @@ public class TestService : ITestService
             AppRole = AppRoles.AppAdmin
         };
         var createdUser = await _repository.CreateAsync(user);
-        
+
         var loriotApp = await _loriotApiClient.CreateLoriotApp(createdUser.Email, 10);
         var company = new Company()
         {
@@ -101,7 +105,7 @@ public class TestService : ITestService
             AppName = loriotApp.name
         };
         var createdCompany = await _repository.CreateAsync(company);
-        
+
         var thresholdPreset = new CompanyThresholdPreset()
         {
             Company = createdCompany,
@@ -117,14 +121,14 @@ public class TestService : ITestService
             DefaultBatteryLevelMin = 15
         };
         var createdThresholdPreset = await _repository.CreateAsync(thresholdPreset);
-        
-        var companyUsers = await _repository.GetUserCompanyUsers(createdUser.Email);
+
+        var companyUsers = await _companyUserRepository.GetUserCompanyUsers(createdUser.Email);
         var isDefault = false;
         if (companyUsers?.FirstOrDefault(x => x.IsDefault == true) == null)
         {
             isDefault = true;
         }
-        
+
         var companyUser = new CompanyUser()
         {
             Company = createdCompany,
@@ -135,7 +139,7 @@ public class TestService : ITestService
             IsDefault = isDefault
         };
         var createdCompanyUser = await _repository.CreateAsync(companyUser);
-        
+
         var companyFarm = new CompanyFarm()
         {
             Company = createdCompany,
@@ -155,7 +159,7 @@ public class TestService : ITestService
             CompanyFarmRole = CompanyFarmRoles.FarmAdmin
         };
         var createdCompanyFarmUser = await _repository.CreateAsync(companyFarmUser);
-        
+
         var loriotAppDevice = new LoriotCreateAppDeviceRequestDto()
         {
             appkey = "fa7090bc518376de6b745987bbb8f5e9",

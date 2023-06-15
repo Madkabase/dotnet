@@ -19,19 +19,22 @@ public class ThresholdPresetController : ControllerBase, IBaseController
     private readonly IThresholdPresetService _thresholdPresetService;
     private readonly IIoDitRepository _repository;
     private readonly IUserRepository _userRepository;
+    private readonly ICompanyUserRepository _companyUserRepository;
 
     public ThresholdPresetController(
         ILogger<ThresholdPresetController> logger,
         IConfiguration configuration,
         IThresholdPresetService thresholdPresetService,
         IIoDitRepository repository,
-        IUserRepository userRepository)
+        IUserRepository userRepository,
+        ICompanyUserRepository companyUserRepository)
     {
         _logger = logger;
         _configuration = configuration;
         _thresholdPresetService = thresholdPresetService;
         _repository = repository;
         _userRepository = userRepository;
+        _companyUserRepository = companyUserRepository;
     }
 
     //CreateThresholdPresetRequestDto
@@ -45,7 +48,7 @@ public class ThresholdPresetController : ControllerBase, IBaseController
             return BadRequest("Cannot find user identity");
         }
 
-        var companyUser = await _repository.GetCompanyUserForUserSecure(user.Email, request.CompanyUserId);
+        var companyUser = await _companyUserRepository.GetCompanyUserForUserSecure(user.Email, request.CompanyUserId);
         if (companyUser == null || companyUser.CompanyRole == CompanyRoles.CompanyUser)
         {
             return BadRequest("Cannot access this feature, please contact your company owner or company admin");
@@ -75,7 +78,7 @@ public class ThresholdPresetController : ControllerBase, IBaseController
             return BadRequest("Cannot find user identity");
         }
 
-        var companyUser = await _repository.GetCompanyUserForUserByCompanyId(user.Email, companyId);
+        var companyUser = await _companyUserRepository.GetCompanyUserForUserByCompanyId(user.Email, companyId);
         if (companyUser == null)
         {
             return BadRequest("Cannot access this feature, please contact your company owner or company admin");

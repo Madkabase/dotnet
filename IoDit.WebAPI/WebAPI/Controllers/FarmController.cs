@@ -19,19 +19,22 @@ public class FarmController : ControllerBase, IBaseController
     private readonly IFarmService _farmService;
     private readonly IIoDitRepository _repository;
     private readonly IUserRepository _userRepository;
+    private readonly ICompanyUserRepository _companyUserRepository;
 
     public FarmController(
         ILogger<FarmController> logger,
         IConfiguration configuration,
         IFarmService farmService,
         IIoDitRepository repository,
-        IUserRepository userRepository)
+        IUserRepository userRepository,
+        ICompanyUserRepository companyUserRepository)
     {
         _logger = logger;
         _configuration = configuration;
         _farmService = farmService;
         _repository = repository;
         _userRepository = userRepository;
+        _companyUserRepository = companyUserRepository;
     }
 
     [HttpPost("createFarm")]
@@ -43,7 +46,7 @@ public class FarmController : ControllerBase, IBaseController
             return BadRequest("Cannot find user identity");
         }
 
-        var companyUser = await _repository.GetCompanyUserForUserSecure(user.Email, request.CompanyUserId);
+        var companyUser = await _companyUserRepository.GetCompanyUserForUserSecure(user.Email, request.CompanyUserId);
         if (companyUser == null || companyUser.CompanyRole == CompanyRoles.CompanyUser)
         {
             return BadRequest("Cannot access this feature, please contact your company owner or company admin");
@@ -63,7 +66,7 @@ public class FarmController : ControllerBase, IBaseController
             return BadRequest("Cannot find user identity");
         }
 
-        var companyUser = await _repository.GetCompanyUserForUserSecure(user.Email, companyUserId);
+        var companyUser = await _companyUserRepository.GetCompanyUserForUserSecure(user.Email, companyUserId);
         if (companyUser == null)
         {
             return BadRequest("Cannot access this feature, please contact your company admin");

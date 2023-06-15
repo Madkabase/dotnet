@@ -19,19 +19,22 @@ public class DeviceController : ControllerBase, IBaseController
     private readonly IDeviceService _deviceService;
     private readonly IIoDitRepository _repository;
     private readonly IUserRepository _userRepository;
+    private readonly ICompanyUserRepository _companyUserRepository;
 
     public DeviceController(
         ILogger<DeviceController> logger,
         IConfiguration configuration,
         IDeviceService deviceService,
         IIoDitRepository repository,
-        IUserRepository userRepository)
+        IUserRepository userRepository,
+        ICompanyUserRepository companyUserRepository)
     {
         _logger = logger;
         _configuration = configuration;
         _deviceService = deviceService;
         _repository = repository;
         _userRepository = userRepository;
+        _companyUserRepository = companyUserRepository;
     }
 
     [HttpPost("createDevice")]
@@ -44,7 +47,7 @@ public class DeviceController : ControllerBase, IBaseController
             return BadRequest("Cannot find user entity");
         }
 
-        var companyUser = await _repository.GetCompanyUserForUserSecure(user.Email, request.CompanyUserId);
+        var companyUser = await _companyUserRepository.GetCompanyUserForUserSecure(user.Email, request.CompanyUserId);
 
         if (companyUser == null || companyUser.CompanyRole == CompanyRoles.CompanyUser)//todo change roles?
         {
@@ -64,7 +67,7 @@ public class DeviceController : ControllerBase, IBaseController
             return BadRequest("Cannot find user entity");
         }
 
-        var companyUser = await _repository.GetCompanyUserForUserSecure(user.Email, companyUserId);
+        var companyUser = await _companyUserRepository.GetCompanyUserForUserSecure(user.Email, companyUserId);
         if (companyUser == null)
         {
             return BadRequest("Cannot find company user entity");
@@ -83,7 +86,7 @@ public class DeviceController : ControllerBase, IBaseController
             return BadRequest("Cannot find user entity");
         }
 
-        var companyUser = await _repository.GetCompanyUserForUserSecure(user.Email, request.CompanyUserId);
+        var companyUser = await _companyUserRepository.GetCompanyUserForUserSecure(user.Email, request.CompanyUserId);
         if (companyUser == null)
         {
             return BadRequest("Cannot find company user entity");
