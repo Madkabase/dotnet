@@ -7,15 +7,19 @@ namespace IoDit.WebAPI.WebAPI.Services;
 public class DeviceDataService : IDeviceDataService
 {
     private readonly IIoDitRepository _repository;
+    private readonly IDeviceRepository _deviceRepository;
 
-    public DeviceDataService(IIoDitRepository repository)
+
+    public DeviceDataService(IIoDitRepository repository,
+        IDeviceRepository deviceRepository)
     {
         _repository = repository;
+        _deviceRepository = deviceRepository;
     }
 
     public async Task<List<DeviceDataResponseDto>?> GetDevicesData(long companyId)
     {
-        var devicesData = (await _repository.GetDevices(companyId)).SelectMany(x => x.DeviceData).ToList();
+        var devicesData = (await _deviceRepository.GetDevices(companyId)).SelectMany(x => x.DeviceData).ToList();
         if (!devicesData.Any())
         {
             return new List<DeviceDataResponseDto>();
@@ -32,10 +36,10 @@ public class DeviceDataService : IDeviceDataService
             TimeStamp = x.TimeStamp
         }).ToList();
     }
-    
+
     public async Task<List<DeviceDataResponseDto>?> GetRangedDevicesData(GetRangedDeviceDataRequestDto dto)
     {
-        var device = await _repository.GetDeviceWithDataByEui(dto.DevEui);
+        var device = await _deviceRepository.GetDeviceWithDataByEui(dto.DevEui);
         if (device == null) return new List<DeviceDataResponseDto>();
 
         var deviceData = device.DeviceData.Where(x => x.TimeStamp >= dto.Start && x.TimeStamp <= dto.End).ToList();

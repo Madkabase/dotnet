@@ -9,14 +9,6 @@ public interface IIoDitRepository
 {
     IoDitDbContext DbContext { get; }
 
-    //DEVICES
-    Task<CompanyDevice?> GetDeviceByEui(string deviceEui);
-    Task<List<CompanyDevice>> GetDevices(long companyUserId);
-
-
-    //DEVICE DATA
-    Task<CompanyDevice?> GetDeviceWithDataByEui(string deviceEUI);
-
     //COMPANY FARM USERS
     Task<IQueryable<CompanyFarmUser>> GetCompanyFarmUsers(long companyId);
     Task<IQueryable<CompanyFarmUser>> GetCompanyUserFarmUsers(long companyUserId);

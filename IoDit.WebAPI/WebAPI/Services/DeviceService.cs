@@ -16,6 +16,7 @@ public class DeviceService : IDeviceService
     private readonly IAzureApiClient _azureApiClient;
     private readonly ICompanyRepository _companyRepository;
     private readonly IFarmRepository _farmRepository;
+    private readonly IDeviceRepository _deviceRepository;
 
 
     public DeviceService(
@@ -23,7 +24,8 @@ public class DeviceService : IDeviceService
         LoriotApiClient loriotApiClient,
         IAzureApiClient azureApiClient,
         ICompanyRepository companyRepository,
-        IFarmRepository farmRepository
+        IFarmRepository farmRepository,
+        IDeviceRepository deviceRepository
     )
     {
         _repository = repository;
@@ -31,6 +33,7 @@ public class DeviceService : IDeviceService
         _azureApiClient = azureApiClient;
         _companyRepository = companyRepository;
         _farmRepository = farmRepository;
+        _deviceRepository = deviceRepository;
     }
 
     public async Task<GetDevicesResponseDto> CreateDevice(CreateDeviceRequestDto request)
@@ -41,7 +44,7 @@ public class DeviceService : IDeviceService
             throw new Exception("Company doesnt exist");
         }
 
-        var device = await _repository.GetDeviceByEui(request.DeviceEUI);
+        var device = await _deviceRepository.GetDeviceByEui(request.DeviceEUI);
         if (device != null)
         {
             throw new Exception("Device already exist");
@@ -117,7 +120,7 @@ public class DeviceService : IDeviceService
 
     public async Task<List<GetDevicesResponseDto>?> GetDevices(long companyId)
     {
-        var devices = await _repository.GetDevices(companyId);
+        var devices = await _deviceRepository.GetDevices(companyId);
         if (!devices.Any())
         {
             return new List<GetDevicesResponseDto>();
@@ -156,7 +159,7 @@ public class DeviceService : IDeviceService
 
     public async Task<GetDevicesResponseDto?> AssignToField(AssignToFieldRequestDto dto)
     {
-        var device = await _repository.GetDeviceByEui(dto.DeviceEui);
+        var device = await _deviceRepository.GetDeviceByEui(dto.DeviceEui);
         if (device == null)
         {
             return null;
