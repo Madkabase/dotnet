@@ -1,0 +1,158 @@
+﻿using IoDit.WebAPI.Persistence.Entities.Company;
+using IoDit.WebAPI.Utilities.Loriot;
+using IoDit.WebAPI.Utilities.Repositories;
+using IoDit.WebAPI.Utilities.Types;
+using IoDit.WebAPI.WebAPI.Models.Company;
+using IoDit.WebAPI.WebAPI.Services.Interfaces;
+using Microsoft.EntityFrameworkCore;
+
+namespace IoDit.WebAPI.WebAPI.Services;
+
+public class CompanyService : ICompanyService
+{
+    private readonly IIoDitRepository _repository;
+    private readonly LoriotApiClient _loriotApiClient;
+
+
+    public CompanyService(IIoDitRepository repository, LoriotApiClient loriotApiClient)
+    {
+        _repository = repository;
+        _loriotApiClient = loriotApiClient;
+    }
+
+    public async Task<GetCompanyResponseDto> CreateCompany(CreateCompanyRequestDto request)
+    {
+        //todo check sub requests and fulfill 
+        var owner = await _repository.GetUserByEmail(request.Email);
+        if (owner == null)
+        {
+            return null;
+        }
+
+        var subRequest = await _repository.DbContext.SubscriptionRequests.FirstOrDefaultAsync(x =>
+            x.IsFulfilled == false && x.CompanyName == request.Name && x.UserId == owner.Id);
+        if (subRequest != null)
+        {
+            subRequest.IsFulfilled = true;
+            await _repository.UpdateAsync(subRequest);
+        }
+
+        var loriotApp = await _loriotApiClient.CreateLoriotApp(owner.Email, request.MaxDevices);
+        var company = new Company()
+        {
+            Owner = owner,
+            OwnerId = owner.Id,
+            MaxDevices = request.MaxDevices,
+            CompanyName = request.Name,
+            AppId = loriotApp.appHexId,
+            AppName = loriotApp.name
+        };
+        var createdCompany = await _repository.CreateAsync(company);
+        var companyUsers = await _repository.GetUserCompanyUsers(owner.Email);
+        var isDefault = false;
+        if (companyUsers?.FirstOrDefault(x => x.IsDefault == true) == null)
+        {
+            isDefault = true;
+        }
+        var companyUser = new CompanyUser()
+        {
+            Company = createdCompany,
+            User = owner,
+            CompanyRole = CompanyRoles.CompanyOwner,
+            CompanyId = createdCompany.Id,
+            UserId = owner.Id,
+            IsDefault = isDefault
+        };
+        var createdCompanyUser = await _repository.CreateAsync(companyUser);
+        return new GetCompanyResponseDto()
+        {
+            Id = createdCompany.Id,
+            CompanyName = createdCompany.CompanyName,
+            MaxDevices = createdCompany.MaxDevices,
+            AppId = createdCompany.AppId,
+            OwnerEmail = createdCompany.Owner.Email,
+            AppName = createdCompany.AppName,
+        };
+    }
+
+    public async Task<GetCompanyResponseDto?> GetCompany(long companyId)
+    {
+        var company = await _repository.GetCompanyById(companyId);
+        if (company != null)
+        {
+            return new GetCompanyResponseDto()
+            {
+                Id = company.Id,
+                AppId = company.AppId,
+                AppName = company.AppName,
+                CompanyName = company.CompanyName,
+                OwnerEmail = company.Owner.Email,
+                MaxDevices = company.MaxDevices,
+                OwnerId = company.OwnerId
+            };
+        }
+        return null;
+    }
+    
+    public async Task<List<GetCompanyResponseDto>?> GetCompanies()
+    {
+        var companies = await _repository.GetCompanies();
+        if (companies.Any())
+        {
+            return companies.Select(company => new GetCompanyResponseDto()
+            {
+                Id = company.Id,
+                CompanyName = company.CompanyName,
+                MaxDevices = company.MaxDevices,
+                AppId = company.AppId,
+                OwnerEmail = company.Owner.Email,
+                AppName = company.AppName,
+                OwnerId = company.OwnerId
+            }).ToList();
+        }
+        return null;
+    }
+    
+    public async Task<List<SubscriptionRequestResponseDto>?> GetSubscriptionRequests(){
+        var requests = await _repository.GetSubscriptionRequests();
+        if (requests.Any())
+        {
+            return requests.Select(request => new SubscriptionRequestResponseDto()
+            {
+                Id = request.Id,
+                CompanyName = request.CompanyName,
+                MaxDevices = request.MaxDevices,
+                Email = request.Email,
+                IsFulfilled = request.IsFulfilled,
+                UserId = request.UserId
+            }).ToList();
+        }
+        return null;
+    }
+    
+    public async Task<SubscriptionRequestResponseDto?> CreateSubscriptionRequest(CreateRequestSubscriptionRequestDto request)
+    {
+        var user = await _repository.GetUserByEmail(request.Email);
+
+        var sub = new SubscriptionRequest()
+        {
+            Email = request.Email,
+            User = user,
+            UserId = user.Id,
+            CompanyName = request.Name,
+            IsFulfilled = false,
+            MaxDevices = request.MaxDevices
+        };
+        var createdSub = await _repository.CreateAsync(sub);
+        
+        return new SubscriptionRequestResponseDto()
+        {
+            Email = createdSub.Email,
+            Id = createdSub.Id,
+            CompanyName = createdSub.CompanyName,
+            IsFulfilled = createdSub.IsFulfilled,
+            MaxDevices = createdSub.MaxDevices,
+            UserId = createdSub.UserId
+        };
+    }
+}
