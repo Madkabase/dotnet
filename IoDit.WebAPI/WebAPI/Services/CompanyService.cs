@@ -1,4 +1,5 @@
-﻿using IoDit.WebAPI.Persistence.Entities.Company;
+﻿using IoDit.WebAPI.Persistence.Entities;
+using IoDit.WebAPI.Persistence.Entities.Company;
 using IoDit.WebAPI.Utilities.Loriot;
 using IoDit.WebAPI.Utilities.Repositories;
 using IoDit.WebAPI.Utilities.Types;
@@ -165,5 +166,15 @@ public class CompanyService : ICompanyService
             MaxDevices = createdSub.MaxDevices,
             UserId = createdSub.UserId
         };
+    }
+
+    public async Task<Boolean> CheckIfUserIsPartIfCompany(User user, long companyId)
+    {
+        var companyUser = await _companyUserRepository.GetCompanyUserForUserByCompanyId(user.Email, companyId);
+        if (companyUser != null)
+        {
+            return true;
+        }
+        return false;
     }
 }
