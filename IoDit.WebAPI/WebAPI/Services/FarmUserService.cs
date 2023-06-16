@@ -28,7 +28,7 @@ public class FarmUserService : IFarmUserService
 
     public async Task<List<GetFarmUsersResponseDto>?> GetUserFarmUsers(long companyUserId)
     {
-        var farmUsers = await _companyFarmUserRepository.GetCompanyUserFarmUsers(companyUserId);
+        var farmUsers = await _companyFarmUserRepository.GetUsersOfCompanyByCompanyId(companyUserId);
 
         if (!farmUsers.Any())
         {

@@ -11,4 +11,5 @@ public interface ICompanyService
     Task<List<SubscriptionRequestResponseDto>?> GetSubscriptionRequests();
     Task<SubscriptionRequestResponseDto?> CreateSubscriptionRequest(CreateRequestSubscriptionRequestDto request);
     Task<Boolean> CheckIfUserIsPartIfCompany(User user, long companyId);
+    Task<List<GetCompanyResponseDto>> GetCompaniesByUserId(long id);
 }

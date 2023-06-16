@@ -7,9 +7,12 @@ namespace IoDit.WebAPI.WebAPI.Services;
 public class UserService : IUserService
 {
     private readonly IUserRepository _userRepository;
-    public UserService(IUserRepository repository)
+    private readonly ICompanyService _companyService;
+    public UserService(IUserRepository repository,
+        ICompanyService companyService)
     {
         _userRepository = repository;
+        _companyService = companyService;
     }
 
     public async Task<UserResponseDto?> GetUser(string userEmail)
@@ -25,7 +28,8 @@ public class UserService : IUserService
             Id = user.Id,
             AppRole = user.AppRole,
             FirstName = user.FirstName,
-            LastName = user.LastName
+            LastName = user.LastName,
+            Companies = await _companyService.GetCompaniesByUserId(user.Id)
         };
     }
 }

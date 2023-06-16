@@ -18,15 +18,19 @@ public class AuthService : IAuthService
     private readonly IEmailService _emailService;
     private readonly IUserRepository _userRepository;
 
+    private readonly ICompanyService _companyService;
+
     public AuthService(IUtilsRepository repository,
     IJwtUtils jwtUtils,
     IEmailService emailService,
-    IUserRepository userRepository)
+    IUserRepository userRepository,
+    ICompanyService companyService)
     {
         _utilsRepository = repository;
         _jwtUtils = jwtUtils;
         _emailService = emailService;
         _userRepository = userRepository;
+        _companyService = companyService;
     }
 
     public async Task<RegistrationResponseDto> Register(RegistrationRequestDto request)
@@ -156,7 +160,9 @@ public class AuthService : IAuthService
                 Email = user.Email,
                 FirstName = user.FirstName,
                 LastName = user.LastName,
-                AppRole = user.AppRole
+                AppRole = user.AppRole,
+                Companies = await _companyService.GetCompaniesByUserId(user.Id)
+
             }
         };
     }
