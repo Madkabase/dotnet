@@ -3,37 +3,37 @@
 # https://docs.microsoft.com/azure/devops/pipelines/languages/docker
 
 trigger:
-- main
+  - main
 
 resources:
-- repo: self
+  - repo: self
 
 variables:
   # Container registry service connection established during pipeline creation
-  dockerRegistryServiceConnection: 'f86dccc6-9b34-48f9-976e-00b1fef7b019'
-  imageRepository: 'backend'
-  containerRegistry: 'agrodit.azurecr.io'
-  dockerfilePath: '$(Build.SourcesDirectory)/IoDit.WebAPI/Dockerfile'
-  tag: '$(Build.BuildId)'
+  dockerRegistryServiceConnection: "9542caea-a64d-4dd0-869f-2bb69ec641b6"
+  imageRepository: "backend"
+  containerRegistry: "agroditregistry.azurecr.io"
+  dockerfilePath: "$(Build.SourcesDirectory)/IoDit.WebAPI/Dockerfile"
+  tag: "$(Build.BuildId)"
 
   # Agent VM image name
-  vmImageName: 'ubuntu-latest'
+  vmImageName: "ubuntu-latest"
 
 stages:
-- stage: Build
-  displayName: Build and push stage
-  jobs:
-  - job: Build
-    displayName: Build
-    pool:
-      vmImage: $(vmImageName)
-    steps:
-    - task: Docker@2
-      displayName: Build and push an image to container registry
-      inputs:
-        command: buildAndPush
-        repository: $(imageRepository)
-        dockerfile: $(dockerfilePath)
-        containerRegistry: $(dockerRegistryServiceConnection)
-        tags: |
-          $(tag)
+  - stage: Build
+    displayName: Build and push stage
+    jobs:
+      - job: Build
+        displayName: Build
+        pool:
+          vmImage: $(vmImageName)
+        steps:
+          - task: Docker@2
+            displayName: Build and push an image to container registry
+            inputs:
+              command: buildAndPush
+              repository: $(imageRepository)
+              dockerfile: $(dockerfilePath)
+              containerRegistry: $(dockerRegistryServiceConnection)
+              tags: |
+                $(tag)
