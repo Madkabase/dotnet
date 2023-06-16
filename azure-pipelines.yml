@@ -10,7 +10,7 @@ resources:
 
 variables:
   # Container registry service connection established during pipeline creation
-  dockerRegistryServiceConnection: 'bdc53ea9-6268-46d0-b606-f75c17807229'
+  dockerRegistryServiceConnection: 'f86dccc6-9b34-48f9-976e-00b1fef7b019'
   imageRepository: 'iodit'
   containerRegistry: 'agrodit.azurecr.io'
   dockerfilePath: '$(Build.SourcesDirectory)/IoDit.WebAPI/Dockerfile'
