@@ -177,4 +177,19 @@ public class CompanyService : ICompanyService
         }
         return false;
     }
+
+    public async Task<List<GetCompanyResponseDto>> GetCompaniesByUserId(long userId)
+    {
+
+        return _companyRepository.GetCompaniesByUserId(userId).Result.Select(company => new GetCompanyResponseDto()
+        {
+            Id = company.Id,
+            CompanyName = company.CompanyName,
+            MaxDevices = company.MaxDevices,
+            AppId = company.AppId,
+            OwnerEmail = company.Owner.Email,
+            AppName = company.AppName,
+            OwnerId = company.OwnerId
+        }).ToList();
+    }
 }
