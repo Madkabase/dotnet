@@ -1,4 +1,5 @@
-﻿using IoDit.WebAPI.WebAPI.Models.Company;
+﻿using IoDit.WebAPI.Persistence.Entities;
+using IoDit.WebAPI.WebAPI.Models.Company;
 
 namespace IoDit.WebAPI.WebAPI.Services.Interfaces;
 
@@ -9,4 +10,5 @@ public interface ICompanyService
     Task<List<GetCompanyResponseDto>?> GetCompanies();
     Task<List<SubscriptionRequestResponseDto>?> GetSubscriptionRequests();
     Task<SubscriptionRequestResponseDto?> CreateSubscriptionRequest(CreateRequestSubscriptionRequestDto request);
+    Task<Boolean> CheckIfUserIsPartIfCompany(User user, long companyId);
 }

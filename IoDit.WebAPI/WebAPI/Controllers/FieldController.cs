@@ -21,11 +21,13 @@ public class FieldController : ControllerBase, IBaseController
     private readonly IUserRepository _userRepository;
     private readonly ICompanyUserRepository _companyUserRepository;
     private readonly ICompanyFarmUserRepository _companyFarmUserRepository;
+    private readonly ICompanyService _companyService;
 
     public FieldController(
         ILogger<FieldController> logger,
         IConfiguration configuration,
         IFieldService fieldService,
+        ICompanyService companyService,
         IUtilsRepository repository,
         IUserRepository userRepository,
         ICompanyUserRepository companyUserRepository,
@@ -38,6 +40,7 @@ public class FieldController : ControllerBase, IBaseController
         _userRepository = userRepository;
         _companyUserRepository = companyUserRepository;
         _companyFarmUserRepository = companyFarmUserRepository;
+        _companyService = companyService;
     }
 
     [HttpPost("createField")]
@@ -129,6 +132,27 @@ public class FieldController : ControllerBase, IBaseController
 
 
         return Ok(await _fieldService.GetFields(companyUser.CompanyId));
+    }
+
+    [HttpGet("getFieldsWithDevicesFromCompany/{companyId}")]
+    public async Task<IActionResult> GetFieldsWithDevices(long companyId)
+    {
+        var user = await GetRequestDetails();
+        if (user == null)
+        {
+            return BadRequest("Cannot find user identity");
+        }
+
+        if (!user.AppRole.Equals(AppRoles.AppAdmin))
+        {
+            // check if user is part of the company 
+            if (!await _companyService.CheckIfUserIsPartIfCompany(user, companyId))
+            {
+                return BadRequest("Cannot access this feature, please contact your company owner or company admin");
+            }
+        }
+
+        return Ok(await _fieldService.GetFieldsWithDevices(companyId));
     }
 
     [ApiExplorerSettings(IgnoreApi = true)]
