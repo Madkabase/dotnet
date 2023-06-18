@@ -97,6 +97,19 @@ public class CompanyController : ControllerBase, IBaseController
         return Ok(await _companyService.GetCompanies());
     }
 
+    [HttpGet("getMyCompanies")]
+    public async Task<IActionResult> GetMyCompanies()
+    {
+        var user = await GetRequestDetails();
+
+        if (user == null)
+        {
+            return BadRequest("Cannot access this feature, please, contact app administrator");
+        }
+
+        return Ok(await _companyService.GetCompaniesByUserId(user.Id));
+    }
+
 
     [HttpGet("getSubRequests")]
     public async Task<IActionResult> GetSubRequests()
