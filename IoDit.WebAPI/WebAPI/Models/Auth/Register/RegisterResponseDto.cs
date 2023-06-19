@@ -2,8 +2,8 @@
 
 namespace IoDit.WebAPI.WebAPI.Models.Auth.Register;
 
-public class ConfirmCodeResponseDto
+public class RegisterResponseDto
 {
     public string Message { get; set; }
-    public ConfirmCodeFlowType CodeConfirmationFlowType { get; set; }
+    public RegistrationFlowType RegistrationFlowType { get; set; }
 }

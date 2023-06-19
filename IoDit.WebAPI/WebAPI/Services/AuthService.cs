@@ -1,223 +1,272 @@
-﻿using IoDit.WebAPI.Persistence.Entities;
-using IoDit.WebAPI.Utilities;
-using IoDit.WebAPI.Utilities.Repositories;
-using IoDit.WebAPI.Utilities.Services;
+using IoDit.WebAPI.Utilities.Helpers;
+using IoDit.WebAPI.WebAPI.Models.Auth.Login;
+using IoDit.WebAPI.WebAPI.DTO.User;
+using IoDit.WebAPI.WebAPI.DTO;
+using IoDit.WebAPI.WebAPI.Models.Auth.Register;
+using IoDit.WebAPI.Persistence.Entities;
 using IoDit.WebAPI.Utilities.Types;
 using IoDit.WebAPI.WebAPI.Models;
-using IoDit.WebAPI.WebAPI.Models.Auth.Login;
-using IoDit.WebAPI.WebAPI.Models.Auth.Register;
-using IoDit.WebAPI.WebAPI.Services.Interfaces;
+using IoDit.WebAPI.Persistence.Repositories;
 
-namespace IoDit.WebAPI.WebAPI.Services;
+namespace IoDit.WebAPI.Services;
 
-public class AuthService : IAuthService
+public class AuthService
 {
-    //todo create logic to renew ur password
-    private readonly IUtilsRepository _utilsRepository;
-    private readonly IJwtUtils _jwtUtils;
-    private readonly IEmailService _emailService;
-    private readonly IUserRepository _userRepository;
 
-    private readonly ICompanyService _companyService;
+    private readonly UserService _userService;
+    private readonly RefreshJwtService _refreshJwtService;
+    private readonly JwtHelper _jwtHelper;
+    private readonly EmailService _emailService;
+    private readonly UtilsRepository _utilsRepository;
 
-    public AuthService(IUtilsRepository repository,
-    IJwtUtils jwtUtils,
-    IEmailService emailService,
-    IUserRepository userRepository,
-    ICompanyService companyService)
+
+    public AuthService(
+        UserService userService,
+        RefreshJwtService refreshJwtService,
+        JwtHelper jwtHelper,
+        EmailService emailService,
+        UtilsRepository utilsRepository
+        )
     {
-        _utilsRepository = repository;
-        _jwtUtils = jwtUtils;
+        _userService = userService;
+        _refreshJwtService = refreshJwtService;
+        _jwtHelper = jwtHelper;
         _emailService = emailService;
-        _userRepository = userRepository;
-        _companyService = companyService;
+        _utilsRepository = utilsRepository;
     }
 
-    public async Task<RegistrationResponseDto> Register(RegistrationRequestDto request)
+    /// <summary>
+    /// Logs in a user and returns a loginResponseDTO
+    /// </summary>
+    /// <param name="email">The email of the user</param>
+    /// <param name="password">The password of the user</param>
+    /// <param name="DeviceId">The device identifier of the user</param>
+    /// <returns>A loginResponseDTO</returns>
+    /// <exception cref="UnauthorizedAccessException">Thrown when the password is incorrect.</exception>
+    public async Task<LoginResponseDto?> Login(String email, String password, String DeviceId)
     {
-        var user = await _userRepository.GetUserByEmail(request.Email);
-        if (user != null && user.IsVerified)
-            return new RegistrationResponseDto()
-            {
-                Message = "User already registered",
-                RegistrationFlowType = RegistrationFlowType.AlreadyVerified
-            };
-
-        if (user != null && !user.IsVerified)
-        {
-            await UpdateConfirmation(request);
-            return new RegistrationResponseDto()
-            {
-                Message = $"User already registered, but not verified. New confirmation code sent to {request.Email}",
-                RegistrationFlowType = RegistrationFlowType.RegisteredNotVerified
-            };
-        }
-
-        await CreateUserAndSendConfirmation(request);
-        return new RegistrationResponseDto()
-        {
-            Message = $"Confirmation code sent to {request.Email}",
-            RegistrationFlowType = RegistrationFlowType.NewUser
-        };
-    }
-
-    public async Task<ConfirmCodeResponseDto> ConfirmCode(ConfirmCodeRequestDto request)
-    {
-        var user = await _userRepository.GetUserByEmail(request.Email);
+        var user = await _userService.GetUserByEmail(email);
+        // check if user exists
         if (user == null)
         {
-            await CreateUserAndSendConfirmation(new RegistrationRequestDto()
-            {
-                Email = request.Email,
-                Password = request.Password,
-                FirstName = request.FirstName,
-                LastName = request.LastName
-            });
-            return new ConfirmCodeResponseDto()
-            {
-                Message = $"User with email {request.Email} wasn't found, user created and notification sent",
-                CodeConfirmationFlowType = CodeConfirmationFlowType.Error
-            };
+            throw new UnauthorizedAccessException("User not found");
+        }
+        // check if user is verified
+        if (!user.IsVerified)
+        {
+            throw new UnauthorizedAccessException("User not verified");
         }
 
-        if (user.ConfirmationExpirationDate < DateTime.UtcNow)
+        if (!PasswordEncoder.CheckIfSame(password, user.Password))
         {
-            await UpdateConfirmation(new RegistrationRequestDto()
-            {
-                Email = request.Email,
-                Password = request.Password,
-                FirstName = request.FirstName,
-                LastName = request.LastName
-            });
-
-            return new ConfirmCodeResponseDto()
-            {
-                Message = $"Confirmation code expired, new confirmation code sent to {user.Email}",
-                CodeConfirmationFlowType = CodeConfirmationFlowType.NewConfirmationSent
-            };
+            throw new UnauthorizedAccessException("Invalid password");
         }
 
-        if (user.ConfirmationTriesCounter == 5)
+        var refreshToken = await _refreshJwtService.GenerateRefreshToken(user, DeviceId);
+
+        return new LoginResponseDto
         {
-            await UpdateConfirmation(new RegistrationRequestDto()
-            {
-                Email = request.Email,
-                Password = request.Password,
-                FirstName = request.FirstName,
-                LastName = request.LastName
-            });
-            return new ConfirmCodeResponseDto()
-            {
-                Message = $"Too many tries, new confirmation code sent to {request.Email}",
-                CodeConfirmationFlowType = CodeConfirmationFlowType.NewConfirmationSent
-            };
-        }
-
-        if (user.ConfirmationCode != request.Code)
-        {
-            user.ConfirmationTriesCounter++;
-            await _utilsRepository.SaveChangesAsync();
-            return new ConfirmCodeResponseDto()
-            {
-                Message = "Invalid code",
-                CodeConfirmationFlowType = CodeConfirmationFlowType.InvalidCode
-            };
-        }
-
-        user.IsVerified = true;
-        await _utilsRepository.SaveChangesAsync();
-        return new ConfirmCodeResponseDto()
-        {
-            Message = "success",
-            CodeConfirmationFlowType = CodeConfirmationFlowType.Success
-        };
-    }
-
-    public async Task<LoginResponseDto?> Login(LoginRequestDto request)
-    {
-        var user = await _userRepository.GetUserByEmail(request.Email);
-        if (user == null)
-        {
-            return null;
-        }
-
-        var pass = PasswordEncoder.HashPassword(request.Password);
-
-        if (PasswordEncoder.CheckIfSame(pass, user.Password))
-        {
-            return null;
-        }
-
-        var refreshToken = await _jwtUtils.GenerateRefreshToken(request.Email, request.DeviceIdentifier);
-
-        return new LoginResponseDto()
-        {
-            Token = _jwtUtils.GenerateJwtToken(request.Email),
-            RefreshToken = refreshToken?.Token,
-            User = new Models.User.UserResponseDto()
+            Token = _jwtHelper.GenerateJwtToken(email),
+            RefreshToken = refreshToken.Token,
+            User = new UserDto
             {
                 Id = user.Id,
                 Email = user.Email,
                 FirstName = user.FirstName,
                 LastName = user.LastName,
                 AppRole = user.AppRole,
-                Companies = await _companyService.GetCompaniesByUserId(user.Id)
-
+                Farms = user.FarmUsers.Select(fu => fu.Farm).Select(f => new FarmDTO
+                {
+                    Id = f.Id,
+                    Name = f.Name
+                }).ToList()
             }
         };
     }
 
-    public async Task SendEmailWithMailKitAsync(CustomEmailMessage emailMessage)
+    /// <summary>
+    /// Registers a new user
+    /// </summary>
+    /// <param name="email">The email of the user</param>
+    /// <param name="password">The password of the user</param>
+    /// <param name="firstName">The first name of the user</param>
+    /// <param name="lastName">The last name of the user</param>
+    /// <returns> the registrationResponseDTO</returns>
+    public async Task<RegisterResponseDto> Register(String email, String password, String firstName, String lastName)
     {
-        await _emailService.SendEmailWithMailKitAsync(emailMessage);
-    }
 
-    private async Task CreateUserAndSendConfirmation(RegistrationRequestDto request)
-    {
-        var user = new User
+
+        User? user = await _userService.GetUserByEmail(email);
+
+        // Check if the email is already in use
+        if (user != null)
         {
-            Email = request.Email,
+            if (user.IsVerified)
+            {
+                return new RegisterResponseDto
+                {
+                    Message = "User already exists",
+                    RegistrationFlowType = RegistrationFlowType.AlreadyVerified
+                };
+            }
+            else
+                return new RegisterResponseDto
+                {
+                    Message = "Confirm your email with the confirmation code sent",
+                    RegistrationFlowType = RegistrationFlowType.RegisteredNotVerified
+                };
+        }
+
+        // create new user
+        user = new User
+        {
+            Email = email,
             // Make sure to hash the password before storing it
-            Password = PasswordEncoder.HashPassword(request.Password),
-            FirstName = request.FirstName,
-            LastName = request.LastName,
+            Password = PasswordEncoder.HashPassword(password),
+            FirstName = firstName,
+            LastName = lastName,
             AppRole = AppRoles.AppUser,
             IsVerified = false,
             ConfirmationCode = GenerateConfirmationCode(),
             ConfirmationExpirationDate = DateTime.UtcNow.AddHours(24),
             ConfirmationTriesCounter = 0,
         };
-        await _utilsRepository.CreateAsync(user);
-    }
 
-    private async Task UpdateConfirmation(RegistrationRequestDto request)
-    {
-        var user = await _userRepository.GetUserByEmail(request.Email);
-        var genConfirmation = GenerateConfirmationCode();
+        await SaveUserAndSendEmailConfirmation(user);
 
-        user.ConfirmationCode = genConfirmation;
-        user.ConfirmationExpirationDate = DateTime.UtcNow.AddHours(24);
-        user.ConfirmationTriesCounter++;
-
-        await _utilsRepository.SaveChangesAsync();
-        await SendConfirmationCode(request.Email, genConfirmation);
-    }
-
-    private async Task SendConfirmationCode(string email, long confirmationCode)
-    {
-        var emailText = new CustomEmailMessage()
+        return new RegisterResponseDto
         {
-            RecipientName = email,
-            RecipientEmail = email,
-            Subject = "Registration confirmation code",
-            Body = $"{confirmationCode}"
+            Message = "User created, check your email for the confirmation code",
+            RegistrationFlowType = RegistrationFlowType.NewUser
         };
-        await SendEmailWithMailKitAsync(emailText);
     }
 
+
+    public async Task<ConfirmCodeResponseDto> ConfirmCode(String email, long confirmationCode)
+    {
+        var user = await _userService.GetUserByEmail(email);
+        // check if user exists
+        if (user == null)
+        {
+            return new ConfirmCodeResponseDto
+            {
+                Message = "User not found",
+                CodeConfirmationFlowType = ConfirmCodeFlowType.UserNotFound
+            };
+        }
+
+        // verify the confirmation code
+        try { await CheckUserVerification(user, confirmationCode); }
+        catch (UnauthorizedAccessException e)
+        {
+            switch (e.Message)
+            {
+                case "tooManyTries":
+                    return new ConfirmCodeResponseDto
+                    {
+                        Message = "Too many tries, a new confirmation code has been sent",
+                        CodeConfirmationFlowType = ConfirmCodeFlowType.NewConfirmationSent
+                    };
+                case "expired":
+                    return new ConfirmCodeResponseDto
+                    {
+                        Message = "Code expired, a new confirmation code has been sent",
+                        CodeConfirmationFlowType = ConfirmCodeFlowType.NewConfirmationSent
+                    };
+                case "invalidCode":
+                    return new ConfirmCodeResponseDto
+                    {
+                        Message = "Invalid code",
+                        CodeConfirmationFlowType = ConfirmCodeFlowType.InvalidCode
+                    };
+            }
+        }
+
+        user.IsVerified = true;
+        await _utilsRepository.UpdateAsync(user);
+        return new ConfirmCodeResponseDto
+        {
+            Message = "User verified",
+            CodeConfirmationFlowType = ConfirmCodeFlowType.Success
+        };
+    }
+
+    /// <summary>
+    /// Confirms saves the user in the database and sends a confirmation email
+    /// </summary>
+    /// <param name="user">The user to be saved</param>
+    /// <returns></returns>
+    private async Task SaveUserAndSendEmailConfirmation(User user)
+    {
+
+        await _utilsRepository.CreateAsync(user);
+
+        await _emailService.SendEmailWithMailKitAsync(new CustomEmailMessage
+        {
+            RecipientEmail = user.Email,
+            Subject = "Your confirmation code",
+            RecipientName = user.FirstName + " " + user.LastName,
+            Body = "Your confirmation code is: " + user.ConfirmationCode
+        });
+    }
+
+    /// <summary>
+    /// Resends the confirmation code to the user
+    /// </summary>
+    /// <param name="user">The user to resend the confirmation code to</param>
+    private async Task SaveUserAndResendConfirmationCode(User user)
+    {
+        var newConfirmationCode = GenerateConfirmationCode();
+        user.ConfirmationCode = newConfirmationCode;
+        user.ConfirmationExpirationDate = DateTime.UtcNow.AddHours(24);
+        user.ConfirmationTriesCounter = 0;
+        await _utilsRepository.UpdateAsync(user);
+        await _emailService.SendEmailWithMailKitAsync(new CustomEmailMessage
+        {
+            RecipientEmail = user.Email,
+            Subject = "Your new confirmation code",
+            RecipientName = user.FirstName + " " + user.LastName,
+            Body = "Your confirmation code is: " + user.ConfirmationCode
+        });
+    }
+
+    /// <summary>
+    /// generates a random confirmation code for the user confirmation
+    /// </summary>
+    /// <returns>the confirmation code</returns>
     private long GenerateConfirmationCode()
     {
         Random random = new Random();
         return random.Next(100000, 999999);
+    }
+
+    /// <summary>
+    /// Checks if the user is verified, if not, checks the number of tries and the expiration date
+    /// sends a new confirmation code if needed
+    /// </summary>
+    /// <param name="user">The user to check</param>
+    /// <returns></returns>
+    /// <exception cref="UnauthorizedAccessException">Thrown when the verification is not good</exception>
+    private async Task CheckUserVerification(User user, long confirmationCode)
+    {
+        // check the number of tries
+        if (user.ConfirmationTriesCounter >= 5)
+        {
+            await SaveUserAndResendConfirmationCode(user);
+            throw new UnauthorizedAccessException("tooManyTries");
+        }
+        // check the expiration date
+        if (user.ConfirmationExpirationDate.ToLocalTime().CompareTo(DateTime.Now.ToLocalTime()) < 0)
+        {
+            await SaveUserAndResendConfirmationCode(user);
+            throw new UnauthorizedAccessException("expired");
+        }
+        // check the confirmation code
+        if (user.ConfirmationCode != confirmationCode)
+        {
+            user.ConfirmationTriesCounter++;
+            await _utilsRepository.UpdateAsync(user);
+            throw new UnauthorizedAccessException("invalidCode");
+        }
     }
 }

@@ -1,6 +1,6 @@
 ﻿using IoDit.WebAPI.Persistence.Entities;
 
-namespace IoDit.WebAPI.WebAPI.Controllers;
+namespace IoDit.WebAPI.Controllers;
 
 public interface IBaseController
 {

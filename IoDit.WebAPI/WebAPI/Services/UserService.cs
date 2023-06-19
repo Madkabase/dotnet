@@ -1,35 +1,29 @@
-﻿using IoDit.WebAPI.Utilities.Repositories;
-using IoDit.WebAPI.WebAPI.Models.User;
-using IoDit.WebAPI.WebAPI.Services.Interfaces;
+using IoDit.WebAPI.Persistence.Entities;
+using IoDit.WebAPI.Persistence.Repositories;
 
-namespace IoDit.WebAPI.WebAPI.Services;
+namespace IoDit.WebAPI.Services;
 
-public class UserService : IUserService
+public class UserService
 {
-    private readonly IUserRepository _userRepository;
-    private readonly ICompanyService _companyService;
-    public UserService(IUserRepository repository,
-        ICompanyService companyService)
+    private readonly UserRepository _userRepository;
+
+    public UserService(UserRepository userRepository)
     {
-        _userRepository = repository;
-        _companyService = companyService;
+        _userRepository = userRepository;
     }
 
-    public async Task<UserResponseDto?> GetUser(string userEmail)
+    /// <summary>
+    ///     Creates a new user in the database.
+    /// </summary>
+    /// <param name="user">The user to be created.</param>
+    /// <returns>The created user.</returns>
+    public async Task<User?> GetUserByEmail(string email)
     {
-        var user = await _userRepository.GetUserByEmail(userEmail);
+        var user = await _userRepository.GetUserByEmail(email);
         if (user == null)
         {
             return null;
         }
-        return new UserResponseDto()
-        {
-            Email = user.Email,
-            Id = user.Id,
-            AppRole = user.AppRole,
-            FirstName = user.FirstName,
-            LastName = user.LastName,
-            Companies = await _companyService.GetCompaniesByUserId(user.Id)
-        };
+        return user;
     }
 }

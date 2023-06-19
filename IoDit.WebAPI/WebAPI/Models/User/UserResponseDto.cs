@@ -1,14 +1,13 @@
 ﻿using IoDit.WebAPI.Utilities.Types;
-using IoDit.WebAPI.WebAPI.Models.Company;
 
-namespace IoDit.WebAPI.WebAPI.Models.User;
+namespace IoDit.WebAPI.WebAPI.DTO.User;
 
-public class UserResponseDto
+public class UserDto
 {
     public string FirstName { get; set; }
     public string LastName { get; set; }
     public AppRoles AppRole { get; set; }
     public string Email { get; set; }
     public long Id { get; set; }
-    public List<GetCompanyResponseDto> Companies { get; set; } = new List<GetCompanyResponseDto>();
+    public List<FarmDTO> Farms { get; set; } = new List<FarmDTO>();
 }

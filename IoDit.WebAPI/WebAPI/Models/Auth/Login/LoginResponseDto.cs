@@ -1,10 +1,11 @@
-﻿namespace IoDit.WebAPI.WebAPI.Models.Auth.Login;
-using IoDit.WebAPI.WebAPI.Models.User;
+﻿using IoDit.WebAPI.WebAPI.DTO.User;
+
+namespace IoDit.WebAPI.WebAPI.Models.Auth.Login;
 
 public class LoginResponseDto
 {
-  public string? Token { get; set; }
-  public string? RefreshToken { get; set; }
+    public string? Token { get; set; }
+    public string? RefreshToken { get; set; }
 
-  public UserResponseDto? User { get; set; }
+    public UserDto? User { get; set; }
 }

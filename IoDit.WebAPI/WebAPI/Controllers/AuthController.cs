@@ -1,106 +1,80 @@
-﻿using System.Security.Claims;
+using System.Security.Claims;
 using IoDit.WebAPI.Persistence.Entities;
-using IoDit.WebAPI.Utilities;
-using IoDit.WebAPI.Utilities.Repositories;
-using IoDit.WebAPI.WebAPI.Models.Auth;
+using IoDit.WebAPI.Services;
+using IoDit.WebAPI.Utilities.Types;
 using IoDit.WebAPI.WebAPI.Models.Auth.Login;
 using IoDit.WebAPI.WebAPI.Models.Auth.Register;
-using IoDit.WebAPI.WebAPI.Services.Interfaces;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
-namespace IoDit.WebAPI.WebAPI.Controllers;
+namespace IoDit.WebAPI.Controllers;
 
 [ApiController]
-[Authorize]
 [Route("[controller]")]
 public class AuthController : ControllerBase, IBaseController
 {
-    private readonly ILogger<AuthController> _logger;
-    private readonly IUtilsRepository _utilsRepository;
-    private readonly IUserRepository _userRepository;
-    private readonly IAuthService _authService;
-    private readonly IJwtUtils _jwtUtils;
+    private readonly UserService _userService;
+    private readonly AuthService _authService;
 
-    public AuthController(
-        ILogger<AuthController> logger,
-        IUtilsRepository repository,
-        IUserRepository userRepository,
-        IAuthService authService,
-        IJwtUtils jwtUtils)
+    public AuthController(UserService userService,
+        AuthService authService)
     {
-        _logger = logger;
-        _utilsRepository = repository;
-        _userRepository = userRepository;
+        _userService = userService;
         _authService = authService;
-        _jwtUtils = jwtUtils;
     }
 
-    [AllowAnonymous]
     [HttpPost("login")]
     public async Task<IActionResult> Login([FromBody] LoginRequestDto model)
     {
-        var result = await _authService.Login(model);
-        if (result == null)
+        try
         {
-            return Unauthorized();
+            var result = await _authService.Login(model.Email, model.Password, model.DeviceIdentifier);
+            return Ok(result);
+        }
+        catch (UnauthorizedAccessException e)
+        {
+            return BadRequest(e.Message);
+        }
+        catch (Exception e)
+        {
+            return BadRequest(e.Message);
+        }
+        return BadRequest("Something went wrong");
+    }
+
+    [HttpPost("register")]
+    public async Task<IActionResult> Register([FromBody] RegisterRequestDto model)
+    {
+
+        // Check if the password and the confirm password are the same
+        if (model.Password != model.ConfirmPassword)
+        {
+            return BadRequest("Passwords do not match");
+        }
+
+        var result = await _authService.Register(model.Email, model.Password, model.FirstName, model.LastName);
+        if (result.RegistrationFlowType != RegistrationFlowType.NewUser)
+        {
+            return BadRequest(result);
         }
         return Ok(result);
     }
 
-    [AllowAnonymous]
-    [HttpPost("renewPassword")]
-    public async Task<IActionResult> RenewPassword()
+    [HttpPost("confirmAccount")]
+    public async Task<IActionResult> ConfirmAccount([FromBody] ConfirmCodeRequestDto model)
     {
-        _logger.LogTrace("password renew requested by deviceId");
-        return Ok("renewPasswordEndpointCalled");
-    }
-
-    [AllowAnonymous]
-    [HttpPost("confirmCode")]
-    public async Task<IActionResult> ConfirmCode([FromBody] ConfirmCodeRequestDto request)
-    {
-        return Ok(await _authService.ConfirmCode(request));
-    }
-
-    [AllowAnonymous]
-    [HttpPost("register")]
-    public async Task<IActionResult> Register([FromBody] RegistrationRequestDto request)
-    {
-        return Ok(await _authService.Register(request));
-    }
-
-    [AllowAnonymous]
-    [HttpPost("refreshAccessToken")]
-    public async Task<IActionResult> RefreshAccessToken([FromBody] RefreshTokenRequestDto refreshTokenRequest)
-    {
-        if (string.IsNullOrEmpty(refreshTokenRequest.RefreshToken))
+        // try
+        // {
+        var result = await _authService.ConfirmCode(model.Email, model.Code);
+        if (result.CodeConfirmationFlowType != ConfirmCodeFlowType.Success)
         {
-            return BadRequest("Refresh token is required.");
+            return BadRequest(result);
         }
-
-        var refreshToken = await _userRepository.GetRefreshToken(refreshTokenRequest.RefreshToken);
-
-        if (refreshToken == null)
-        {
-            return NotFound("Invalid refresh token.");
-        }
-
-        if (refreshToken.Expires < DateTime.UtcNow)
-        {
-            return BadRequest("Refresh token has expired.");
-        }
-
-        var user = await _userRepository.GetUserById(refreshToken.UserId);
-
-        if (user == null)
-        {
-            return NotFound("User not found.");
-        }
-
-        var newAccessToken = _jwtUtils.GenerateJwtToken(user.Email);
-
-        return Ok(new { AccessToken = newAccessToken });
+        return Ok(result);
+        // }
+        // catch (UnauthorizedAccessException e)
+        // {
+        //     return BadRequest(e.Message);
+        // }
     }
 
     [ApiExplorerSettings(IgnoreApi = true)]
@@ -113,7 +87,7 @@ public class AuthController : ControllerBase, IBaseController
         {
             return null;
         }
-        var user = await _userRepository.GetUserByEmail(userId);
+        var user = await _userService.GetUserByEmail(userId);
         if (user != null)
         {
             return user;
@@ -121,5 +95,4 @@ public class AuthController : ControllerBase, IBaseController
 
         return null;
     }
-
 }

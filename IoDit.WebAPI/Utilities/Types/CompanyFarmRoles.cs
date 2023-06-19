@@ -1,7 +1,8 @@
 ﻿namespace IoDit.WebAPI.Utilities.Types;
 
-public enum CompanyFarmRoles
+public enum FarmRoles
 {
-    FarmAdmin = 0,
-    FarmUser = 1,
+    Admin = 0,
+    User = 1,
+    Invited = 2
 }
