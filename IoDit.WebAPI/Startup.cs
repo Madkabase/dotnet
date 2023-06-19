@@ -56,7 +56,7 @@ public class Startup
                 connectionString = _configuration.GetConnectionString("AzureAgroditPostgresSqlServer");
             }
 
-            services.AddDbContext<IoDitDbContext>(opts =>
+            services.AddDbContext<AgroditDbContext>(opts =>
             {
                 opts.UseNpgsql(connectionString, x => x.UseNetTopologySuite());
             });

@@ -1,0 +1,31 @@
+﻿using IoDit.WebAPI.Persistence.Entities;
+using Microsoft.EntityFrameworkCore;
+
+namespace IoDit.WebAPI.Persistence;
+
+public class AgroditDbContext : DbContext
+{
+    public AgroditDbContext(DbContextOptions<AgroditDbContext> options) : base(options)
+    {
+
+    }
+
+    public DbSet<User> Users { get; set; }
+    public DbSet<RefreshToken> RefreshTokens { get; set; }
+    public DbSet<ThresholdPreset> ThresholdPresets { get; set; }
+    public DbSet<GlobalThresholdPreset> GlobalThresholdPresets { get; set; }
+    public DbSet<Threshold> Thresholds { get; set; }
+    public DbSet<Device> Devices { get; set; }
+    public DbSet<Farm> Farms { get; set; }
+    public DbSet<Field> Fields { get; set; }
+    public DbSet<SubscriptionRequest> SubscriptionRequests { get; set; }
+
+    protected override void OnModelCreating(ModelBuilder modelBuilder)
+    {
+        modelBuilder.Entity<Threshold>()
+            .HasOne(t => t.Field)
+            .WithOne(f => f.Threshold)
+            .HasForeignKey<Field>(f => f.ThresholdId)
+            .OnDelete(DeleteBehavior.Cascade);
+    }
+}
