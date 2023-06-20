@@ -1,4 +1,4 @@
-﻿namespace IoDit.WebAPI.WebAPI.Models.Auth.Register;
+﻿namespace IoDit.WebAPI.DTO.Auth;
 
 public class RegisterRequestDto
 {

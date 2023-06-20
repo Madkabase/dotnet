@@ -17,8 +17,13 @@ public static class ServiceCollectionExtension
         .AddScoped<RefreshTokenRepository>()
         .AddScoped<UtilsRepository>()
         .AddScoped<UserRepository>()
+        .AddScoped<FarmRepository>()
+        .AddScoped<FarmUserRepository>()
     // services
     .AddScoped<AuthService>()
     .AddScoped<RefreshJwtService>()
-    .AddScoped<UserService>();
+    .AddScoped<UserService>()
+    .AddScoped<FarmService>()
+    .AddScoped<FarmUserService>()
+    ;
 }

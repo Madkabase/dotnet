@@ -1,6 +1,7 @@
-﻿using IoDit.WebAPI.WebAPI.DTO.User;
+﻿
+using IoDit.WebAPI.DTO.User;
 
-namespace IoDit.WebAPI.WebAPI.Models.Auth.Login;
+namespace IoDit.WebAPI.DTO.Auth;
 
 public class LoginResponseDto
 {

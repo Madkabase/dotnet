@@ -26,15 +26,18 @@ public class RefreshJwtService
         _userService = userService;
     }
 
+    /// <summary>
+    /// Generates a new refresh token for a user
+    /// </summary>
+    /// <param name="user">The user to generate the token for</param>
+    /// <param name="deviceIdentifier">The device identifier of the user</param>
+    /// <returns>A refresh token</returns>
     public async Task<RefreshToken> GenerateRefreshToken(User user, string deviceIdentifier)
     {
-
         var userTokens = await _refreshTokenRepository.GetRefreshTokensForUser(user);
-        var expiredTokens = userTokens.Where(t => t.Expires < DateTime.UtcNow).ToList();
-        if (expiredTokens.Any())
-        {
-            await _utilsRepository.DeleteRangeAsync(expiredTokens);
-        }
+
+        await CleanExpiredTokens(userTokens);
+
         var currentToken = userTokens.FirstOrDefault(x => x.DeviceIdentifier == deviceIdentifier);
 
         bool isTokenUnique;
@@ -66,4 +69,27 @@ public class RefreshJwtService
         await _utilsRepository.CreateAsync(refreshToken);
         return refreshToken;
     }
+
+    public async Task<RefreshToken?> GetRefreshTokenByToken(String token)
+    {
+        return await _refreshTokenRepository.GetRefreshTokenByToken(token);
+    }
+
+    public async Task<bool> isExpired(RefreshToken refreshToken)
+    {
+        return refreshToken.Expires < DateTime.UtcNow;
+    }
+    /// <summary>
+    /// Deletes the expired refresh tokens in the given list 
+    /// </summary>
+    /// <param name="userTokens">The list of refresh tokens to check</param>
+    private async Task CleanExpiredTokens(List<RefreshToken> userTokens)
+    {
+        var expiredTokens = userTokens.Where(t => t.Expires < DateTime.UtcNow).ToList();
+        if (expiredTokens.Any())
+        {
+            await _utilsRepository.DeleteRangeAsync(expiredTokens);
+        }
+    }
+
 }

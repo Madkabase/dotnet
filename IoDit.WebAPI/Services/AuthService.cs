@@ -1,12 +1,13 @@
 using IoDit.WebAPI.Utilities.Helpers;
-using IoDit.WebAPI.WebAPI.Models.Auth.Login;
-using IoDit.WebAPI.WebAPI.DTO.User;
-using IoDit.WebAPI.WebAPI.DTO;
-using IoDit.WebAPI.WebAPI.Models.Auth.Register;
+
+using IoDit.WebAPI.DTO;
 using IoDit.WebAPI.Persistence.Entities;
 using IoDit.WebAPI.Utilities.Types;
-using IoDit.WebAPI.WebAPI.Models;
 using IoDit.WebAPI.Persistence.Repositories;
+using IoDit.WebAPI.DTO.Auth;
+using IoDit.WebAPI.DTO.Farm;
+using IoDit.WebAPI.Models.Auth;
+using IoDit.WebAPI.DTO.User;
 
 namespace IoDit.WebAPI.Services;
 
@@ -18,6 +19,7 @@ public class AuthService
     private readonly JwtHelper _jwtHelper;
     private readonly EmailService _emailService;
     private readonly UtilsRepository _utilsRepository;
+    private readonly FarmUserService _farmUserService;
 
 
     public AuthService(
@@ -25,7 +27,8 @@ public class AuthService
         RefreshJwtService refreshJwtService,
         JwtHelper jwtHelper,
         EmailService emailService,
-        UtilsRepository utilsRepository
+        UtilsRepository utilsRepository,
+        FarmUserService farmUserService
         )
     {
         _userService = userService;
@@ -33,6 +36,7 @@ public class AuthService
         _jwtHelper = jwtHelper;
         _emailService = emailService;
         _utilsRepository = utilsRepository;
+        _farmUserService = farmUserService;
     }
 
     /// <summary>
@@ -63,25 +67,22 @@ public class AuthService
         }
 
         var refreshToken = await _refreshJwtService.GenerateRefreshToken(user, DeviceId);
-
-        return new LoginResponseDto
+        var response = new LoginResponseDto
         {
             Token = _jwtHelper.GenerateJwtToken(email),
             RefreshToken = refreshToken.Token,
-            User = new UserDto
+            User = new DTO.User.UserDto
             {
                 Id = user.Id,
                 Email = user.Email,
                 FirstName = user.FirstName,
                 LastName = user.LastName,
-                AppRole = user.AppRole,
-                Farms = user.FarmUsers.Select(fu => fu.Farm).Select(f => new FarmDTO
-                {
-                    Id = f.Id,
-                    Name = f.Name
-                }).ToList()
+                AppRole = user.AppRole
             }
         };
+
+        response.User.Farms = await _farmUserService.getUserFarms(response.User);
+        return response;
     }
 
     /// <summary>

@@ -17,6 +17,7 @@ public class AgroditDbContext : DbContext
     public DbSet<Threshold> Thresholds { get; set; }
     public DbSet<Device> Devices { get; set; }
     public DbSet<Farm> Farms { get; set; }
+    public DbSet<FarmUser> FarmUsers { get; set; }
     public DbSet<Field> Fields { get; set; }
     public DbSet<SubscriptionRequest> SubscriptionRequests { get; set; }
 
@@ -27,5 +28,13 @@ public class AgroditDbContext : DbContext
             .WithOne(f => f.Threshold)
             .HasForeignKey<Field>(f => f.ThresholdId)
             .OnDelete(DeleteBehavior.Cascade);
+
+        modelBuilder.Entity<FarmUser>()
+        .HasOne(fu => fu.Farm)
+        .WithMany(f => f.FarmUsers);
+
+        modelBuilder.Entity<FarmUser>()
+        .HasOne(fu => fu.User)
+        .WithMany(u => u.FarmUsers);
     }
 }

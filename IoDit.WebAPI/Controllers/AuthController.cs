@@ -2,9 +2,10 @@ using System.Security.Claims;
 using IoDit.WebAPI.Persistence.Entities;
 using IoDit.WebAPI.Services;
 using IoDit.WebAPI.Utilities.Types;
-using IoDit.WebAPI.WebAPI.Models.Auth.Login;
-using IoDit.WebAPI.WebAPI.Models.Auth.Register;
+using IoDit.WebAPI.DTO.Auth;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using IoDit.WebAPI.Utilities.Helpers;
 
 namespace IoDit.WebAPI.Controllers;
 
@@ -14,20 +15,28 @@ public class AuthController : ControllerBase, IBaseController
 {
     private readonly UserService _userService;
     private readonly AuthService _authService;
+    private readonly RefreshJwtService _refreshTokenService;
+    private readonly JwtHelper _jwtHelper;
 
     public AuthController(UserService userService,
-        AuthService authService)
+        AuthService authService,
+        RefreshJwtService refreshTokenService,
+        JwtHelper jwtHelper)
     {
         _userService = userService;
         _authService = authService;
+        _refreshTokenService = refreshTokenService;
+        _jwtHelper = jwtHelper;
     }
 
+    [AllowAnonymous]
     [HttpPost("login")]
     public async Task<IActionResult> Login([FromBody] LoginRequestDto model)
     {
         try
         {
             var result = await _authService.Login(model.Email, model.Password, model.DeviceIdentifier);
+
             return Ok(result);
         }
         catch (UnauthorizedAccessException e)
@@ -38,9 +47,14 @@ public class AuthController : ControllerBase, IBaseController
         {
             return BadRequest(e.Message);
         }
-        return BadRequest("Something went wrong");
     }
 
+    /// <summary>
+    /// Registers a new user
+    /// </summary>
+    /// <param name="model">The model containing the email, password, first name and last name</param>
+    /// <returns>A registrationResponseDTO</returns>
+    [AllowAnonymous]
     [HttpPost("register")]
     public async Task<IActionResult> Register([FromBody] RegisterRequestDto model)
     {
@@ -59,22 +73,47 @@ public class AuthController : ControllerBase, IBaseController
         return Ok(result);
     }
 
+    /// <summary>
+    /// Confirms the account of a user
+    /// </summary>
+    /// <param name="model">The model containing the email and the code</param>
+    /// <returns>A confirmationResponseDTO</returns>
+    [AllowAnonymous]
     [HttpPost("confirmAccount")]
     public async Task<IActionResult> ConfirmAccount([FromBody] ConfirmCodeRequestDto model)
     {
-        // try
-        // {
         var result = await _authService.ConfirmCode(model.Email, model.Code);
         if (result.CodeConfirmationFlowType != ConfirmCodeFlowType.Success)
         {
             return BadRequest(result);
         }
         return Ok(result);
-        // }
-        // catch (UnauthorizedAccessException e)
-        // {
-        //     return BadRequest(e.Message);
-        // }
+    }
+
+    [AllowAnonymous]
+    [HttpPost("refreshAccessToken")]
+    public async Task<IActionResult> refreshAccessToken([FromBody] RefreshTokenRequestDto model)
+    {
+        var token = await _refreshTokenService.GetRefreshTokenByToken(model.RefreshToken);
+        if (token == null)
+        {
+            return BadRequest("Invalid refresh token");
+        }
+        if (token.DeviceIdentifier != model.DeviceIdentifier)
+        {
+            return BadRequest("Invalid device identifier");
+        }
+        if (await _refreshTokenService.isExpired(token))
+        {
+            return BadRequest("Refresh token expired");
+        }
+        var newToken = await _refreshTokenService.GenerateRefreshToken(token.User, token.DeviceIdentifier);
+
+        return Ok(new
+        {
+            refreshToken = newToken.Token,
+            accessToken = _jwtHelper.GenerateJwtToken(token.User.Email)
+        });
     }
 
     [ApiExplorerSettings(IgnoreApi = true)]

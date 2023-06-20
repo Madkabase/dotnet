@@ -1,4 +1,5 @@
-﻿using IoDit.WebAPI.Persistence.Entities.Base;
+﻿using IoDit.WebAPI.DTO.User;
+using IoDit.WebAPI.Persistence.Entities.Base;
 using IoDit.WebAPI.Utilities.Types;
 
 namespace IoDit.WebAPI.Persistence.Entities;
@@ -16,4 +17,16 @@ public class User : EntityBase, IEntity
     public int ConfirmationTriesCounter { get; set; }
     public ICollection<RefreshToken> RefreshTokens { get; set; } = new List<RefreshToken>();
     public ICollection<FarmUser> FarmUsers { get; set; } = new List<FarmUser>();
+
+    public static User FromDTO(UserDto userDto)
+    {
+        return new User
+        {
+            Id = userDto.Id,
+            FirstName = userDto.FirstName,
+            LastName = userDto.LastName,
+            Email = userDto.Email,
+            AppRole = userDto.AppRole,
+        };
+    }
 }

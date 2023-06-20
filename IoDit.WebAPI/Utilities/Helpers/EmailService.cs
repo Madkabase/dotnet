@@ -1,4 +1,4 @@
-﻿using IoDit.WebAPI.WebAPI.Models;
+﻿using IoDit.WebAPI.DTO;
 using MimeKit;
 
 namespace IoDit.WebAPI.Utilities.Helpers;

@@ -1,4 +1,4 @@
-﻿namespace IoDit.WebAPI.WebAPI.Models.Auth.Login;
+﻿namespace IoDit.WebAPI.DTO.Auth;
 
 public class LoginRequestDto
 {

@@ -1,6 +1,6 @@
 ﻿using IoDit.WebAPI.Utilities.Types;
 
-namespace IoDit.WebAPI.WebAPI.Models.Auth.Register;
+namespace IoDit.WebAPI.Models.Auth;
 
 public class ConfirmCodeResponseDto
 {

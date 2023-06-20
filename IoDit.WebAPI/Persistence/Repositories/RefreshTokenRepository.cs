@@ -11,12 +11,14 @@ public class RefreshTokenRepository
         DbContext = dbContext;
     }
 
-    public async Task<List<RefreshToken>> GetRefreshTokensForUser(User User)
-    {
-        return await Task.Run(() => DbContext.RefreshTokens.Where(rt => rt.User == User).ToList());
-    }
+    public async Task<List<RefreshToken>> GetRefreshTokensForUser(User User) =>
+        await Task.Run(() => DbContext.RefreshTokens.Where(rt => rt.User == User).ToList());
+
 
     public async Task<bool> DoesRefreshTokenExist(string token) =>
         await Task.Run(() => !DbContext.RefreshTokens.Any(rt => rt.Token == token));
+
+    internal async Task<RefreshToken?> GetRefreshTokenByToken(string token)
+      => await Task.Run(() => DbContext.RefreshTokens.FirstOrDefault(rt => rt.Token == token));
 
 }

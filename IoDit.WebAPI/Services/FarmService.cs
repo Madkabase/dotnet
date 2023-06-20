@@ -1,0 +1,22 @@
+using IoDit.WebAPI.DTO.Farm;
+using IoDit.WebAPI.DTO.User;
+using IoDit.WebAPI.Persistence.Entities;
+using IoDit.WebAPI.Persistence.Repositories;
+
+namespace IoDit.WebAPI.Services;
+
+public class FarmService
+{
+    FarmRepository _farmRepository;
+
+    public FarmService(FarmRepository farmRepository)
+    {
+        _farmRepository = farmRepository;
+    }
+    internal async Task<List<FarmDTO>> getUserFarms(UserDto user)
+    {
+        var farms = await _farmRepository.getUserFarms(User.FromDTO(user));
+
+        return farms.Select(f => FarmDTO.FromEntity(f.Farm)).ToList();
+    }
+}

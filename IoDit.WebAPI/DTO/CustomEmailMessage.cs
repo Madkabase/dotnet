@@ -1,4 +1,4 @@
-﻿namespace IoDit.WebAPI.WebAPI.Models;
+﻿namespace IoDit.WebAPI.DTO;
 
 public class CustomEmailMessage
 {
