@@ -10,7 +10,7 @@ resources:
 
 variables:
   # Container registry service connection established during pipeline creation
-  dockerRegistryServiceConnection: '3d189972c-6ef1-4060-864b-ca1514aa7726'
+  dockerRegistryServiceConnection: '2ac5577b-ed5e-4b75-8db2-4267406ce572'
   imageRepository: 'backend'
   containerRegistry: 'agrodit.azurecr.io'
   dockerfilePath: '$(Build.SourcesDirectory)/Dockerfile'
