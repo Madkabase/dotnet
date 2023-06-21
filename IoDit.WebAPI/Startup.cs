@@ -43,6 +43,7 @@ public class Startup
             services.AddHttpClient<LoriotApiClient>();
             services.RegisterApplicationServices(_configuration);
             var connectionString = "";
+            Console.WriteLine($"Environment: {_configuration["Environment"]}");
             if (_isDevelopment)
             {
                 connectionString = _configuration.GetConnectionString("PostgresSqlServer");
