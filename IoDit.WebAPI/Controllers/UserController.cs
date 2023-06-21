@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 using IoDit.WebAPI.DTO.User;
 using IoDit.WebAPI.Persistence.Repositories;
 using Microsoft.AspNetCore.Authorization;
+using IoDit.WebAPI.DTO;
 
 namespace IoDit.WebAPI.Controllers;
 
@@ -34,7 +35,7 @@ public class UserController : ControllerBase, IBaseController
         var user = await GetRequestDetails();
         if (user == null)
         {
-            return BadRequest("User not found");
+            return BadRequest(new ErrorResponseDTO { Message = "User not found" });
         }
         var userDto = new UserDto
         {

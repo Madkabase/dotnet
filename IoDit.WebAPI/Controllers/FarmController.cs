@@ -1,4 +1,5 @@
 using System.Security.Claims;
+using IoDit.WebAPI.DTO;
 using IoDit.WebAPI.DTO.User;
 using IoDit.WebAPI.Persistence.Entities;
 using IoDit.WebAPI.Services;
@@ -29,7 +30,7 @@ public class FarmController : ControllerBase, IBaseController
         var user = await GetRequestDetails();
         if (user == null)
         {
-            return BadRequest("User not found");
+            return BadRequest(new ErrorResponseDTO { Message = "User not found" });
         }
         var farms = await _farmService.getUserFarms(UserDto.FromEntity(user));
         return Ok(farms);

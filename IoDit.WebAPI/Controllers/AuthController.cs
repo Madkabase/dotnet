@@ -6,6 +6,7 @@ using IoDit.WebAPI.DTO.Auth;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using IoDit.WebAPI.Utilities.Helpers;
+using IoDit.WebAPI.DTO;
 
 namespace IoDit.WebAPI.Controllers;
 
@@ -41,11 +42,11 @@ public class AuthController : ControllerBase, IBaseController
         }
         catch (UnauthorizedAccessException e)
         {
-            return BadRequest(e.Message);
+            return Unauthorized(new ErrorResponseDTO { Message = e.Message });
         }
         catch (Exception e)
         {
-            return BadRequest(e.Message);
+            return BadRequest(new ErrorResponseDTO { Message = e.Message });
         }
     }
 
@@ -68,7 +69,7 @@ public class AuthController : ControllerBase, IBaseController
         var result = await _authService.Register(model.Email, model.Password, model.FirstName, model.LastName);
         if (result.RegistrationFlowType != RegistrationFlowType.NewUser)
         {
-            return BadRequest(result);
+            return BadRequest(new ErrorResponseDTO { Message = result.Message });
         }
         return Ok(result);
     }
@@ -85,7 +86,10 @@ public class AuthController : ControllerBase, IBaseController
         var result = await _authService.ConfirmCode(model.Email, model.Code);
         if (result.CodeConfirmationFlowType != ConfirmCodeFlowType.Success)
         {
-            return BadRequest(result);
+            return BadRequest(new ErrorResponseDTO
+            {
+                Message = result.Message
+            });
         }
         return Ok(result);
     }
@@ -97,15 +101,15 @@ public class AuthController : ControllerBase, IBaseController
         var token = await _refreshTokenService.GetRefreshTokenByToken(model.RefreshToken);
         if (token == null)
         {
-            return BadRequest("Invalid refresh token");
+            return Unauthorized(new ErrorResponseDTO { Message = "Invalid refresh token" });
         }
         if (token.DeviceIdentifier != model.DeviceIdentifier)
         {
-            return BadRequest("Invalid device identifier");
+            return Unauthorized(new ErrorResponseDTO { Message = "Invalid device identifier" });
         }
         if (await _refreshTokenService.isExpired(token))
         {
-            return BadRequest("Refresh token expired");
+            return Unauthorized(new ErrorResponseDTO { Message = "Refresh token expired" });
         }
         var newToken = await _refreshTokenService.GenerateRefreshToken(token.User, token.DeviceIdentifier);
 
