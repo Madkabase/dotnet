@@ -13,8 +13,10 @@ variables:
   dockerRegistryServiceConnection: '2ac5577b-ed5e-4b75-8db2-4267406ce572'
   imageRepository: 'backend'
   containerRegistry: 'agrodit.azurecr.io'
-  dockerfilePath: '$(Build.SourcesDirectory)/Dockerfile.staging'
+  dockerfilePath: '$(Build.SourcesDirectory)/Dockerfile'
   tag: '$(Build.BuildId)'
+
+  ASPNETCORE_ENVIRONMENT: 'Staging'
 
   # Agent VM image name
   vmImageName: 'ubuntu-latest'
