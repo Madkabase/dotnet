@@ -13,101 +13,109 @@ namespace IoDit.WebAPI;
 
 public class Startup
 {
-  private readonly IConfiguration _configuration;
+    private readonly IConfiguration _configuration;
 
-  private readonly bool _isDevelopment;
+    private readonly bool _isDevelopment;
+    private readonly bool _isStaging;
 
-  public Startup(IWebHostEnvironment hostEnvironment, IConfiguration configuration)
-  {
-    _configuration = configuration;
-    _isDevelopment = hostEnvironment.IsDevelopment();
-  }
-
-  [UsedImplicitly]
-  public void ConfigureServices(IServiceCollection services)
-  {
+    public Startup(IWebHostEnvironment hostEnvironment, IConfiguration configuration)
     {
-      services.AddHealthChecks();
-      services.AddControllers().AddNewtonsoftJson(options =>
-      {
-        options.SerializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore;
-        foreach (var converter in NetTopologySuite.IO.GeoJsonSerializer.Create(new GeometryFactory(new PrecisionModel(), 4326)).Converters)
+        _configuration = configuration;
+        _isDevelopment = hostEnvironment.IsDevelopment();
+        _isStaging = hostEnvironment.IsStaging();
+    }
+
+    [UsedImplicitly]
+    public void ConfigureServices(IServiceCollection services)
+    {
         {
-          options.SerializerSettings.Converters.Add(converter);
-        }
-      });
-      services.AddEndpointsApiExplorer();
-      services.AddSwaggerGen();
-      services.AddHttpClient<LoriotApiClient>();
-      services.RegisterApplicationServices(_configuration);
-      var connectionString = "";
-      if (_isDevelopment)
-      {
-        connectionString = _configuration.GetConnectionString("PostgresSqlServer");
-      } else {
-        connectionString = _configuration.GetConnectionString("AzureAgroditPostgresSqlServer");
-      }
-
-      services.AddDbContext<IoDitDbContext>(opts =>
-      {
-        opts.UseNpgsql(connectionString, x => x.UseNetTopologySuite());
-      });
-      // var issuer = configuration["JwtSettings-Issuer"];
-      // var audience = configuration["JwtSettings-Audience"];
-      var secretKey = Encoding.ASCII.GetBytes(_configuration["JwtSettings-SecretKey"]);
-      services.AddCors();
-      services.AddAuthentication(options =>
-          {
-            options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-            options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-          })
-          .AddJwtBearer(options =>
-          {
-            options.TokenValidationParameters = new TokenValidationParameters
+            services.AddHealthChecks();
+            services.AddControllers().AddNewtonsoftJson(options =>
             {
-              //todo change issuer to https://agrodit-api.azurewebsites.net on deploy 
-              //todo change audience on deploy
-              ValidateIssuer = false,
-              ValidateAudience = false,
-              ValidIssuer = "https://localhost:7161",
-              ValidAudience = "http://localhost:8100",
-              ValidateIssuerSigningKey = true,
-              ValidateLifetime = true,
-              ClockSkew = TimeSpan.Zero,
-              IssuerSigningKey = new SymmetricSecurityKey(secretKey)
-            };
-          });
-    }
-  }
+                options.SerializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore;
+                foreach (var converter in NetTopologySuite.IO.GeoJsonSerializer.Create(new GeometryFactory(new PrecisionModel(), 4326)).Converters)
+                {
+                    options.SerializerSettings.Converters.Add(converter);
+                }
+            });
+            services.AddEndpointsApiExplorer();
+            services.AddSwaggerGen();
+            services.AddHttpClient<LoriotApiClient>();
+            services.RegisterApplicationServices(_configuration);
+            var connectionString = "";
+            if (_isDevelopment)
+            {
+                connectionString = _configuration.GetConnectionString("PostgresSqlServer");
+            }
+            else if (_isStaging)
+            {
+                connectionString = _configuration.GetConnectionString("AzureAgroditPostgresSqlServer-Staging");
+            }
+            else
+            {
+                connectionString = _configuration.GetConnectionString("AzureAgroditPostgresSqlServer");
+            }
 
-  [UsedImplicitly]
-  public void Configure(IApplicationBuilder app)
-  {
+            services.AddDbContext<IoDitDbContext>(opts =>
+            {
+                opts.UseNpgsql(connectionString, x => x.UseNetTopologySuite());
+            });
+            // var issuer = configuration["JwtSettings-Issuer"];
+            // var audience = configuration["JwtSettings-Audience"];
+            var secretKey = Encoding.ASCII.GetBytes(_configuration["JwtSettings-SecretKey"]);
+            services.AddCors();
+            services.AddAuthentication(options =>
+                {
+                    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+                })
+                .AddJwtBearer(options =>
+                {
+                    options.TokenValidationParameters = new TokenValidationParameters
+                    {
+                        //todo change issuer to https://agrodit-api.azurewebsites.net on deploy 
+                        //todo change audience on deploy
+                        ValidateIssuer = false,
+                        ValidateAudience = false,
+                        ValidIssuer = "https://localhost:7161",
+                        ValidAudience = "http://localhost:8100",
+                        ValidateIssuerSigningKey = true,
+                        ValidateLifetime = true,
+                        ClockSkew = TimeSpan.Zero,
+                        IssuerSigningKey = new SymmetricSecurityKey(secretKey)
+                    };
+                });
+        }
+    }
+
+    [UsedImplicitly]
+    public void Configure(IApplicationBuilder app)
     {
-      if (_isDevelopment)
-      {
-        app.UseSwagger();
-        app.UseSwaggerUI();
-      }
-      else
-      {
-        app.UseHttpsRedirection();
-      }
+        {
+            if (_isDevelopment)
+            {
+                app.UseSwagger();
+                app.UseSwaggerUI();
+            }
+            else
+            {
+                app.UseHttpsRedirection();
+            }
 
-      app.UseCors(x =>
-      {
-        x.AllowAnyHeader();
-        x.AllowAnyMethod();
-        x.AllowAnyOrigin();
-      });
-      app.UseRouting();
-      app.UseAuthentication();
-      app.UseAuthorization();
-      app.UseEndpoints(endpoints =>
-      {
-        endpoints.MapHealthChecks("/healthz");
-        endpoints.MapControllers();
-      });
+            app.UseCors(x =>
+            {
+                x.AllowAnyHeader();
+                x.AllowAnyMethod();
+                x.AllowAnyOrigin();
+            });
+            app.UseRouting();
+            app.UseAuthentication();
+            app.UseAuthorization();
+            app.UseEndpoints(endpoints =>
+            {
+                endpoints.MapHealthChecks("/healthz");
+                endpoints.MapControllers();
+            });
+        }
     }
-  }
 }
