@@ -27,7 +27,11 @@ public class FarmDTO
             AppId = farm.AppId,
             AppName = farm.AppName,
             MaxDevices = farm.MaxDevices,
-            Users = farm.FarmUsers.Select(fu => UserFarmDto.FromEntity(fu)).ToList(),
+            Users = farm.FarmUsers.Select(fu => new UserFarmDto
+            {
+                Role = fu.FarmRole,
+                User = UserDto.FromEntity(fu.User)
+            }).ToList(),
             Fields = farm.Fields.Select(f => FieldDto.FromEntity(f)).ToList()
         };
     }

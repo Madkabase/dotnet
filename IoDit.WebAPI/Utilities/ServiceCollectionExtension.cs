@@ -19,11 +19,13 @@ public static class ServiceCollectionExtension
         .AddScoped<UserRepository>()
         .AddScoped<FarmRepository>()
         .AddScoped<FarmUserRepository>()
+        .AddScoped<FieldRepository>()
     // services
     .AddScoped<AuthService>()
     .AddScoped<RefreshJwtService>()
     .AddScoped<UserService>()
     .AddScoped<FarmService>()
     .AddScoped<FarmUserService>()
+    .AddScoped<FieldService>()
     ;
 }

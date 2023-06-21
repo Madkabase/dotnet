@@ -4,10 +4,12 @@ using IoDit.WebAPI.Services;
 using Microsoft.AspNetCore.Mvc;
 using IoDit.WebAPI.DTO.User;
 using IoDit.WebAPI.Persistence.Repositories;
+using Microsoft.AspNetCore.Authorization;
 
 namespace IoDit.WebAPI.Controllers;
 
 [ApiController]
+[Authorize]
 [Route("[controller]")]
 public class UserController : ControllerBase, IBaseController
 {
