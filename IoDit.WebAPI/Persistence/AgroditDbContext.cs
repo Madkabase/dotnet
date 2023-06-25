@@ -23,6 +23,9 @@ public class AgroditDbContext : DbContext
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
+        modelBuilder.Entity<User>()
+            .HasIndex(u => u.Email)
+            .IsUnique();
         modelBuilder.Entity<Threshold>()
             .HasOne(t => t.Field)
             .WithOne(f => f.Threshold)

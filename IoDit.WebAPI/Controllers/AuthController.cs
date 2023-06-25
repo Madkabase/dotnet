@@ -63,7 +63,7 @@ public class AuthController : ControllerBase, IBaseController
         // Check if the password and the confirm password are the same
         if (model.Password != model.ConfirmPassword)
         {
-            return BadRequest("Passwords do not match");
+            return BadRequest(new ErrorResponseDTO { Message = "Passwords do not match" });
         }
 
         var result = await _authService.Register(model.Email, model.Password, model.FirstName, model.LastName);
