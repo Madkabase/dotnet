@@ -5,30 +5,28 @@ using IoDit.WebAPI.Persistence.Entities;
 using IoDit.WebAPI.Utilities.Types;
 using IoDit.WebAPI.Persistence.Repositories;
 using IoDit.WebAPI.DTO.Auth;
-using IoDit.WebAPI.DTO.Farm;
 using IoDit.WebAPI.Models.Auth;
-using IoDit.WebAPI.DTO.User;
 
 namespace IoDit.WebAPI.Services;
 
-public class AuthService
+public class AuthService : IAuthService
 {
 
-    private readonly UserService _userService;
-    private readonly RefreshJwtService _refreshJwtService;
+    private readonly IUserService _userService;
+    private readonly IRefreshJwtService _refreshJwtService;
     private readonly JwtHelper _jwtHelper;
-    private readonly EmailService _emailService;
-    private readonly UtilsRepository _utilsRepository;
-    private readonly FarmUserService _farmUserService;
+    private readonly IEmailHelper _emailService;
+    private readonly IUtilsRepository _utilsRepository;
+    private readonly IFarmUserService _farmUserService;
 
 
     public AuthService(
-        UserService userService,
-        RefreshJwtService refreshJwtService,
+        IUserService userService,
+        IRefreshJwtService refreshJwtService,
         JwtHelper jwtHelper,
-        EmailService emailService,
-        UtilsRepository utilsRepository,
-        FarmUserService farmUserService
+        IEmailHelper emailService,
+        IUtilsRepository utilsRepository,
+        IFarmUserService farmUserService
         )
     {
         _userService = userService;

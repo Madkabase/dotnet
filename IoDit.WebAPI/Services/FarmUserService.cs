@@ -4,15 +4,15 @@ using IoDit.WebAPI.Persistence.Repositories;
 
 namespace IoDit.WebAPI.Services;
 
-public class FarmUserService
+public class FarmUserService : IFarmUserService
 {
-    FarmUserRepository _farmUserRepository;
+    IFarmUserRepository _farmUserRepository;
 
-    public FarmUserService(FarmUserRepository farmUserRepository)
+    public FarmUserService(IFarmUserRepository farmUserRepository)
     {
         _farmUserRepository = farmUserRepository;
     }
-    internal async Task<List<UserFarmDto>> getUserFarms(UserDto user)
+    public async Task<List<UserFarmDto>> getUserFarms(UserDto user)
     {
         var farms = await _farmUserRepository.getUserFarms(User.FromDTO(user));
         if (farms == null)

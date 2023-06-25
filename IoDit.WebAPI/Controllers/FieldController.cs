@@ -10,9 +10,9 @@ namespace IoDit.WebAPI.Controllers;
 [Route("[controller]")]
 public class FieldController : ControllerBase
 {
-    private readonly FieldService _fieldService;
+    private readonly IFieldService _fieldService;
 
-    public FieldController(FieldService fieldService)
+    public FieldController(IFieldService fieldService)
     {
         _fieldService = fieldService;
     }
