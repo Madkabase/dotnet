@@ -5,7 +5,7 @@ using Microsoft.IdentityModel.Tokens;
 
 namespace IoDit.WebAPI.Utilities.Helpers;
 
-public class JwtHelper
+public class JwtHelper : IJwtHelper
 {
     private readonly IConfiguration _configuration;
 

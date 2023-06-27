@@ -12,7 +12,7 @@ public static class ServiceCollectionExtension
         .AddSingleton<KeyVaultSecrets>()
         .AddSingleton<IAzureApiClient, AzureApiClient>()
         .AddSingleton<IEmailHelper, EmailHelper>()
-        .AddSingleton<JwtHelper>()
+        .AddSingleton<IJwtHelper, JwtHelper>()
     // reposoitories
         .AddScoped<IRefreshTokenRepository, RefreshTokenRepository>()
         .AddScoped<IUtilsRepository, UtilsRepository>()

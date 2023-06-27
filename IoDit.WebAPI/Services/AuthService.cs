@@ -14,7 +14,7 @@ public class AuthService : IAuthService
 
     private readonly IUserService _userService;
     private readonly IRefreshJwtService _refreshJwtService;
-    private readonly JwtHelper _jwtHelper;
+    private readonly IJwtHelper _jwtHelper;
     private readonly IEmailHelper _emailService;
     private readonly IUtilsRepository _utilsRepository;
     private readonly IFarmUserService _farmUserService;
@@ -23,7 +23,7 @@ public class AuthService : IAuthService
     public AuthService(
         IUserService userService,
         IRefreshJwtService refreshJwtService,
-        JwtHelper jwtHelper,
+        IJwtHelper jwtHelper,
         IEmailHelper emailService,
         IUtilsRepository utilsRepository,
         IFarmUserService farmUserService
