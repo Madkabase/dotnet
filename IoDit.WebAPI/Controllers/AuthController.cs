@@ -17,13 +17,13 @@ public class AuthController : ControllerBase, IBaseController
     private readonly IUserService _userService;
     private readonly IAuthService _authService;
     private readonly IRefreshJwtService _refreshTokenService;
-    private readonly JwtHelper _jwtHelper;
+    private readonly IJwtHelper _jwtHelper;
 
     public AuthController(
         IUserService userService,
         IAuthService authService,
         IRefreshJwtService refreshTokenService,
-        JwtHelper jwtHelper
+        IJwtHelper jwtHelper
     )
     {
         _userService = userService;

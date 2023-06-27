@@ -16,9 +16,10 @@ public class FarmController : ControllerBase, IBaseController
     private readonly IFarmService _farmService;
     private readonly IUserService _userService;
 
-    public FarmController(FarmService farmService,
+    public FarmController(
+        IFarmService farmService,
         IUserService userService
-        )
+    )
     {
         _farmService = farmService;
         _userService = userService;
