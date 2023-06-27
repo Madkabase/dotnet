@@ -23,4 +23,14 @@ public class FarmUserService : IFarmUserService
         return farms.Select(f => UserFarmDto.FromEntity(f)).ToList();
     }
 
+    public async Task<UserFarmDto?> GetUserFarm(long farmId, long userId)
+    {
+        var farm = await _farmUserRepository.GetUserFarm(farmId, userId);
+        if (farm == null)
+        {
+            return null;
+        }
+        return UserFarmDto.FromEntity(farm);
+    }
+
 }

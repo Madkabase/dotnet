@@ -20,4 +20,14 @@ public class FarmService : IFarmService
 
         return farms.Select(f => FarmDTO.FromEntity(f.Farm)).ToList();
     }
+
+    public async Task<FarmDTO?> getFarmDetailsById(long farmId)
+    {
+        var farm = await _farmRepository.getFarmDetailsById(farmId);
+        if (farm == null)
+        {
+            return null;
+        }
+        return FarmDTO.FromEntity(farm);
+    }
 }

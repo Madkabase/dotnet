@@ -3,6 +3,7 @@ using IoDit.WebAPI.DTO;
 using IoDit.WebAPI.DTO.User;
 using IoDit.WebAPI.Persistence.Entities;
 using IoDit.WebAPI.Services;
+using IoDit.WebAPI.Utilities.Types;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -15,14 +16,17 @@ public class FarmController : ControllerBase, IBaseController
 {
     private readonly IFarmService _farmService;
     private readonly IUserService _userService;
+    private readonly IFarmUserService _farmUserService;
 
     public FarmController(
         IFarmService farmService,
-        IUserService userService
+        IUserService userService,
+        IFarmUserService farmUserService
     )
     {
         _farmService = farmService;
         _userService = userService;
+        _farmUserService = farmUserService;
     }
 
     [HttpGet("myFarms")]
@@ -54,5 +58,23 @@ public class FarmController : ControllerBase, IBaseController
         }
 
         return null;
+    }
+
+    [HttpGet("details/{farmId}")]
+    public async Task<IActionResult> GetFarmDetails([FromRoute] int farmId)
+    {
+        var user = await GetRequestDetails();
+        if (user == null)
+        {
+            return BadRequest(new ErrorResponseDTO { Message = "User not found" });
+        }
+        var userFarm = await _farmUserService.GetUserFarm(farmId, user.Id);
+        if (userFarm == null || userFarm.Role != FarmRoles.Admin || userFarm.Role != FarmRoles.Admin || user.AppRole != AppRoles.AppAdmin)
+        {
+            return BadRequest(new ErrorResponseDTO { Message = "User does not have access to this farm" });
+        }
+
+        var farm = await _farmService.getFarmDetailsById(farmId);
+        return Ok(farm);
     }
 }
