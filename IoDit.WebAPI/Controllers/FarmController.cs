@@ -13,11 +13,11 @@ namespace IoDit.WebAPI.Controllers;
 [Route("[controller]")]
 public class FarmController : ControllerBase, IBaseController
 {
-    FarmService _farmService;
-    UserService _userService;
+    private readonly IFarmService _farmService;
+    private readonly IUserService _userService;
 
     public FarmController(FarmService farmService,
-        UserService userService
+        IUserService userService
         )
     {
         _farmService = farmService;

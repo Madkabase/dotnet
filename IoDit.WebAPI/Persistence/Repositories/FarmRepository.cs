@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace IoDit.WebAPI.Persistence.Repositories;
 
-public class FarmRepository
+public class FarmRepository : IFarmRepository
 {
     private readonly AgroditDbContext _context;
     public FarmRepository(AgroditDbContext context)
@@ -12,7 +12,7 @@ public class FarmRepository
         _context = context;
     }
 
-    internal Task<List<FarmUser>> getUserFarms(User user) =>
+    public Task<List<FarmUser>> getUserFarms(User user) =>
     Task.Run(() => _context.FarmUsers.Include(fu => fu.Farm).Where(fu => fu.User.Id == user.Id).ToList());
 
 }

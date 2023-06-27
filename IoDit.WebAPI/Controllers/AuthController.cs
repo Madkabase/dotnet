@@ -14,15 +14,17 @@ namespace IoDit.WebAPI.Controllers;
 [Route("[controller]")]
 public class AuthController : ControllerBase, IBaseController
 {
-    private readonly UserService _userService;
-    private readonly AuthService _authService;
-    private readonly RefreshJwtService _refreshTokenService;
+    private readonly IUserService _userService;
+    private readonly IAuthService _authService;
+    private readonly IRefreshJwtService _refreshTokenService;
     private readonly JwtHelper _jwtHelper;
 
-    public AuthController(UserService userService,
-        AuthService authService,
-        RefreshJwtService refreshTokenService,
-        JwtHelper jwtHelper)
+    public AuthController(
+        IUserService userService,
+        IAuthService authService,
+        IRefreshJwtService refreshTokenService,
+        JwtHelper jwtHelper
+    )
     {
         _userService = userService;
         _authService = authService;

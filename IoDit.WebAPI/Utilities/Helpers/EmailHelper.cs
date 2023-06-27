@@ -3,11 +3,11 @@ using MimeKit;
 
 namespace IoDit.WebAPI.Utilities.Helpers;
 
-public class EmailService
+public class EmailHelper : IEmailHelper
 {
     private readonly IConfiguration _configuration;
 
-    public EmailService(IConfiguration configuration)
+    public EmailHelper(IConfiguration configuration)
     {
         _configuration = configuration;
     }

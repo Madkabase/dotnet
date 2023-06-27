@@ -17,7 +17,7 @@ public class FarmDTO
 
 
 
-    internal static FarmDTO FromEntity(Persistence.Entities.Farm farm)
+    public static FarmDTO FromEntity(Persistence.Entities.Farm farm)
     {
         return new FarmDTO
         {

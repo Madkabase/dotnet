@@ -5,19 +5,19 @@ using IoDit.WebAPI.Persistence.Repositories;
 
 namespace IoDit.WebAPI.Services;
 
-public class RefreshJwtService
+public class RefreshJwtService : IRefreshJwtService
 {
 
     private readonly IConfiguration _configuration;
-    private readonly RefreshTokenRepository _refreshTokenRepository;
-    private readonly UtilsRepository _utilsRepository;
-    private readonly UserService _userService;
+    private readonly IRefreshTokenRepository _refreshTokenRepository;
+    private readonly IUtilsRepository _utilsRepository;
+    private readonly IUserService _userService;
 
     public RefreshJwtService(
         IConfiguration configuration,
-        RefreshTokenRepository refreshTokenRepository,
-        UtilsRepository utilsRepository,
-        UserService userService
+        IRefreshTokenRepository refreshTokenRepository,
+        IUtilsRepository utilsRepository,
+        IUserService userService
         )
     {
         _configuration = configuration;

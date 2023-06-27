@@ -3,7 +3,7 @@ using IoDit.WebAPI.Persistence.Entities.Base;
 
 namespace IoDit.WebAPI.Persistence.Repositories;
 
-public class UtilsRepository
+public class UtilsRepository : IUtilsRepository
 {
     public AgroditDbContext DbContext { get; }
 

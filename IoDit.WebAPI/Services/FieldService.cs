@@ -6,12 +6,12 @@ using IoDit.WebAPI.Persistence.Repositories;
 
 namespace IoDit.WebAPI.Services;
 
-public class FieldService
+public class FieldService : IFieldService
 {
 
-    FieldRepository _fileRepository;
+    IFieldRepository _fileRepository;
 
-    public FieldService(FieldRepository fieldRepository)
+    public FieldService(IFieldRepository fieldRepository)
     {
         _fileRepository = fieldRepository;
     }

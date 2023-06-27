@@ -15,13 +15,13 @@ namespace IoDit.WebAPI.Controllers;
 public class UserController : ControllerBase, IBaseController
 {
 
-    private readonly UserService _userService;
-    private readonly FarmService _farmService;
-    private readonly FarmUserService _farmUserService;
+    private readonly IUserService _userService;
+    private readonly IFarmService _farmService;
+    private readonly IFarmUserService _farmUserService;
 
-    public UserController(UserService userService,
-        FarmService farmService,
-        FarmUserService farmUserService
+    public UserController(IUserService userService,
+        IFarmService farmService,
+        IFarmUserService farmUserService
         )
     {
         _userService = userService;

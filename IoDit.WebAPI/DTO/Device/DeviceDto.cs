@@ -6,7 +6,7 @@ namespace IoDit.WebAPI.DTO.Device
         public List<DeviceDataDTO> Data { get; set; } = new List<DeviceDataDTO>();
         public string Name { get; set; } = "";
 
-        internal static DeviceDto FromEntity(Persistence.Entities.Device device)
+        public static DeviceDto FromEntity(Persistence.Entities.Device device)
         {
             return new DeviceDto
             {

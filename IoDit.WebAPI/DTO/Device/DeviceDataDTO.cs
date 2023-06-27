@@ -9,7 +9,7 @@ public class DeviceDataDTO
     public float Temperature { get; set; }
     public DateTime TimeStamp { get; set; }
 
-    internal static DeviceDataDTO FromEntity(Persistence.Entities.DeviceData deviceData)
+    public static DeviceDataDTO FromEntity(Persistence.Entities.DeviceData deviceData)
     {
         return new DeviceDataDTO
         {
@@ -22,7 +22,7 @@ public class DeviceDataDTO
         };
     }
 
-    internal static DeviceDataDTO empty()
+    public static DeviceDataDTO empty()
     {
         return new DeviceDataDTO
         {

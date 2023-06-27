@@ -2,7 +2,7 @@ using IoDit.WebAPI.Persistence.Entities;
 
 namespace IoDit.WebAPI.Persistence.Repositories;
 
-public class RefreshTokenRepository
+public class RefreshTokenRepository : IRefreshTokenRepository
 {
     public AgroditDbContext DbContext { get; }
 
@@ -18,7 +18,7 @@ public class RefreshTokenRepository
     public async Task<bool> DoesRefreshTokenExist(string token) =>
         await Task.Run(() => !DbContext.RefreshTokens.Any(rt => rt.Token == token));
 
-    internal async Task<RefreshToken?> GetRefreshTokenByToken(string token)
+    public async Task<RefreshToken?> GetRefreshTokenByToken(string token)
       => await Task.Run(() => DbContext.RefreshTokens.FirstOrDefault(rt => rt.Token == token));
 
 }
