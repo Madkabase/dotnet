@@ -8,7 +8,7 @@ namespace IoDit.WebAPI.DTO.User
     {
         public FarmRoles Role { get; set; }
         public FarmDTO Farm { get; set; } = new FarmDTO();
-        public UserDto User { get; set; } = new UserDto();
+        public UserDto? User { get; set; } = null;
 
 
         public static UserFarmDto FromEntity(FarmUser farmUser) => new UserFarmDto

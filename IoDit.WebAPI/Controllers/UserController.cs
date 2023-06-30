@@ -3,9 +3,9 @@ using IoDit.WebAPI.Persistence.Entities;
 using IoDit.WebAPI.Services;
 using Microsoft.AspNetCore.Mvc;
 using IoDit.WebAPI.DTO.User;
-using IoDit.WebAPI.Persistence.Repositories;
 using Microsoft.AspNetCore.Authorization;
 using IoDit.WebAPI.DTO;
+using IoDit.WebAPI.DTO.Farm;
 
 namespace IoDit.WebAPI.Controllers;
 
@@ -46,9 +46,18 @@ public class UserController : ControllerBase, IBaseController
             AppRole = user.AppRole
         };
         var userFarms = await _farmUserService.getUserFarms(userDto);
+
         if (userFarms != null)
         {
-            userDto.Farms = userFarms;
+            userDto.Farms = userFarms.Select(f =>
+            new UserFarmDto
+            {
+                Farm = new FarmDTO
+                {
+                    Id = f.Farm.Id,
+                    Name = f.Farm.Name,
+                }
+            }).ToList();
         }
         return Ok(userDto);
     }
