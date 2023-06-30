@@ -14,6 +14,7 @@ public class FarmDTO
     public int MaxDevices { get; set; }
     public List<UserFarmDto>? Users { get; set; }
     public List<FieldDto>? Fields { get; set; }
+    public bool isRequesterAdmin { get; set; } = false;
 
 
 

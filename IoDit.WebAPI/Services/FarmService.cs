@@ -18,7 +18,13 @@ public class FarmService : IFarmService
     {
         var farms = await _farmRepository.getUserFarms(User.FromDTO(user));
 
-        return farms.Select(f => FarmDTO.FromEntity(f.Farm)).ToList();
+        return farms.Select(f =>
+        new FarmDTO
+        {
+            Id = f.Farm.Id,
+            Name = f.Farm.Name
+        }
+        ).ToList();
     }
 
     public async Task<FarmDTO?> getFarmDetailsById(long farmId)

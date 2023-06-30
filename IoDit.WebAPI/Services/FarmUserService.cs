@@ -25,12 +25,37 @@ public class FarmUserService : IFarmUserService
 
     public async Task<UserFarmDto?> GetUserFarm(long farmId, long userId)
     {
-        var farm = await _farmUserRepository.GetUserFarm(farmId, userId);
-        if (farm == null)
+        var farmUser = await _farmUserRepository.GetUserFarm(farmId, userId);
+        if (farmUser == null)
         {
             return null;
         }
-        return UserFarmDto.FromEntity(farm);
+
+        if (farmUser.FarmRole != Utilities.Types.FarmRoles.Admin)
+        {
+            return new UserFarmDto
+            {
+                Role = farmUser.FarmRole,
+                Farm = new DTO.Farm.FarmDTO
+                {
+                    Id = farmUser.Farm.Id,
+                    Name = farmUser.Farm.Name,
+                    AppId = farmUser.Farm.AppId,
+                    AppName = farmUser.Farm.AppName,
+                    MaxDevices = farmUser.Farm.MaxDevices,
+                    Users = farmUser.Farm.FarmUsers.Select(fu => new UserFarmDto
+                    {
+                        User = new UserDto
+                        {
+                            FirstName = fu.User.FirstName,
+                            LastName = fu.User.LastName,
+                        }
+                    }).ToList(),
+                }
+            };
+        }
+
+        return UserFarmDto.FromEntity(farmUser);
     }
 
 }

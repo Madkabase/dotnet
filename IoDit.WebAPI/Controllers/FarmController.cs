@@ -1,5 +1,6 @@
 using System.Security.Claims;
 using IoDit.WebAPI.DTO;
+using IoDit.WebAPI.DTO.Farm;
 using IoDit.WebAPI.DTO.User;
 using IoDit.WebAPI.Persistence.Entities;
 using IoDit.WebAPI.Services;
@@ -41,6 +42,45 @@ public class FarmController : ControllerBase, IBaseController
         return Ok(farms);
     }
 
+    [HttpGet("details/{farmId}")]
+    public async Task<IActionResult> GetFarmDetails([FromRoute] int farmId)
+    {
+        var user = await GetRequestDetails();
+        if (user == null)
+        {
+            return BadRequest(new ErrorResponseDTO { Message = "User not found" });
+        }
+        var userFarm = await _farmUserService.GetUserFarm(farmId, user.Id);
+
+        // check if user not null or farm admin or app admin
+
+        if (userFarm == null && userFarm?.Role != FarmRoles.Admin && user.AppRole != AppRoles.AppAdmin)
+        {
+            return BadRequest(new ErrorResponseDTO { Message = "User does not have access to this farm" });
+        }
+
+        var farm = await _farmService.getFarmDetailsById(farmId);
+        if (farm == null)
+        {
+            return BadRequest(new ErrorResponseDTO { Message = "Farm not found" });
+        }
+
+        farm.isRequesterAdmin = userFarm?.Role == FarmRoles.Admin || user.AppRole == AppRoles.AppAdmin;
+
+        farm.Users?.ForEach(u =>
+        {
+            // remove farm from user dto
+            u.Farm = null;
+            // if requester is not admin, remove user details
+            if (!farm.isRequesterAdmin)
+            {
+                u.User = new UserDto { };
+            }
+        }
+        );
+        return Ok(farm);
+    }
+
     [ApiExplorerSettings(IgnoreApi = true)]
     public async Task<User?> GetRequestDetails()
     {
@@ -60,21 +100,4 @@ public class FarmController : ControllerBase, IBaseController
         return null;
     }
 
-    [HttpGet("details/{farmId}")]
-    public async Task<IActionResult> GetFarmDetails([FromRoute] int farmId)
-    {
-        var user = await GetRequestDetails();
-        if (user == null)
-        {
-            return BadRequest(new ErrorResponseDTO { Message = "User not found" });
-        }
-        var userFarm = await _farmUserService.GetUserFarm(farmId, user.Id);
-        if (userFarm == null || userFarm.Role != FarmRoles.Admin || userFarm.Role != FarmRoles.Admin || user.AppRole != AppRoles.AppAdmin)
-        {
-            return BadRequest(new ErrorResponseDTO { Message = "User does not have access to this farm" });
-        }
-
-        var farm = await _farmService.getFarmDetailsById(farmId);
-        return Ok(farm);
-    }
 }
