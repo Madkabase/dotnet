@@ -41,11 +41,6 @@ public class FieldService : IFieldService
             Id = f.Id,
             Name = f.Name,
             Geofence = f.Geofence,
-            Farm = new FarmDTO
-            {
-                Id = f.Farm.Id,
-                Name = f.Farm.Name,
-            },
             Devices = f.Devices.Select(d => new DeviceDto
             {
                 Id = d.Id,
@@ -60,7 +55,6 @@ public class FieldService : IFieldService
                     TimeStamp = dd.TimeStamp
                 }).ToList()
             }).ToList()
-
         })
         .ToList();
     }
