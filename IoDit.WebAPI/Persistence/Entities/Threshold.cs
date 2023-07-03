@@ -6,7 +6,7 @@ namespace IoDit.WebAPI.Persistence.Entities;
 
 public class Threshold : EntityBase, IEntity
 {
-    public Field Field { get; set; }
+    public Field? Field { get; set; } = null;
     public int Humidity1Min { get; set; }
     public int Humidity1Max { get; set; }
     public int Humidity2Min { get; set; }

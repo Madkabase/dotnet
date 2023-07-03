@@ -3,6 +3,7 @@ using System;
 using IoDit.WebAPI.Persistence;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using NetTopologySuite.Geometries;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
@@ -12,9 +13,10 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace IoDit.WebAPI.Migrations
 {
     [DbContext(typeof(AgroditDbContext))]
-    partial class IoDitDbContextModelSnapshot : ModelSnapshot
+    [Migration("20230703124003_threshold_nullable")]
+    partial class threshold_nullable
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -168,7 +170,7 @@ namespace IoDit.WebAPI.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<long?>("ThresholdId")
+                    b.Property<long>("ThresholdId")
                         .HasColumnType("bigint");
 
                     b.HasKey("Id");
@@ -533,7 +535,8 @@ namespace IoDit.WebAPI.Migrations
 
             modelBuilder.Entity("IoDit.WebAPI.Persistence.Entities.Threshold", b =>
                 {
-                    b.Navigation("Field");
+                    b.Navigation("Field")
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("IoDit.WebAPI.Persistence.Entities.User", b =>
