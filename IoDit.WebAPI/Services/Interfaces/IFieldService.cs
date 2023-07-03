@@ -9,6 +9,6 @@ namespace IoDit.WebAPI.Services;
 public interface IFieldService
 {
     public Task<List<FieldDto>> GetFieldsForFarm(FarmDTO farm);
-
     public Task<List<FieldDto>> GetFieldsWithDevicesForFarm(FarmDTO farm);
+    public Task<FieldDto> CreateFieldForFarm(FieldDto field, FarmDTO farm);
 }

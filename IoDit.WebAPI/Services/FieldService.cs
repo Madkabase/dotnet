@@ -9,16 +9,16 @@ namespace IoDit.WebAPI.Services;
 public class FieldService : IFieldService
 {
 
-    IFieldRepository _fileRepository;
+    IFieldRepository _fieldRepository;
 
     public FieldService(IFieldRepository fieldRepository)
     {
-        _fileRepository = fieldRepository;
+        _fieldRepository = fieldRepository;
     }
 
     public async Task<List<FieldDto>> GetFieldsForFarm(FarmDTO farm)
     {
-        var fields = await _fileRepository.GetFieldsByFarm(Farm.FromDto(farm));
+        var fields = await _fieldRepository.GetFieldsByFarm(Farm.FromDto(farm));
         if (fields == null)
         {
             return new List<FieldDto>();
@@ -29,7 +29,7 @@ public class FieldService : IFieldService
     public async Task<List<FieldDto>> GetFieldsWithDevicesForFarm(FarmDTO farm)
     {
         var farmEntity = new Farm { Id = farm.Id };
-        var fields = await _fileRepository.GetFieldsWithDevicesByFarm(farmEntity);
+        var fields = await _fieldRepository.GetFieldsWithDevicesByFarm(farmEntity);
         if (fields == null)
         {
             return new List<FieldDto>();
@@ -57,5 +57,13 @@ public class FieldService : IFieldService
             }).ToList()
         })
         .ToList();
+    }
+
+    public async Task<FieldDto> CreateFieldForFarm(FieldDto field, FarmDTO farm)
+    {
+
+        var fieldEntity = new Field { Name = field.Name, Farm = new Farm { Id = farm.Id }, Geofence = field.Geofence };
+
+        return FieldDto.FromEntity(await _fieldRepository.CreateField(fieldEntity));
     }
 }

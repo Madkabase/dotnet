@@ -26,4 +26,12 @@ public class FieldRepository : IFieldRepository
         .ThenInclude(d => d.DeviceData.Where(dd => dd.TimeStamp.ToLocalTime() > DateTime.Now.AddDays(-1).ToLocalTime()))
         .ToList());
 
+
+    public async Task<Field> CreateField(Field field)
+    {
+        field.Farm = await _context.Farms.FindAsync(field.Farm.Id);
+        await _context.Fields.AddAsync(field);
+        await _context.SaveChangesAsync();
+        return field;
+    }
 }

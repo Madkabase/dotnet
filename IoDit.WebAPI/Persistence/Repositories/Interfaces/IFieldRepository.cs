@@ -11,4 +11,6 @@ public interface IFieldRepository
 
     public Task<List<Field>> GetFieldsWithDevicesByFarm(Farm farm);
 
+    public Task<Field> CreateField(Field field);
+
 }
