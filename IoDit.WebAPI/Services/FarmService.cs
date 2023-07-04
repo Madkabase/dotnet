@@ -22,7 +22,12 @@ public class FarmService : IFarmService
         new FarmDTO
         {
             Id = f.Farm.Id,
-            Name = f.Farm.Name
+            Name = f.Farm.Name,
+            Owner = new UserDto
+            {
+                FirstName = f.User.FirstName,
+                LastName = f.User.LastName,
+            },
         }
         ).ToList();
     }
