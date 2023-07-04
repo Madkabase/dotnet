@@ -1,6 +1,7 @@
 using IoDit.WebAPI.DTO.Device;
 using IoDit.WebAPI.DTO.Farm;
 using IoDit.WebAPI.DTO.Field;
+using IoDit.WebAPI.DTO.Threshold;
 using IoDit.WebAPI.Persistence.Entities;
 using IoDit.WebAPI.Persistence.Repositories;
 
@@ -54,7 +55,20 @@ public class FieldService : IFieldService
                     Temperature = dd.Temperature,
                     TimeStamp = dd.TimeStamp
                 }).ToList()
-            }).ToList()
+            }).ToList(),
+            Threshold = f.Threshold != null ? new ThresoldDto
+            {
+                Id = f.Threshold.Id,
+                Humidity1Min = f.Threshold.Humidity1Min,
+                Humidity1Max = f.Threshold.Humidity1Max,
+                Humidity2Min = f.Threshold.Humidity2Min,
+                Humidity2Max = f.Threshold.Humidity2Max,
+                TemperatureMin = f.Threshold.TemperatureMin,
+                TemperatureMax = f.Threshold.TemperatureMax,
+                BatteryLevelMin = f.Threshold.BatteryLevelMin,
+                BatteryLevelMax = f.Threshold.BatteryLevelMax
+
+            } : null
         })
         .ToList();
     }

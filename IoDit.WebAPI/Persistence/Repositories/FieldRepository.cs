@@ -24,6 +24,7 @@ public class FieldRepository : IFieldRepository
     _context.Fields.Where(f => f.Farm.Id == farm.Id)
         .Include(f => f.Devices)
         .ThenInclude(d => d.DeviceData.Where(dd => dd.TimeStamp.ToLocalTime() > DateTime.Now.AddDays(-1).ToLocalTime()))
+        .Include(f => f.Threshold)
         .ToList());
 
 
