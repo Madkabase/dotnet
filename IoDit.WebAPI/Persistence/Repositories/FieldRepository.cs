@@ -35,4 +35,14 @@ public class FieldRepository : IFieldRepository
         await _context.SaveChangesAsync();
         return field;
     }
+
+    public async Task<Field?> GetFieldById(long id) =>
+    await _context.Fields
+
+        .Include(f => f.Threshold)
+        .Include(f => f.Devices)
+        .ThenInclude(d => d.DeviceData.Where(dd => dd.TimeStamp.ToLocalTime() > DateTime.Now.AddDays(-1).ToLocalTime()))
+        // ! needs to be fixed
+        // .Include(f => ((f).Geofence))
+        .FirstAsync(f => f.Id == id);
 }

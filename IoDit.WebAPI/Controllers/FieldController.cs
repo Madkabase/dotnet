@@ -70,6 +70,23 @@ public class FieldController : ControllerBase, IBaseController
         return Ok(field);
     }
 
+    [HttpGet("getFieldDetails/{fieldId}")]
+    public async Task<IActionResult> GetFieldDetails(int fieldId)
+    {
+        var user = await GetRequestDetails();
+        if (user == null)
+        {
+            return BadRequest(new ErrorResponseDTO { Message = "User not found" });
+        }
+
+        if (!await _fieldService.UserHasAccessToField(fieldId, user))
+        {
+            return BadRequest(new ErrorResponseDTO { Message = "User does not have access to this field" });
+        }
+        var field = await _fieldService.GetFieldById(fieldId);
+        return Ok(field);
+    }
+
     [ApiExplorerSettings(IgnoreApi = true)]
     public async Task<User?> GetRequestDetails()
     {

@@ -11,10 +11,13 @@ public class FieldService : IFieldService
 {
 
     IFieldRepository _fieldRepository;
+    IFarmUserService _farmUserService;
 
-    public FieldService(IFieldRepository fieldRepository)
+    public FieldService(IFieldRepository fieldRepository,
+        IFarmUserService farmUserService)
     {
         _fieldRepository = fieldRepository;
+        _farmUserService = farmUserService;
     }
 
     public async Task<List<FieldDto>> GetFieldsForFarm(FarmDTO farm)
@@ -79,5 +82,34 @@ public class FieldService : IFieldService
         var fieldEntity = new Field { Name = field.Name, Farm = new Farm { Id = farm.Id }, Geofence = field.Geofence };
 
         return FieldDto.FromEntity(await _fieldRepository.CreateField(fieldEntity));
+    }
+
+    public async Task<FieldDto?> GetFieldById(long id)
+    {
+        var field = await _fieldRepository.GetFieldById(id);
+        if (field == null)
+        {
+            return null;
+        }
+        return FieldDto.FromEntity(field);
+    }
+
+    public async Task<bool> UserHasAccessToField(long fieldId, User user)
+    {
+        // throw new NotImplementedException();
+
+
+
+        var field = await _fieldRepository.GetFieldById(fieldId);
+        if (field == null)
+        {
+            return false;
+        }
+
+        var d = await _farmUserService.HasAccessToFarm(field.Farm, user);
+
+
+        return d;
+        // return await _fieldRepository.UserHasAccessToField(fieldId, user);
     }
 }
