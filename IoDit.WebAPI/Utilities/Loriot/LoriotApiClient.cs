@@ -15,8 +15,7 @@ public class LoriotApiClient
     {
         _httpClient = httpClient;
         _configuration = configuration;
-        //todo replace access token with one from Fernando and put it in KeyVault
-        var accessToken = _configuration["LoriotSettings-ViktorSecretKey"];
+        var accessToken = _configuration["LoriotSettings-APIKey"];
         _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
     }
 
