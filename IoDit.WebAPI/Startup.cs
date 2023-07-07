@@ -59,7 +59,11 @@ public class Startup
 
             services.AddDbContext<AgroditDbContext>(opts =>
             {
-                opts.UseNpgsql(connectionString, x => x.UseNetTopologySuite());
+                opts.UseNpgsql(connectionString, x =>
+                x.UseNetTopologySuite()
+                .UseQuerySplittingBehavior(QuerySplittingBehavior.SplitQuery)
+                );
+
             });
             // var issuer = configuration["JwtSettings-Issuer"];
             // var audience = configuration["JwtSettings-Audience"];
