@@ -9,5 +9,5 @@ public interface IFarmUserService
 
     public Task<List<UserFarmDto>> getUserFarms(UserDto user);
     public Task<UserFarmDto?> GetUserFarm(long farmId, long userId);
-
+    public Task<bool> HasAccessToFarm(Farm farm, User user);
 }

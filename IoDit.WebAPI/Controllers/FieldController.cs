@@ -1,6 +1,8 @@
 using System.Security.Claims;
 using IoDit.WebAPI.DTO;
+using IoDit.WebAPI.DTO.Device;
 using IoDit.WebAPI.DTO.Field;
+using IoDit.WebAPI.DTO.Threshold;
 using IoDit.WebAPI.Persistence.Entities;
 using IoDit.WebAPI.Services;
 using IoDit.WebAPI.Utilities.Types;
@@ -68,6 +70,35 @@ public class FieldController : ControllerBase, IBaseController
 
         field = await _fieldService.CreateFieldForFarm(field, farm);
         return Ok(field);
+    }
+
+    [HttpGet("getFieldDetails/{fieldId}")]
+    public async Task<IActionResult> GetFieldDetails(int fieldId)
+    {
+        var user = await GetRequestDetails();
+        if (user == null)
+        {
+            return BadRequest(new ErrorResponseDTO { Message = "User not found" });
+        }
+
+        if (!await _fieldService.UserHasAccessToField(fieldId, user))
+        {
+            return BadRequest(new ErrorResponseDTO { Message = "User does not have access to this field" });
+        }
+        var field = await _fieldService.GetFieldById(fieldId);
+        if (field == null)
+        {
+            return BadRequest(new ErrorResponseDTO { Message = "Field not found" });
+        }
+        var fieldDto = new FieldDto
+        {
+            Id = field.Id,
+            Name = field.Name,
+            Geofence = field.Geofence,
+            Threshold = field.Threshold != null ? ThresholdDto.FromEntity(field.Threshold) : null,
+            Devices = field.Devices.Select(d => DeviceDto.FromEntity(d)).ToList()
+        };
+        return Ok(fieldDto);
     }
 
     [ApiExplorerSettings(IgnoreApi = true)]

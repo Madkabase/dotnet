@@ -58,4 +58,14 @@ public class FarmUserService : IFarmUserService
         return UserFarmDto.FromEntity(farmUser);
     }
 
+    public async Task<bool> HasAccessToFarm(Farm farm, User user)
+    {
+        var farmUser = await _farmUserRepository.GetUserFarm(farm.Id, user.Id);
+        if (farmUser == null)
+        {
+            return false;
+        }
+
+        return true;
+    }
 }

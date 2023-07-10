@@ -13,4 +13,6 @@ public interface IFieldRepository
 
     public Task<Field> CreateField(Field field);
 
+    public Task<Field?> GetFieldById(long id);
+
 }
