@@ -1,6 +1,6 @@
 namespace IoDit.WebAPI.DTO.Threshold
 {
-    public class ThresoldDto
+    public class ThresholdDto
     {
         public long Id { get; set; }
         public int Humidity1Min { get; set; }
@@ -12,5 +12,20 @@ namespace IoDit.WebAPI.DTO.Threshold
         public int BatteryLevelMin { get; set; }
         public int BatteryLevelMax { get; set; }
 
+        internal static ThresholdDto FromEntity(Persistence.Entities.Threshold threshold)
+        {
+            return new ThresholdDto
+            {
+                Id = threshold.Id,
+                Humidity1Min = threshold.Humidity1Min,
+                Humidity1Max = threshold.Humidity1Max,
+                Humidity2Min = threshold.Humidity2Min,
+                Humidity2Max = threshold.Humidity2Max,
+                TemperatureMin = threshold.TemperatureMin,
+                TemperatureMax = threshold.TemperatureMax,
+                BatteryLevelMin = threshold.BatteryLevelMin,
+                BatteryLevelMax = threshold.BatteryLevelMax
+            };
+        }
     }
 }

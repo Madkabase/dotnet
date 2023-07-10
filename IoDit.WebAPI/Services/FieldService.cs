@@ -59,7 +59,7 @@ public class FieldService : IFieldService
                     TimeStamp = dd.TimeStamp
                 }).ToList()
             }).ToList(),
-            Threshold = f.Threshold != null ? new ThresoldDto
+            Threshold = f.Threshold != null ? new ThresholdDto
             {
                 Id = f.Threshold.Id,
                 Humidity1Min = f.Threshold.Humidity1Min,
@@ -84,14 +84,14 @@ public class FieldService : IFieldService
         return FieldDto.FromEntity(await _fieldRepository.CreateField(fieldEntity));
     }
 
-    public async Task<FieldDto?> GetFieldById(long id)
+    public async Task<Field?> GetFieldById(long id)
     {
         var field = await _fieldRepository.GetFieldById(id);
         if (field == null)
         {
             return null;
         }
-        return FieldDto.FromEntity(field);
+        return field;
     }
 
     public async Task<bool> UserHasAccessToField(long fieldId, User user)
@@ -106,8 +106,9 @@ public class FieldService : IFieldService
             return false;
         }
 
-        var d = await _farmUserService.HasAccessToFarm(field.Farm, user);
+        // TODO : when FieldUser is created, implement this
 
+        var d = await _farmUserService.HasAccessToFarm(field.Farm, user);
 
         return d;
         // return await _fieldRepository.UserHasAccessToField(fieldId, user);

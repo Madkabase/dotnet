@@ -13,7 +13,7 @@ public class FieldDto
     public Geometry? Geofence { get; set; } = null;
     public List<DeviceDto> Devices { get; set; } = new List<DeviceDto>();
 
-    public ThresoldDto? Threshold { get; set; } = null;
+    public ThresholdDto? Threshold { get; set; } = null;
 
     public static FieldDto FromEntity(Persistence.Entities.Field field)
     {
