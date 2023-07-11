@@ -294,7 +294,7 @@ public class AuthService : IAuthService
             Subject = "Reset your password",
             RecipientName = user.FirstName + " " + user.LastName,
             //TODO : change the link to the frontend link
-            Body = "You can reset your password on this link: " + "localhost:5161" + "/reset-password?token=" + resetPasswordToken
+            Body = "You can reset your password on this link: " + "http://localhost:5161" + "/reset-password?token=" + resetPasswordToken
         });
 
 
@@ -305,4 +305,34 @@ public class AuthService : IAuthService
         };
     }
 
+    public async Task<ResetPasswordResponseDto> ResetPassword(string token, string newPassword)
+    {
+        var decodedToken = _jwtHelper.DecodeResetPasswordToken(token);
+        var user = await _userService.GetUserByEmail(decodedToken.Email);
+        if (user == null)
+        {
+            return new ResetPasswordResponseDto
+            {
+                Message = "User not found",
+                FlowType = ResetPasswordFlowType.InvalidEmail
+            };
+        }
+        if (decodedToken.Expiration.CompareTo(DateTime.Now) < 0)
+        {
+            return new ResetPasswordResponseDto
+            {
+                Message = "Token expired",
+                FlowType = ResetPasswordFlowType.TokenExpired
+            };
+        }
+
+        user.Password = PasswordEncoder.HashPassword(newPassword);
+        await _utilsRepository.UpdateAsync(user);
+
+        return new ResetPasswordResponseDto
+        {
+            Message = "Password reset",
+            FlowType = ResetPasswordFlowType.PasswordReset
+        };
+    }
 }

@@ -142,7 +142,30 @@ public class AuthController : ControllerBase, IBaseController
         return Ok(result);
     }
 
+    /// <summary>
+    /// Reset the password of the user
+    /// </summary>
+    /// <param name="model">The model containing the token, the new password and the confirmation password</param>
+    /// <returns>A resetPasswordResponseDTO</returns>
+    [AllowAnonymous]
+    [HttpPost("resetPassword")]
+    public async Task<IActionResult> ResetPassword([FromBody] ResetPasswordRequestDto model)
+    {
+        if (model.Password != model.ConfirmPassword)
+        {
+            return BadRequest(new ErrorResponseDTO { Message = "Passwords do not match" });
+        }
 
+        var result = await _authService.ResetPassword(model.Token, model.Password);
+        if (result.FlowType != ResetPasswordFlowType.PasswordReset)
+        {
+            return BadRequest(new ErrorResponseDTO
+            {
+                Message = result.Message
+            });
+        }
+        return Ok(result);
+    }
 
     [ApiExplorerSettings(IgnoreApi = true)]
     public async Task<User?> GetRequestDetails()
