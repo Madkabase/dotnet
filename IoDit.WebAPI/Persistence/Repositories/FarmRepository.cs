@@ -16,5 +16,11 @@ public class FarmRepository : IFarmRepository
     Task.Run(() => _context.FarmUsers.Include(fu => fu.Farm).Where(fu => fu.User.Id == user.Id).ToList());
 
     public Task<Farm?> getFarmDetailsById(long farmId) =>
-    Task.Run(() => _context.Farms.Include(f => f.FarmUsers).ThenInclude(fu => fu.User).Include(f => f.Fields).FirstOrDefault(f => f.Id == farmId));
+    Task.Run(() => _context.Farms
+        .Include(f => f.Owner)
+        .Include(f => f.FarmUsers)
+        .ThenInclude(fu => fu.User)
+        .Include(f => f.Fields)
+        .FirstOrDefault(f => f.Id == farmId)
+    );
 }

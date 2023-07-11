@@ -6,7 +6,7 @@ namespace IoDit.WebAPI.Persistence.Repositories;
 
 public interface IFarmRepository
 {
-    Task<Farm> getFarmDetailsById(long farmId);
+    Task<Farm?> getFarmDetailsById(long farmId);
     public Task<List<FarmUser>> getUserFarms(User user);
 
 }
