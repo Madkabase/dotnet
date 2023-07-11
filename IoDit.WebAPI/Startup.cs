@@ -6,6 +6,7 @@ using JetBrains.Annotations;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using Microsoft.OpenApi.Models;
 using NetTopologySuite.Geometries;
 using Newtonsoft.Json;
 
@@ -43,7 +44,6 @@ public class Startup
             services.AddHttpClient<LoriotApiClient>();
             services.RegisterApplicationServices(_configuration);
             var connectionString = "";
-            Console.WriteLine($"Environment: {_configuration["Environment"]}");
             if (_isDevelopment)
             {
                 connectionString = _configuration.GetConnectionString("PostgresSqlServer");
@@ -90,6 +90,35 @@ public class Startup
                         IssuerSigningKey = new SymmetricSecurityKey(secretKey)
                     };
                 });
+            // swagger configuration
+            if (_isDevelopment || _isStaging)
+            {
+                services.AddSwaggerGen((opt) =>
+                {
+                    var jwtSecurityScheme = new OpenApiSecurityScheme
+                    {
+                        BearerFormat = "JWT",
+                        Name = "JWT Authentication",
+                        In = ParameterLocation.Header,
+                        Type = SecuritySchemeType.Http,
+                        Scheme = JwtBearerDefaults.AuthenticationScheme,
+                        Description = "Get your token by login on the Auth/login route.\n Put **_ONLY_** your JWT Bearer token on textbox below!",
+
+                        Reference = new OpenApiReference
+                        {
+                            Id = JwtBearerDefaults.AuthenticationScheme,
+                            Type = ReferenceType.SecurityScheme
+                        }
+                    };
+
+                    opt.AddSecurityDefinition(jwtSecurityScheme.Reference.Id, jwtSecurityScheme);
+
+                    opt.AddSecurityRequirement(new OpenApiSecurityRequirement
+                    {
+                        { jwtSecurityScheme, Array.Empty<string>() }
+                    });
+                });
+            }
         }
     }
 
@@ -101,6 +130,14 @@ public class Startup
             {
                 app.UseSwagger();
                 app.UseSwaggerUI();
+
+                // c.AddSecurityDefinition("Bearer",
+                //     new ApiKeyScheme { In = "header",
+                //       Description = "Please enter into field the word 'Bearer' following by space and JWT", 
+                //       Name = "Authorization", Type = "apiKey" });
+                // c.AddSecurityRequirement(new Dictionary<string, IEnumerable<string>> {
+                //     { "Bearer", Enumerable.Empty<string>() },
+                // });
             }
             else
             {
