@@ -268,4 +268,41 @@ public class AuthService : IAuthService
             throw new UnauthorizedAccessException("invalidCode");
         }
     }
+
+    /// <summary>
+    /// sends a reset passwrod mail
+    /// </summary>
+    /// <param name="email">The email of the user</param>
+    /// <returns> </returns>
+    public async Task<SendResetPasswordMailResponseDto> SendResetPasswordLink(String email)
+    {
+        var user = await _userService.GetUserByEmail(email);
+        if (user == null)
+        {
+            return new SendResetPasswordMailResponseDto
+            {
+                Message = "User not found",
+                FlowType = ResetPasswordFlowType.InvalidEmail
+            };
+        }
+
+        var resetPasswordToken = _jwtHelper.GenerateResetPasswordToken(email);
+
+        await _emailService.SendEmailWithMailKitAsync(new CustomEmailMessage
+        {
+            RecipientEmail = user.Email,
+            Subject = "Reset your password",
+            RecipientName = user.FirstName + " " + user.LastName,
+            //TODO : change the link to the frontend link
+            Body = "You can reset your password on this link: " + "localhost:5161" + "/reset-password?token=" + resetPasswordToken
+        });
+
+
+        return new SendResetPasswordMailResponseDto
+        {
+            Message = "Reset password email sent",
+            FlowType = ResetPasswordFlowType.MailSent
+        };
+    }
+
 }

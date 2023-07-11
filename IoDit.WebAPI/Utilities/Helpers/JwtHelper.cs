@@ -40,4 +40,27 @@ public class JwtHelper : IJwtHelper
 
         return new JwtSecurityTokenHandler().WriteToken(sToken);
     }
+
+    public string GenerateResetPasswordToken(string email)
+    {
+        var claims = new[]
+        {
+            new Claim("sub", email),
+        };
+
+        var secret = _configuration["JwtSettings-SecretKey"];
+        var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secret));
+
+        var expires = DateTime.UtcNow.AddDays(1);
+        var tokenDesc = new SecurityTokenDescriptor()
+        {
+            Subject = new ClaimsIdentity(claims),
+            Expires = expires,
+            TokenType = "reset-password",
+        };
+
+        var sToken = new JwtSecurityTokenHandler().CreateToken(tokenDesc);
+
+        return new JwtSecurityTokenHandler().WriteToken(sToken);
+    }
 }

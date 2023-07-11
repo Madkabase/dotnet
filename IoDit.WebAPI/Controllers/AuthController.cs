@@ -122,6 +122,28 @@ public class AuthController : ControllerBase, IBaseController
         });
     }
 
+    /// <summary>
+    /// Send reset password link to the user
+    /// </summary>
+    /// <param name="model">The model containing the email</param>
+    /// <returns>A resetPasswordResponseDTO</returns>
+    [AllowAnonymous]
+    [HttpPost("sendResetMail")]
+    public async Task<IActionResult> SendResetPassword([FromBody] SendResetPasswordMailRequestDto model)
+    {
+        var result = await _authService.SendResetPasswordLink(model.Email);
+        if (result.FlowType != ResetPasswordFlowType.MailSent)
+        {
+            return BadRequest(new ErrorResponseDTO
+            {
+                Message = result.Message
+            });
+        }
+        return Ok(result);
+    }
+
+
+
     [ApiExplorerSettings(IgnoreApi = true)]
     public async Task<User?> GetRequestDetails()
     {

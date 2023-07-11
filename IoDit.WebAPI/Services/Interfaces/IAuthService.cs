@@ -13,5 +13,5 @@ public interface IAuthService
     public Task<RegisterResponseDto> Register(String email, String password, String firstName, String lastName);
 
     public Task<ConfirmCodeResponseDto> ConfirmCode(String email, long confirmationCode);
-
+    public Task<SendResetPasswordMailResponseDto> SendResetPasswordLink(string email);
 }
