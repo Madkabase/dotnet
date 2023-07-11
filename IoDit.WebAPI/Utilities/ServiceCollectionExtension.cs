@@ -20,6 +20,7 @@ public static class ServiceCollectionExtension
         .AddScoped<IFarmRepository, FarmRepository>()
         .AddScoped<IFarmUserRepository, FarmUserRepository>()
         .AddScoped<IFieldRepository, FieldRepository>()
+        .AddScoped<IThresholdPresetRepository, ThresholdPresetRepository>()
     // services
         .AddScoped<IAuthService, AuthService>()
         .AddScoped<IRefreshJwtService, RefreshJwtService>()
@@ -27,5 +28,6 @@ public static class ServiceCollectionExtension
         .AddScoped<IFarmService, FarmService>()
         .AddScoped<IFarmUserService, FarmUserService>()
         .AddScoped<IFieldService, FieldService>()
+        .AddScoped<IThresholdPresetService, ThresholdPresetService>()
     ;
 }
