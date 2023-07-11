@@ -63,4 +63,19 @@ public class JwtHelper : IJwtHelper
 
         return new JwtSecurityTokenHandler().WriteToken(sToken);
     }
+
+    public PasswordToken DecodeResetPasswordToken(string token)
+    {
+        var handler = new JwtSecurityTokenHandler();
+        var decodedToken = handler.ReadJwtToken(token);
+
+        var email = decodedToken.Claims.First(claim => claim.Type == "sub").Value;
+        var expiration = decodedToken.ValidTo;
+
+        return new PasswordToken
+        {
+            Email = email,
+            Expiration = expiration
+        };
+    }
 }
