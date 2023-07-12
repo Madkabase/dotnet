@@ -154,6 +154,16 @@ public class AuthService : IAuthService
             };
         }
 
+        // check if user is verified
+        if (user.IsVerified)
+        {
+            return new ConfirmCodeResponseDto
+            {
+                Message = "User already verified",
+                CodeConfirmationFlowType = ConfirmCodeFlowType.AlreadyVerified
+            };
+        }
+
         // verify the confirmation code
         try { await CheckUserVerification(user, confirmationCode); }
         catch (UnauthorizedAccessException e)

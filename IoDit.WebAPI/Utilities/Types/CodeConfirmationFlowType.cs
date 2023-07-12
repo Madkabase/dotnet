@@ -7,4 +7,5 @@ public enum ConfirmCodeFlowType
     Error = 2,
     InvalidCode = 3,
     UserNotFound = 4,
+    AlreadyVerified = 5,
 }
