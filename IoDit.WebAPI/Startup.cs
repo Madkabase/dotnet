@@ -158,6 +158,7 @@ public class Startup
                 endpoints.MapHealthChecks("/healthz");
                 endpoints.MapControllers();
             });
+            app.UseStaticFiles();
         }
     }
 }

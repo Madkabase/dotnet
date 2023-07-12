@@ -10,8 +10,8 @@ public class Program
     {
         CreateHostBuilder(args).Build().Run();
     }
-    
-    public static IHostBuilder CreateHostBuilder(string[] args) => 
+
+    public static IHostBuilder CreateHostBuilder(string[] args) =>
         Host.CreateDefaultBuilder(args)
             .ConfigureAppConfiguration(ConfigureDelegate)
               .ConfigureWebHostDefaults(webBuilder =>
@@ -27,7 +27,7 @@ public class Program
         var tenantId = builtConfiguration["KeyVaultConfig:TenantId"];
         var clientId = builtConfiguration["KeyVaultConfig:ClientId"];
         var clientSecret = builtConfiguration["KeyVaultConfig:ClientSecret"];
-        
+
         var credential = new ClientSecretCredential(tenantId, clientId, clientSecret);
 
         var client = new SecretClient(new Uri(kvUrl), credential);
