@@ -35,7 +35,41 @@ public class FieldController : ControllerBase, IBaseController
     public async Task<IActionResult> GetFieldsWithDevicesForFarm(int farmId)
     {
         var fields = await _fieldService.GetFieldsWithDevicesForFarm(new DTO.Farm.FarmDTO { Id = farmId });
+        fields = fields.Select(f =>
+         {
+             f.OverallMoistureLevel = CalculateOverAllMoistureLevel(f.Devices);
+             return f;
+         }).ToList();
         return Ok(fields);
+    }
+
+    private int CalculateOverAllMoistureLevel(List<DeviceDto> devices)
+    {
+        if (devices.Count == 0)
+        {
+            return 0;
+        }
+        var lastDatas = devices.Select(device =>
+        {
+            if (device.Data.Count == 0)
+            {
+                return new DeviceDataDTO
+                {
+                    Humidity1 = 0,
+                    Humidity2 = 0,
+                    BatteryLevel = 100,
+                    Temperature = 0,
+                    TimeStamp = DateTime.Now
+                };
+            }
+            return device.Data.OrderByDescending(d => d.TimeStamp).First();
+        }).ToList();
+        if (lastDatas.Count == 0)
+        {
+            return 0;
+        }
+
+        return lastDatas.Select(d => d.Humidity2).Min();
     }
 
     [HttpPost("createField")]

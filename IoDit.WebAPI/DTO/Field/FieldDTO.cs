@@ -14,6 +14,7 @@ public class FieldDto
     public List<DeviceDto> Devices { get; set; } = new List<DeviceDto>();
 
     public ThresholdDto? Threshold { get; set; } = null;
+    public long OverallMoistureLevel { get; set; } = 0;
 
     public static FieldDto FromEntity(Persistence.Entities.Field field)
     {
