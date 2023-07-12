@@ -25,8 +25,8 @@ public class FarmService : IFarmService
             Name = f.Farm.Name,
             Owner = new UserDto
             {
-                FirstName = f.User.FirstName,
-                LastName = f.User.LastName,
+                FirstName = f.Farm.Owner.FirstName,
+                LastName = f.Farm.Owner.LastName,
             },
         }
         ).ToList();
