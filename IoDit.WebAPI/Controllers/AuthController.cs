@@ -96,6 +96,9 @@ public class AuthController : ControllerBase, IBaseController
         return Ok(result);
     }
 
+    /// <summary>
+    /// let the user refresh its access token from the refresh token
+    /// </summary>
     [AllowAnonymous]
     [HttpPost("refreshAccessToken")]
     public async Task<IActionResult> refreshAccessToken([FromBody] RefreshTokenRequestDto model)

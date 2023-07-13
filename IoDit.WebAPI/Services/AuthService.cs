@@ -18,6 +18,8 @@ public class AuthService : IAuthService
     private readonly IEmailHelper _emailService;
     private readonly IUtilsRepository _utilsRepository;
     private readonly IFarmUserService _farmUserService;
+    private readonly IConfiguration _configuration;
+
 
 
     public AuthService(
@@ -26,7 +28,8 @@ public class AuthService : IAuthService
         IJwtHelper jwtHelper,
         IEmailHelper emailService,
         IUtilsRepository utilsRepository,
-        IFarmUserService farmUserService
+        IFarmUserService farmUserService,
+        IConfiguration configuration
         )
     {
         _userService = userService;
@@ -35,6 +38,7 @@ public class AuthService : IAuthService
         _emailService = emailService;
         _utilsRepository = utilsRepository;
         _farmUserService = farmUserService;
+        _configuration = configuration;
     }
 
     /// <summary>
@@ -294,7 +298,9 @@ public class AuthService : IAuthService
             Subject = "Reset your password",
             RecipientName = user.FirstName + " " + user.LastName,
             //TODO : change the link to the frontend link
-            Body = "You can reset your password on this link: " + "http://localhost:5161" + "/reset-password?token=" + resetPasswordToken
+            Body = "Hello,\n You can reset your password on this link: "
+                + _configuration["BackendUrl"] + "/ui/reset-password?token="
+                + resetPasswordToken + " \n\n Best regards, \n The Agrodit team"
         });
 
 

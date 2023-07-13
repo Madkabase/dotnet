@@ -14,7 +14,7 @@ public class Uicontroller : ControllerBase
 
     // serves reset password page with image and css
     [HttpGet]
-    [Route("resetPassword")]
+    [Route("reset-password")]
     public IActionResult ResetPassword()
     {
         return File("reset-password.html", "text/html");
