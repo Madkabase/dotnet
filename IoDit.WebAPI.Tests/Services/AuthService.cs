@@ -1,9 +1,9 @@
-using IoDit.WebAPI.DTO.Auth;
 using IoDit.WebAPI.Persistence.Entities;
 using IoDit.WebAPI.Persistence.Repositories;
 using IoDit.WebAPI.Services;
 using IoDit.WebAPI.Utilities.Helpers;
 using IoDit.WebAPI.Utilities.Types;
+using Microsoft.Extensions.Configuration;
 using Moq;
 
 namespace IoDit.WebAPI.Tests.Services;
@@ -52,8 +52,9 @@ public class AuthServiceTest
         var utilsRepository = new Mock<IUtilsRepository>();
 
         var farmUserService = new Mock<IFarmUserService>();
+        var _configuration = new Mock<IConfiguration>();
 
-        var authService = new AuthService(mockUserService.Object, refreshTokenService.Object, mockJwtHelper.Object, emailSerivce.Object, utilsRepository.Object, farmUserService.Object);
+        var authService = new AuthService(mockUserService.Object, refreshTokenService.Object, mockJwtHelper.Object, emailSerivce.Object, utilsRepository.Object, farmUserService.Object, _configuration.Object);
 
         // Act
         var result = await authService.Login(email: user.Email, password: userPassword, DeviceId: "deviceId");

@@ -96,6 +96,9 @@ public class AuthController : ControllerBase, IBaseController
         return Ok(result);
     }
 
+    /// <summary>
+    /// let the user refresh its access token from the refresh token
+    /// </summary>
     [AllowAnonymous]
     [HttpPost("refreshAccessToken")]
     public async Task<IActionResult> refreshAccessToken([FromBody] RefreshTokenRequestDto model)
@@ -120,6 +123,51 @@ public class AuthController : ControllerBase, IBaseController
             refreshToken = newToken.Token,
             accessToken = _jwtHelper.GenerateJwtToken(token.User.Email)
         });
+    }
+
+    /// <summary>
+    /// Send reset password link to the user
+    /// </summary>
+    /// <param name="model">The model containing the email</param>
+    /// <returns>A resetPasswordResponseDTO</returns>
+    [AllowAnonymous]
+    [HttpPost("sendResetMail")]
+    public async Task<IActionResult> SendResetPassword([FromBody] SendResetPasswordMailRequestDto model)
+    {
+        var result = await _authService.SendResetPasswordLink(model.Email);
+        if (result.FlowType != ResetPasswordFlowType.MailSent)
+        {
+            return BadRequest(new ErrorResponseDTO
+            {
+                Message = result.Message
+            });
+        }
+        return Ok(result);
+    }
+
+    /// <summary>
+    /// Reset the password of the user
+    /// </summary>
+    /// <param name="model">The model containing the token, the new password and the confirmation password</param>
+    /// <returns>A resetPasswordResponseDTO</returns>
+    [AllowAnonymous]
+    [HttpPost("resetPassword")]
+    public async Task<IActionResult> ResetPassword([FromBody] ResetPasswordRequestDto model)
+    {
+        if (model.Password != model.ConfirmPassword)
+        {
+            return BadRequest(new ErrorResponseDTO { Message = "Passwords do not match" });
+        }
+
+        var result = await _authService.ResetPassword(model.Token, model.Password);
+        if (result.FlowType != ResetPasswordFlowType.PasswordReset)
+        {
+            return BadRequest(new ErrorResponseDTO
+            {
+                Message = result.Message
+            });
+        }
+        return Ok(result);
     }
 
     [ApiExplorerSettings(IgnoreApi = true)]

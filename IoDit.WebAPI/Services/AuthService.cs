@@ -18,6 +18,8 @@ public class AuthService : IAuthService
     private readonly IEmailHelper _emailService;
     private readonly IUtilsRepository _utilsRepository;
     private readonly IFarmUserService _farmUserService;
+    private readonly IConfiguration _configuration;
+
 
 
     public AuthService(
@@ -26,7 +28,8 @@ public class AuthService : IAuthService
         IJwtHelper jwtHelper,
         IEmailHelper emailService,
         IUtilsRepository utilsRepository,
-        IFarmUserService farmUserService
+        IFarmUserService farmUserService,
+        IConfiguration configuration
         )
     {
         _userService = userService;
@@ -35,6 +38,7 @@ public class AuthService : IAuthService
         _emailService = emailService;
         _utilsRepository = utilsRepository;
         _farmUserService = farmUserService;
+        _configuration = configuration;
     }
 
     /// <summary>
@@ -277,5 +281,74 @@ public class AuthService : IAuthService
             await _utilsRepository.UpdateAsync(user);
             throw new UnauthorizedAccessException("invalidCode");
         }
+    }
+
+    /// <summary>
+    /// sends a reset passwrod mail
+    /// </summary>
+    /// <param name="email">The email of the user</param>
+    /// <returns> </returns>
+    public async Task<SendResetPasswordMailResponseDto> SendResetPasswordLink(String email)
+    {
+        var user = await _userService.GetUserByEmail(email);
+        if (user == null)
+        {
+            return new SendResetPasswordMailResponseDto
+            {
+                Message = "User not found",
+                FlowType = ResetPasswordFlowType.InvalidEmail
+            };
+        }
+
+        var resetPasswordToken = _jwtHelper.GenerateResetPasswordToken(email);
+
+        await _emailService.SendEmailWithMailKitAsync(new CustomEmailMessage
+        {
+            RecipientEmail = user.Email,
+            Subject = "Reset your password",
+            RecipientName = user.FirstName + " " + user.LastName,
+            //TODO : change the link to the frontend link
+            Body = "Hello,\n You can reset your password on this link: "
+                + _configuration["BackendUrl"] + "/ui/reset-password?token="
+                + resetPasswordToken + " \n\n Best regards, \n The Agrodit team"
+        });
+
+
+        return new SendResetPasswordMailResponseDto
+        {
+            Message = "Reset password email sent",
+            FlowType = ResetPasswordFlowType.MailSent
+        };
+    }
+
+    public async Task<ResetPasswordResponseDto> ResetPassword(string token, string newPassword)
+    {
+        var decodedToken = _jwtHelper.DecodeResetPasswordToken(token);
+        var user = await _userService.GetUserByEmail(decodedToken.Email);
+        if (user == null)
+        {
+            return new ResetPasswordResponseDto
+            {
+                Message = "User not found",
+                FlowType = ResetPasswordFlowType.InvalidEmail
+            };
+        }
+        if (decodedToken.Expiration.CompareTo(DateTime.Now) < 0)
+        {
+            return new ResetPasswordResponseDto
+            {
+                Message = "Token expired",
+                FlowType = ResetPasswordFlowType.TokenExpired
+            };
+        }
+
+        user.Password = PasswordEncoder.HashPassword(newPassword);
+        await _utilsRepository.UpdateAsync(user);
+
+        return new ResetPasswordResponseDto
+        {
+            Message = "Password reset",
+            FlowType = ResetPasswordFlowType.PasswordReset
+        };
     }
 }
