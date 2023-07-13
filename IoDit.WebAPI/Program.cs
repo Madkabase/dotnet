@@ -34,6 +34,10 @@ public class Program
 
         config.AddAzureKeyVault(client, new AzureKeyVaultConfigurationOptions());
 
+        config.AddEnvironmentVariables()
+              .AddUserSecrets<Program>()
+              .AddJsonFile($"appsettings.{context.HostingEnvironment.EnvironmentName}.json", optional: true, reloadOnChange: true)
+              .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true);
     }
 }
 

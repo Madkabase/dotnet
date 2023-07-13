@@ -40,7 +40,6 @@ public class Startup
                 }
             });
             services.AddEndpointsApiExplorer();
-            services.AddSwaggerGen();
             services.AddHttpClient<LoriotApiClient>();
             services.RegisterApplicationServices(_configuration);
             var connectionString = "";
@@ -82,8 +81,8 @@ public class Startup
                         //todo change audience on deploy
                         ValidateIssuer = false,
                         ValidateAudience = false,
-                        ValidIssuer = "https://localhost:7161",
-                        ValidAudience = "http://localhost:8100",
+                        ValidIssuer = _configuration["BackEndUrl"],
+                        // ValidAudience = "*",
                         ValidateIssuerSigningKey = true,
                         ValidateLifetime = true,
                         ClockSkew = TimeSpan.Zero,
@@ -126,18 +125,11 @@ public class Startup
     public void Configure(IApplicationBuilder app)
     {
         {
+
             if (_isDevelopment)
             {
                 app.UseSwagger();
                 app.UseSwaggerUI();
-
-                // c.AddSecurityDefinition("Bearer",
-                //     new ApiKeyScheme { In = "header",
-                //       Description = "Please enter into field the word 'Bearer' following by space and JWT", 
-                //       Name = "Authorization", Type = "apiKey" });
-                // c.AddSecurityRequirement(new Dictionary<string, IEnumerable<string>> {
-                //     { "Bearer", Enumerable.Empty<string>() },
-                // });
             }
             else
             {
