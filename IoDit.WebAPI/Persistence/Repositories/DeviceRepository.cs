@@ -11,10 +11,11 @@ namespace IoDit.WebAPI.Persistence.Repositories
             _dbContext = dbContext;
         }
 
-        public async Task CreateDevice(Device device)
+        public async Task<Device> CreateDevice(Device device)
         {
-            await _dbContext.Devices.AddAsync(device);
+            var res = await _dbContext.Devices.AddAsync(device);
             await _dbContext.SaveChangesAsync();
+            return res.Entity;
         }
     }
 
