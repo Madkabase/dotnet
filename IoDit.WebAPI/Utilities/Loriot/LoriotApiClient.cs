@@ -140,6 +140,27 @@ public class LoriotApiClient
         }
     }
 
+    /// <summary> 
+    /// Get a given app
+    /// </summary>
+    /// <param name="appId">The id of the app to get</param>
+    /// <returns>The app</returns>
+    public async Task<LoriotApp> GetLoriotApp(string appId)
+    {
+        var response = await _httpClient.GetAsync($"{apiBaseUrl}/app/{appId}");
+
+        if (response.IsSuccessStatusCode)
+        {
+            var content = await response.Content.ReadAsStringAsync();
+            var data = JsonConvert.DeserializeObject<LoriotApp>(content);
+            return data;
+        }
+        else
+        {
+            throw new HttpRequestException($"Error calling external API: {response.ReasonPhrase}");
+        }
+    }
+
     public async Task<List<LoriotDevice>> GetLoriotAppDevices(string appId)
     {
         var pageIndex = 1;
