@@ -143,7 +143,7 @@ public class LoriotApiClient
     public async Task<List<LoriotDevice>> GetLoriotAppDevices(string appId)
     {
         var pageIndex = 1;
-        var pageSize = 2;
+        var pageSize = 10;
         var hasMorePages = true;
         var allData = new List<LoriotDevice>();
 
@@ -175,6 +175,23 @@ public class LoriotApiClient
         }
 
         return allData;
+    }
+
+    public async Task<LoriotDevice> GetLoriotAppDevice(string appId, string deviceId)
+    {
+        var response = await _httpClient.GetAsync($"{apiBaseUrl}/app/{appId}/device/{deviceId}");
+
+        if (response.IsSuccessStatusCode)
+        {
+            var content = await response.Content.ReadAsStringAsync();
+            var data = JsonConvert.DeserializeObject<LoriotDevice>(content);
+            return data;
+        }
+        else
+        {
+            Console.WriteLine(await response.Content.ReadAsByteArrayAsync());
+            throw new HttpRequestException($"Error calling external API: {response.ReasonPhrase}", new Exception(), statusCode: response.StatusCode);
+        }
     }
 
     public async Task<LoriotDevice> CreateLoriotAppDevice(LoriotCreateAppDeviceRequestDto device, string appId)
