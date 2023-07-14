@@ -44,9 +44,9 @@ public class DeviceService : IDeviceService
                 {
                     appeui = field.Farm.AppId,
                     deveui = createDeviceRequestDto.DevEUI,
+                    joinEui = createDeviceRequestDto.JoinEUI,
                     title = createDeviceRequestDto.Name
                 }, field.Farm.AppId);
-
             }
         }
         var device = new Device
@@ -54,11 +54,10 @@ public class DeviceService : IDeviceService
             Name = createDeviceRequestDto.Name,
             Field = field,
             DevEUI = createDeviceRequestDto.DevEUI,
-            AppKey = field.Farm.AppId,
-
+            AppKey = createDeviceRequestDto.AppKey,
+            JoinEUI = createDeviceRequestDto.JoinEUI,
         };
-        await _deviceRepository.CreateDevice(device);
-        throw new NotImplementedException();
+        return await _deviceRepository.CreateDevice(device);
     }
 
 }
