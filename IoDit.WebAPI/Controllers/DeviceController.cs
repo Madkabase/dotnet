@@ -20,12 +20,25 @@ public class DeviceController : ControllerBase, IBaseController
     [HttpPost]
     public async Task<IActionResult> CreateDevice([FromBody] CreateDeviceRequestDto createDeviceRequestDto)
     {
-        var device = await _deviceService.CreateDevice(createDeviceRequestDto);
-        return Ok(device);
+        try
+        {
+            var device = await _deviceService.CreateDevice(createDeviceRequestDto);
+            return Ok(new CreateDeviceResponseDto
+            {
+                Device = new DeviceDto
+                {
+                    Id = device.Id,
+                    Name = device.Name,
+                },
+                Message = "Device created successfully"
+            });
+        }
+        catch (System.Exception)
+        {
+
+            throw;
+        }
     }
-
-    // ignore api methods below
-
 
     [ApiExplorerSettings(IgnoreApi = true)]
     public Task<User?> GetRequestDetails()
