@@ -47,7 +47,7 @@ public class FieldService : IFieldService
             Geofence = f.Geofence,
             Devices = f.Devices.Select(d => new DeviceDto
             {
-                Id = d.Id,
+                Id = d.DevEUI,
                 Name = d.Name,
                 Data = d.DeviceData.Select(dd => new DeviceDataDTO
                 {
@@ -87,6 +87,7 @@ public class FieldService : IFieldService
     public async Task<Field?> GetFieldById(long id)
     {
         var field = await _fieldRepository.GetFieldById(id);
+
         if (field == null)
         {
             return null;

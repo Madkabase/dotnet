@@ -27,7 +27,7 @@ public class DeviceController : ControllerBase, IBaseController
             {
                 Device = new DeviceDto
                 {
-                    Id = device.Id,
+                    Id = device.DevEUI,
                     Name = device.Name,
                 },
                 Message = "Device created successfully"

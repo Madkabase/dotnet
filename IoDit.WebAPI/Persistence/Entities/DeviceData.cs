@@ -4,7 +4,7 @@ namespace IoDit.WebAPI.Persistence.Entities;
 
 public class DeviceData : EntityBase, IEntity
 {
-    public Device Device { get; set; }
+    public string DevEUI { get; set; }
     public int Humidity1 { get; set; }
     public int Humidity2 { get; set; }
     public int BatteryLevel { get; set; }

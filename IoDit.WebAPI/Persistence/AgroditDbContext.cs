@@ -20,6 +20,7 @@ public class AgroditDbContext : DbContext
     public DbSet<FarmUser> FarmUsers { get; set; }
     public DbSet<Field> Fields { get; set; }
     public DbSet<SubscriptionRequest> SubscriptionRequests { get; set; }
+    public DbSet<DeviceData> DeviceData { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
