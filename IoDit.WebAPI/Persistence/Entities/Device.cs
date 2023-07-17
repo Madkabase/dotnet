@@ -1,13 +1,21 @@
-﻿using IoDit.WebAPI.Persistence.Entities.Base;
+﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
+using IoDit.WebAPI.Persistence.Entities.Base;
 
 namespace IoDit.WebAPI.Persistence.Entities;
 
-public class Device : EntityBase, IEntity
+public class Device : IEntity
 {
-    public string Name { get; set; }
+    // devEUI is the unique identifier for the device
+    [Key]
+    [Required]
+    [DatabaseGenerated(DatabaseGeneratedOption.None)]
     public string DevEUI { get; set; }
+    public string Name { get; set; }
     public string JoinEUI { get; set; }
     public string AppKey { get; set; }
     public Field Field { get; set; }
+    // virtual link on the deviceEUI property in the DeviceData class with no db link
+    [NotMapped]
     public ICollection<DeviceData> DeviceData { get; set; } = new List<DeviceData>();
 }

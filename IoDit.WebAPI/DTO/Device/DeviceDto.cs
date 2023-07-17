@@ -2,7 +2,7 @@ namespace IoDit.WebAPI.DTO.Device
 {
     public class DeviceDto
     {
-        public long Id { get; set; }
+        public string Id { get; set; }
         public List<DeviceDataDTO> Data { get; set; } = new List<DeviceDataDTO>();
         public string Name { get; set; } = "";
 
@@ -10,7 +10,7 @@ namespace IoDit.WebAPI.DTO.Device
         {
             return new DeviceDto
             {
-                Id = device.Id,
+                Id = device.DevEUI,
                 Name = device.Name,
                 Data = device.DeviceData.Select(d => DeviceDataDTO.FromEntity(d)).ToList()
             };
