@@ -40,13 +40,18 @@ public class DeviceService : IDeviceService
             if (e.StatusCode == System.Net.HttpStatusCode.NotFound)
             {
                 // create device in loriot
-                // TODO: check if this works
                 await _loriotApiClient.CreateLoriotAppDevice(new Utilities.Loriot.Types.LoriotCreateAppDeviceRequestDto
                 {
                     deveui = createDeviceRequestDto.DevEUI,
                     appeui = createDeviceRequestDto.JoinEUI,
+                    appkey = createDeviceRequestDto.AppKey,
                     title = createDeviceRequestDto.Name,
+                    description = createDeviceRequestDto.Name
                 }, field.Farm.AppId);
+            }
+            else
+            {
+                throw;
             }
         }
         var device = new Device
