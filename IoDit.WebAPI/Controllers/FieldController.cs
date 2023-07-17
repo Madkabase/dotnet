@@ -96,14 +96,15 @@ public class FieldController : ControllerBase, IBaseController
             Name = createFieldDTO.FieldName,
             Geofence = NetTopologySuite.Geometries.Geometry.DefaultFactory.CreatePolygon(
                 createFieldDTO.Coordinates.Select(c => new NetTopologySuite.Geometries.Coordinate(c[0], c[1])).ToArray()
-            )
+            ),
+            Threshold = createFieldDTO.Threshold,
         };
 
         var farm = new DTO.Farm.FarmDTO { Id = createFieldDTO.Farm.Id };
 
 
-        field = await _fieldService.CreateFieldForFarm(field, farm);
-        return Ok(field);
+        var fieldE = (await _fieldService.CreateFieldForFarm(field, farm));
+        return Ok(FieldDto.FromEntity(fieldE));
     }
 
     [HttpGet("getFieldDetails/{fieldId}")]
