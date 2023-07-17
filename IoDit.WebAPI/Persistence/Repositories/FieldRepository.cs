@@ -25,7 +25,14 @@ public class FieldRepository : IFieldRepository
         .Include(f => f.Devices)
         .Include(f => f.Threshold)
         .ToList().Select(f =>
+        new Field
         {
+            Id = f.Id,
+            Name = f.Name,
+            Geofence = f.Geofence,
+            Farm = f.Farm,
+            Threshold = f.Threshold,
+            Devices =
             f.Devices.Select(d => new Device
             {
                 DevEUI = d.DevEUI,
@@ -33,9 +40,8 @@ public class FieldRepository : IFieldRepository
                 AppKey = d.AppKey,
                 JoinEUI = d.JoinEUI,
                 Field = f,
-                DeviceData = d.DeviceData.Where(dd => dd.TimeStamp.ToLocalTime() > DateTime.Now.AddDays(-1).ToLocalTime() && dd.DevEUI == d.DevEUI).ToList()
-            });
-            return f;
+                DeviceData = _context.DeviceData.Where(dd => dd.TimeStamp.ToLocalTime() > DateTime.Now.AddDays(-1).ToLocalTime() && dd.DevEUI == d.DevEUI).ToList()
+            }).ToList() ?? new List<Device>()
         }).ToList());
 
 
