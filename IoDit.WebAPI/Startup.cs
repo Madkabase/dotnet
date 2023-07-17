@@ -126,7 +126,7 @@ public class Startup
     {
         {
 
-            if (_isDevelopment)
+            if (_isDevelopment || _isStaging)
             {
                 app.UseSwagger();
                 app.UseSwaggerUI();
