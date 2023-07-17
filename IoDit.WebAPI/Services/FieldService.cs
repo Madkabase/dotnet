@@ -10,14 +10,18 @@ namespace IoDit.WebAPI.Services;
 public class FieldService : IFieldService
 {
 
-    IFieldRepository _fieldRepository;
-    IFarmUserService _farmUserService;
+    private readonly IFieldRepository _fieldRepository;
+    private readonly IFarmUserService _farmUserService;
+    private readonly IThresholdService _thresholdService;
 
     public FieldService(IFieldRepository fieldRepository,
-        IFarmUserService farmUserService)
+        IFarmUserService farmUserService,
+        IThresholdService thresholdService
+    )
     {
         _fieldRepository = fieldRepository;
         _farmUserService = farmUserService;
+        _thresholdService = thresholdService;
     }
 
     public async Task<List<FieldDto>> GetFieldsForFarm(FarmDTO farm)
@@ -76,12 +80,22 @@ public class FieldService : IFieldService
         .ToList();
     }
 
-    public async Task<FieldDto> CreateFieldForFarm(FieldDto field, FarmDTO farm)
+    public async Task<Field> CreateFieldForFarm(FieldDto field, FarmDTO farm)
     {
 
-        var fieldEntity = new Field { Name = field.Name, Farm = new Farm { Id = farm.Id }, Geofence = field.Geofence };
-
-        return FieldDto.FromEntity(await _fieldRepository.CreateField(fieldEntity));
+        var fieldEntity = new Field
+        {
+            Name = field.Name,
+            Farm = new Farm { Id = farm.Id },
+            Geofence = field.Geofence!,
+            Threshold = new Threshold { }
+        };
+        fieldEntity = await _fieldRepository.CreateField(fieldEntity);
+        if (field.Threshold != null)
+        {
+            await _thresholdService.CreateThreshold(field.Threshold, fieldEntity);
+        }
+        return fieldEntity;
     }
 
     public async Task<Field?> GetFieldById(long id)
