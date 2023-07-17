@@ -23,9 +23,20 @@ public class FieldRepository : IFieldRepository
     await Task.Run(() =>
     _context.Fields.Where(f => f.Farm.Id == farm.Id)
         .Include(f => f.Devices)
-        .ThenInclude(d => d.DeviceData.Where(dd => dd.TimeStamp.ToLocalTime() > DateTime.Now.AddDays(-1).ToLocalTime()))
         .Include(f => f.Threshold)
-        .ToList());
+        .ToList().Select(f =>
+        {
+            f.Devices.Select(d => new Device
+            {
+                DevEUI = d.DevEUI,
+                Name = d.Name,
+                AppKey = d.AppKey,
+                JoinEUI = d.JoinEUI,
+                Field = f,
+                DeviceData = d.DeviceData.Where(dd => dd.TimeStamp.ToLocalTime() > DateTime.Now.AddDays(-1).ToLocalTime() && dd.DevEUI == d.DevEUI).ToList()
+            });
+            return f;
+        }).ToList());
 
 
     public async Task<Field> CreateField(Field field)
@@ -37,10 +48,28 @@ public class FieldRepository : IFieldRepository
     }
 
     public async Task<Field?> GetFieldById(long id) =>
-    await _context.Fields
+    await Task.Run(() => _context.Fields
+        .Where(f => f.Id == id)
         .Include(f => f.Farm)
         .Include(f => f.Threshold)
-        .Include(f => f.Devices)
-        .ThenInclude(d => d.DeviceData.Where(dd => dd.TimeStamp.ToLocalTime() > DateTime.Now.AddDays(-1).ToLocalTime()))
-        .FirstAsync(f => f.Id == id);
+        .Include(f => f.Devices).ToList()
+        .Select(f =>
+        new Field
+        {
+            Id = f.Id,
+            Name = f.Name,
+            Geofence = f.Geofence,
+            Farm = f.Farm,
+            Threshold = f.Threshold,
+            Devices =
+            f.Devices.Select(d => new Device
+            {
+                DevEUI = d.DevEUI,
+                Name = d.Name,
+                AppKey = d.AppKey,
+                JoinEUI = d.JoinEUI,
+                Field = f,
+                DeviceData = _context.DeviceData.Where(dd => dd.TimeStamp.ToLocalTime() > DateTime.Now.AddDays(-1).ToLocalTime() && dd.DevEUI == d.DevEUI).ToList()
+            }).ToList()
+        }).First(f => f.Id == id));
 }
