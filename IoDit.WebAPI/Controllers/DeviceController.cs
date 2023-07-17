@@ -33,6 +33,13 @@ public class DeviceController : ControllerBase, IBaseController
                 Message = "Device created successfully"
             });
         }
+        catch (HttpRequestException e)
+        {
+            return BadRequest(new CreateDeviceResponseDto
+            {
+                Message = e.Message
+            });
+        }
         catch (System.Exception)
         {
 

@@ -210,7 +210,7 @@ public class LoriotApiClient
         }
         else
         {
-            Console.WriteLine(await response.Content.ReadAsByteArrayAsync());
+            Console.WriteLine(await response.Content.ReadAsStringAsync());
             throw new HttpRequestException($"Error calling external API: {response.ReasonPhrase}", new Exception(), statusCode: response.StatusCode);
         }
     }
@@ -221,16 +221,16 @@ public class LoriotApiClient
         var stringContent = new StringContent(jsonPayload, Encoding.UTF8, "application/json");
         var response = await _httpClient.PostAsync($"{apiBaseUrl}/app/{appId}/devices/otaa", stringContent);
 
+        var content = await response.Content.ReadAsStringAsync();
         if (response.IsSuccessStatusCode)
         {
-            var content = await response.Content.ReadAsStringAsync();
-            var data = JsonConvert.DeserializeObject<LoriotDevice>(content);
-            return data;
+            return JsonConvert.DeserializeObject<LoriotDevice>(content)!;
         }
-        else
-        {
-            throw new HttpRequestException($"Error calling external API: {response.ReasonPhrase}");
-        }
+
+        content = await response.Content.ReadAsStringAsync();
+        var data = JsonConvert.DeserializeObject<LoriotError>(content);
+
+        throw new HttpRequestException(data!.error ?? "", null, response.StatusCode);
     }
 
     public async Task<string> DeleteLoriotAppDevice(string appId, string deviceId)
