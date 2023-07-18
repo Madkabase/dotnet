@@ -81,6 +81,32 @@ public class FarmController : ControllerBase, IBaseController
         return Ok(farm);
     }
 
+    [HttpPut("addFarmer/{farmId}")]
+    public async Task<IActionResult> AddFarmer([FromRoute] int farmId, [FromBody] AddFarmerDTO addFarmerDTO)
+    {
+        var user = await GetRequestDetails();
+        if (user == null)
+        {
+            return Unauthorized(new ErrorResponseDTO { Message = "User not found" });
+        }
+        var userFarm = await _farmUserService.GetUserFarm(farmId, user.Id);
+        if (userFarm == null || userFarm.Role != FarmRoles.Admin)
+        {
+            return Unauthorized(new ErrorResponseDTO { Message = "User does not have access to this farm" });
+        }
+        var userToAdd = await _userService.GetUserByEmail(addFarmerDTO.UserEmail);
+        if (userToAdd == null)
+        {
+            return BadRequest(new ErrorResponseDTO { Message = "User not found" });
+        }
+        FarmUser userFarmToAdd = await _farmUserService.AddFarmer(userFarm.Farm, userToAdd, addFarmerDTO.Role);
+        if (userFarmToAdd == null)
+        {
+            return BadRequest(new ErrorResponseDTO { Message = "User already added to this farm" });
+        }
+        return Ok();
+    }
+
     [ApiExplorerSettings(IgnoreApi = true)]
     public async Task<User?> GetRequestDetails()
     {

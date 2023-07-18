@@ -16,4 +16,7 @@ public class FarmUserRepository : IFarmUserRepository
 
     public async Task<FarmUser?> GetUserFarm(long farmId, long userId) =>
         await Task.Run(() => _context.FarmUsers.Include(fu => fu.Farm).Include(fu => fu.User).FirstOrDefaultAsync(fu => fu.Farm.Id == farmId && fu.User.Id == userId));
+
+    public async Task<FarmUser> AddFarmUser(FarmUser farmUser) =>
+        await Task.Run(() => _context.FarmUsers.Add(farmUser).Entity);
 }

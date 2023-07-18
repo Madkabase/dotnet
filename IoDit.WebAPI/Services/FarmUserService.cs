@@ -68,4 +68,16 @@ public class FarmUserService : IFarmUserService
 
         return true;
     }
+
+    public async Task<FarmUser> AddFarmer(DTO.Farm.FarmDTO farm, User userToAdd, Utilities.Types.FarmRoles role)
+    {
+        var farmUser = new FarmUser
+        {
+            Farm = Farm.FromDto(farm),
+            User = userToAdd,
+            FarmRole = role,
+        };
+
+        return await _farmUserRepository.AddFarmUser(farmUser);
+    }
 }
