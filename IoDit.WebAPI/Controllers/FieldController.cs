@@ -86,7 +86,7 @@ public class FieldController : ControllerBase, IBaseController
         {
             return BadRequest(new ErrorResponseDTO { Message = "User does not have access to this farm" });
         }
-        if (userFarm.Role != FarmRoles.Admin && AppRoles.AppAdmin != user.AppRole)
+        if (userFarm.FarmRole != FarmRoles.Admin && AppRoles.AppAdmin != user.AppRole)
         {
             return BadRequest(new ErrorResponseDTO { Message = "User does not have access to this farm" });
         }
