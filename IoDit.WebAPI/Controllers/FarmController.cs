@@ -81,7 +81,7 @@ public class FarmController : ControllerBase, IBaseController
         return Ok(farm);
     }
 
-    [HttpPut("addFarmer/{farmId}")]
+    [HttpPut("{farmId}/addFarmer")]
     public async Task<IActionResult> AddFarmer([FromRoute] int farmId, [FromBody] AddFarmerDTO addFarmerDTO)
     {
         var user = await GetRequestDetails();
@@ -89,21 +89,31 @@ public class FarmController : ControllerBase, IBaseController
         {
             return Unauthorized(new ErrorResponseDTO { Message = "User not found" });
         }
+        // check if user is farm admin
         var userFarm = await _farmUserService.GetUserFarm(farmId, user.Id);
         if (userFarm == null || userFarm.FarmRole != FarmRoles.Admin)
         {
             return Unauthorized(new ErrorResponseDTO { Message = "User does not have access to this farm" });
         }
+        // check if user to add exists  
         var userToAdd = await _userService.GetUserByEmail(addFarmerDTO.UserEmail);
         if (userToAdd == null)
         {
             return BadRequest(new ErrorResponseDTO { Message = "User not found" });
         }
+        // chek if user is already part of the farm
+        var newUserFarm = await _farmUserService.GetUserFarm(farmId, userToAdd.Id);
+        if (newUserFarm != null)
+        {
+            return BadRequest(new ErrorResponseDTO { Message = "User is already part of the farm" });
+        }
+
         FarmUser userFarmToAdd = await _farmUserService.AddFarmer(userFarm.Farm, userToAdd, addFarmerDTO.Role);
         if (userFarmToAdd == null)
         {
-            return BadRequest(new ErrorResponseDTO { Message = "User already added to this farm" });
+            return BadRequest(new ErrorResponseDTO { Message = "Error adding user to farm" });
         }
+
         return Ok();
     }
 
