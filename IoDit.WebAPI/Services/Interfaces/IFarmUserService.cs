@@ -13,5 +13,4 @@ public interface IFarmUserService
     public Task<FarmUser?> GetUserFarm(long farmId, long userId);
     public Task<bool> HasAccessToFarm(Farm farm, User user);
     Task<FarmUser> AddFarmer(Farm farm, User userToAdd, FarmRoles role);
-    Task<List<User>> GetUsersNotFromFarmByQuery(int farmId, string? search);
 }

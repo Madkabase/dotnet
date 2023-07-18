@@ -107,24 +107,6 @@ public class FarmController : ControllerBase, IBaseController
         return Ok();
     }
 
-    [HttpGet("/{farmId}/userNotFrom")]
-    public async Task<IActionResult> GetUsersNotFromFarm([FromRoute] int farmId, [FromQuery] string? search)
-    {
-        var user = await GetRequestDetails();
-        if (user == null)
-        {
-            return Unauthorized(new ErrorResponseDTO { Message = "User not found" });
-        }
-        var userFarm = await _farmUserService.GetUserFarm(farmId, user.Id);
-        if (userFarm == null || userFarm.FarmRole != FarmRoles.Admin)
-        {
-            return Unauthorized(new ErrorResponseDTO { Message = "User does not have access to this farm" });
-        }
-
-        var users = await _farmUserService.GetUsersNotFromFarmByQuery(farmId, search);
-        return Ok(users);
-    }
-
     [ApiExplorerSettings(IgnoreApi = true)]
     public async Task<User?> GetRequestDetails()
     {

@@ -83,9 +83,4 @@ public class FarmUserService : IFarmUserService
 
         return await _farmUserRepository.AddFarmUser(farmUser);
     }
-
-    public async Task<List<User>> GetUsersNotFromFarmByQuery(int farmId, string? search)
-    {
-        return await _farmUserRepository.GetUsersNotFromFarmByQuery(farmId, search);
-    }
 }
