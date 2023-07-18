@@ -22,6 +22,15 @@ public class DeviceController : ControllerBase, IBaseController
     {
         try
         {
+            var getDevice = await _deviceService.GetDeviceByDevEUI(createDeviceRequestDto.DevEUI);
+            if (getDevice != null)
+            {
+                return BadRequest(new CreateDeviceResponseDto
+                {
+                    Message = "Device already bounded to a field"
+                });
+            }
+
             var device = await _deviceService.CreateDevice(createDeviceRequestDto);
             return Ok(new CreateDeviceResponseDto
             {
