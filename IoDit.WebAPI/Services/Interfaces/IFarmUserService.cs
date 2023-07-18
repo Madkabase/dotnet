@@ -10,7 +10,8 @@ public interface IFarmUserService
 {
 
     public Task<List<UserFarmDto>> getUserFarms(UserDto user);
-    public Task<UserFarmDto?> GetUserFarm(long farmId, long userId);
+    public Task<FarmUser?> GetUserFarm(long farmId, long userId);
     public Task<bool> HasAccessToFarm(Farm farm, User user);
-    Task<FarmUser> AddFarmer(FarmDTO farm, User userToAdd, FarmRoles role);
+    Task<FarmUser> AddFarmer(Farm farm, User userToAdd, FarmRoles role);
+    Task<List<User>> GetUsersNotFromFarmByQuery(int farmId, string? search);
 }

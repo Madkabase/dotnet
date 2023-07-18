@@ -23,7 +23,7 @@ public class FarmUserService : IFarmUserService
         return farms.Select(f => UserFarmDto.FromEntity(f)).ToList();
     }
 
-    public async Task<UserFarmDto?> GetUserFarm(long farmId, long userId)
+    public async Task<FarmUser?> GetUserFarm(long farmId, long userId)
     {
         var farmUser = await _farmUserRepository.GetUserFarm(farmId, userId);
         if (farmUser == null)
@@ -33,29 +33,32 @@ public class FarmUserService : IFarmUserService
 
         if (farmUser.FarmRole != Utilities.Types.FarmRoles.Admin)
         {
-            return new UserFarmDto
+            return new FarmUser
             {
-                Role = farmUser.FarmRole,
-                Farm = new DTO.Farm.FarmDTO
+
+                FarmRole = farmUser.FarmRole,
+                Farm = new Farm
                 {
                     Id = farmUser.Farm.Id,
                     Name = farmUser.Farm.Name,
                     AppId = farmUser.Farm.AppId,
                     AppName = farmUser.Farm.AppName,
                     MaxDevices = farmUser.Farm.MaxDevices,
-                    Users = farmUser.Farm.FarmUsers.Select(fu => new UserFarmDto
+
+                    FarmUsers = farmUser.Farm.FarmUsers.Select(fu => new FarmUser
                     {
-                        User = new UserDto
+                        FarmRole = fu.FarmRole,
+                        User = new User
                         {
                             FirstName = fu.User.FirstName,
                             LastName = fu.User.LastName,
                         }
-                    }).ToList(),
+                    }).ToList()
                 }
             };
         }
 
-        return UserFarmDto.FromEntity(farmUser);
+        return farmUser;
     }
 
     public async Task<bool> HasAccessToFarm(Farm farm, User user)
@@ -69,15 +72,20 @@ public class FarmUserService : IFarmUserService
         return true;
     }
 
-    public async Task<FarmUser> AddFarmer(DTO.Farm.FarmDTO farm, User userToAdd, Utilities.Types.FarmRoles role)
+    public async Task<FarmUser> AddFarmer(Farm farm, User userToAdd, Utilities.Types.FarmRoles role)
     {
         var farmUser = new FarmUser
         {
-            Farm = Farm.FromDto(farm),
+            Farm = farm,
             User = userToAdd,
             FarmRole = role,
         };
 
         return await _farmUserRepository.AddFarmUser(farmUser);
+    }
+
+    public async Task<List<User>> GetUsersNotFromFarmByQuery(int farmId, string? search)
+    {
+        return await _farmUserRepository.GetUsersNotFromFarmByQuery(farmId, search);
     }
 }

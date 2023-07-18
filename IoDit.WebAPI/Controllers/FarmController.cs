@@ -54,7 +54,7 @@ public class FarmController : ControllerBase, IBaseController
 
         // check if user not null or farm admin or app admin
 
-        if (userFarm == null && userFarm?.Role != FarmRoles.Admin && user.AppRole != AppRoles.AppAdmin)
+        if (userFarm == null && userFarm?.FarmRole != FarmRoles.Admin && user.AppRole != AppRoles.AppAdmin)
         {
             return BadRequest(new ErrorResponseDTO { Message = "User does not have access to this farm" });
         }
@@ -65,7 +65,7 @@ public class FarmController : ControllerBase, IBaseController
             return BadRequest(new ErrorResponseDTO { Message = "Farm not found" });
         }
 
-        farm.isRequesterAdmin = userFarm?.Role == FarmRoles.Admin || user.AppRole == AppRoles.AppAdmin;
+        farm.isRequesterAdmin = userFarm?.FarmRole == FarmRoles.Admin || user.AppRole == AppRoles.AppAdmin;
 
         farm.Users?.ForEach(u =>
         {
@@ -90,7 +90,7 @@ public class FarmController : ControllerBase, IBaseController
             return Unauthorized(new ErrorResponseDTO { Message = "User not found" });
         }
         var userFarm = await _farmUserService.GetUserFarm(farmId, user.Id);
-        if (userFarm == null || userFarm.Role != FarmRoles.Admin)
+        if (userFarm == null || userFarm.FarmRole != FarmRoles.Admin)
         {
             return Unauthorized(new ErrorResponseDTO { Message = "User does not have access to this farm" });
         }
@@ -105,6 +105,24 @@ public class FarmController : ControllerBase, IBaseController
             return BadRequest(new ErrorResponseDTO { Message = "User already added to this farm" });
         }
         return Ok();
+    }
+
+    [HttpGet("/{farmId}/userNotFrom")]
+    public async Task<IActionResult> GetUsersNotFromFarm([FromRoute] int farmId, [FromQuery] string? search)
+    {
+        var user = await GetRequestDetails();
+        if (user == null)
+        {
+            return Unauthorized(new ErrorResponseDTO { Message = "User not found" });
+        }
+        var userFarm = await _farmUserService.GetUserFarm(farmId, user.Id);
+        if (userFarm == null || userFarm.FarmRole != FarmRoles.Admin)
+        {
+            return Unauthorized(new ErrorResponseDTO { Message = "User does not have access to this farm" });
+        }
+
+        var users = await _farmUserService.GetUsersNotFromFarmByQuery(farmId, search);
+        return Ok(users);
     }
 
     [ApiExplorerSettings(IgnoreApi = true)]
@@ -125,5 +143,7 @@ public class FarmController : ControllerBase, IBaseController
 
         return null;
     }
+
+
 
 }
