@@ -23,6 +23,11 @@ public class DeviceService : IDeviceService
         _loriotApiClient = loriotApiClient;
     }
 
+    public async Task<Device?> GetDeviceByDevEUI(string devEUI)
+    {
+        return await _deviceRepository.GetDeviceByDevEUI(devEUI);
+    }
+
     public async Task<Device> CreateDevice(CreateDeviceRequestDto createDeviceRequestDto)
     {
         var field = await _fieldService.GetFieldById(createDeviceRequestDto.FieldId);
@@ -31,12 +36,15 @@ public class DeviceService : IDeviceService
             throw new Exception("Field not found");
         }
 
+        // check if device already exists in loriot for this app
         try
         {
+
             await _loriotApiClient.GetLoriotAppDevice(field.Farm.AppId, createDeviceRequestDto.DevEUI);
         }
         catch (HttpRequestException e)
         {
+
             if (e.StatusCode == System.Net.HttpStatusCode.NotFound)
             {
                 // create device in loriot
