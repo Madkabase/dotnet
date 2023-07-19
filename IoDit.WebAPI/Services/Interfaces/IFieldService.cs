@@ -12,7 +12,19 @@ public interface IFieldService
     public Task<List<FieldDto>> GetFieldsWithDevicesForFarm(FarmDTO farm);
     public Task<Field> CreateFieldForFarm(FieldDto field, FarmDTO farm);
     public Task<Field?> GetFieldById(long id);
-
+    /// <summary>
+    /// checks if a given user has access to a given field
+    /// </summary>
+    /// <param name="fieldId">the id of the field</param>
+    /// <param name="user">the user to check</param>
+    /// <returns>true if the user has access to the field, false otherwise</returns>
     public Task<bool> UserHasAccessToField(long fieldId, User user);
+    /// <summary>
+    /// checks if a given user can change a given field
+    /// </summary>
+    /// <param name="fieldId">the id of the field</param>
+    /// <param name="user">the user to check</param>
+    /// <returns>true if the user can change the field, false otherwise</returns>
+    public Task<bool> UserCanChangeField(long fieldId, User user);
 
 }

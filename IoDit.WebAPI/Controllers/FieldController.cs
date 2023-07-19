@@ -19,16 +19,19 @@ public class FieldController : ControllerBase, IBaseController
     private readonly IUserService _userService;
     private readonly IFieldService _fieldService;
     private readonly IFarmUserService _farmUserService;
+    private readonly IThresholdService _thresholdService;
 
     public FieldController(
         IFieldService fieldService,
         IUserService userService,
-        IFarmUserService farmUserService
+        IFarmUserService farmUserService,
+        IThresholdService thresholdService
     )
     {
         _fieldService = fieldService;
         _userService = userService;
         _farmUserService = farmUserService;
+        _thresholdService = thresholdService;
     }
 
     [HttpGet("getFieldsWithDevicesForFarm/{farmId}")]
@@ -134,6 +137,31 @@ public class FieldController : ControllerBase, IBaseController
             Devices = field.Devices.Select(d => DeviceDto.FromEntity(d)).ToList()
         };
         return Ok(fieldDto);
+    }
+
+    [HttpPatch("{fieldId}/updateThreshold")]
+    public async Task<IActionResult> UpdateThreshold(int fieldId, [FromBody] ThresholdDto thresholdDto)
+    {
+        var user = await GetRequestDetails();
+        if (user == null)
+        {
+            return NotFound(new ErrorResponseDTO { Message = "User not found" });
+        }
+        var field = await _fieldService.GetFieldById(fieldId);
+        if (field == null)
+        {
+            return NotFound(new ErrorResponseDTO { Message = "Field not found" });
+        }
+        if (!await _fieldService.UserCanChangeField(fieldId, user))
+        {
+            return Unauthorized(new ErrorResponseDTO { Message = "User does no right to modify field" });
+        }
+        var threshold = await _thresholdService.UpdateThreshold(thresholdDto);
+        if (threshold == null)
+        {
+            return NotFound(new ErrorResponseDTO { Message = "Threshold not found" });
+        }
+        return Ok(ThresholdDto.FromEntity(threshold));
     }
 
     [ApiExplorerSettings(IgnoreApi = true)]

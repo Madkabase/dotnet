@@ -73,7 +73,8 @@ public class FieldService : IFieldService
                 TemperatureMin = f.Threshold.TemperatureMin,
                 TemperatureMax = f.Threshold.TemperatureMax,
                 BatteryLevelMin = f.Threshold.BatteryLevelMin,
-                BatteryLevelMax = f.Threshold.BatteryLevelMax
+                BatteryLevelMax = f.Threshold.BatteryLevelMax,
+                MainSensor = f.Threshold.MainSensor
 
             } : null
         })
@@ -111,10 +112,6 @@ public class FieldService : IFieldService
 
     public async Task<bool> UserHasAccessToField(long fieldId, User user)
     {
-        // throw new NotImplementedException();
-
-
-
         var field = await _fieldRepository.GetFieldById(fieldId);
         if (field == null)
         {
@@ -127,5 +124,22 @@ public class FieldService : IFieldService
 
         return d;
         // return await _fieldRepository.UserHasAccessToField(fieldId, user);
+    }
+
+    public async Task<bool> UserCanChangeField(long fieldId, User user)
+    {
+        var field = await _fieldRepository.GetFieldById(fieldId);
+        if (field == null)
+        {
+            return false;
+        }
+        // TODO : when FieldUser is created, implement this
+
+        var d = await _farmUserService.GetUserFarm(field.Farm.Id, user.Id);
+        if (d == null)
+        {
+            return false;
+        }
+        return d.FarmRole == Utilities.Types.FarmRoles.Admin;
     }
 }

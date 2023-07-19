@@ -1,4 +1,5 @@
 ﻿using IoDit.WebAPI.Persistence.Entities;
+using IoDit.WebAPI.Utilities.Types;
 using Microsoft.EntityFrameworkCore;
 
 namespace IoDit.WebAPI.Persistence;
@@ -27,6 +28,11 @@ public class AgroditDbContext : DbContext
         modelBuilder.Entity<User>()
             .HasIndex(u => u.Email)
             .IsUnique();
+
+        modelBuilder.Entity<Threshold>()
+            .Property(t => t.MainSensor)
+            .HasDefaultValue(MainSensor.SensorDown);
+
         modelBuilder.Entity<Threshold>()
             .HasOne(t => t.Field)
             .WithOne(f => f.Threshold)

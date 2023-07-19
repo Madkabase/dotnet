@@ -1,6 +1,7 @@
 using IoDit.WebAPI.DTO.Threshold;
 using IoDit.WebAPI.Persistence.Entities;
 using IoDit.WebAPI.Persistence.Entities.Base;
+using IoDit.WebAPI.Utilities.Types;
 using Microsoft.EntityFrameworkCore;
 
 namespace IoDit.WebAPI.Persistence.Entities;
@@ -16,12 +17,14 @@ public class Threshold : EntityBase, IEntity
     public double TemperatureMax { get; set; }
     public int BatteryLevelMin { get; set; }
     public int BatteryLevelMax { get; set; }
+    public MainSensor MainSensor { get; set; }
 
     // from dto
     public static Threshold FromDto(ThresholdDto thresholdDto)
     {
         return new Threshold
         {
+            Id = thresholdDto.Id,
             Humidity1Min = thresholdDto.Humidity1Min,
             Humidity1Max = thresholdDto.Humidity1Max,
             Humidity2Min = thresholdDto.Humidity2Min,
@@ -29,7 +32,8 @@ public class Threshold : EntityBase, IEntity
             TemperatureMin = thresholdDto.TemperatureMin,
             TemperatureMax = thresholdDto.TemperatureMax,
             BatteryLevelMin = thresholdDto.BatteryLevelMin,
-            BatteryLevelMax = thresholdDto.BatteryLevelMax
+            BatteryLevelMax = thresholdDto.BatteryLevelMax,
+            MainSensor = thresholdDto.MainSensor
         };
     }
 }

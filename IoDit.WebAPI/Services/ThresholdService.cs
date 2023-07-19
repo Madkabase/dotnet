@@ -21,5 +21,11 @@ public class ThresholdService : IThresholdService
         await thresholdRepository.CreateThreshold(threshold);
     }
 
+    public async Task<Threshold?> UpdateThreshold(ThresholdDto thresholdDto)
+    {
+        var threshold = Threshold.FromDto(thresholdDto);
+        return await thresholdRepository.UpdateThreshold(threshold);
+    }
+
 
 }
