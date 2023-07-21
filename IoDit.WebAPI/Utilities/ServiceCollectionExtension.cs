@@ -13,6 +13,7 @@ public static class ServiceCollectionExtension
         .AddSingleton<IAzureApiClient, AzureApiClient>()
         .AddSingleton<IEmailHelper, EmailHelper>()
         .AddSingleton<IJwtHelper, JwtHelper>()
+        .AddSingleton<NotificationsHelper>()
     // reposoitories
         .AddScoped<IRefreshTokenRepository, RefreshTokenRepository>()
         .AddScoped<IUtilsRepository, UtilsRepository>()

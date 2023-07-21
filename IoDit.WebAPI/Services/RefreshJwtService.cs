@@ -75,6 +75,12 @@ public class RefreshJwtService : IRefreshJwtService
         return await _refreshTokenRepository.GetRefreshTokenByToken(token);
     }
 
+    public async Task<List<RefreshToken>> GetRefreshTokensForUser(User user)
+    {
+        return await _refreshTokenRepository.GetRefreshTokensForUser(user);
+    }
+
+
     public async Task<bool> isExpired(RefreshToken refreshToken)
     {
         return refreshToken.Expires < DateTime.UtcNow;
