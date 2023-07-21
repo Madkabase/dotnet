@@ -16,7 +16,12 @@ public interface IRefreshJwtService
     /// <returns>A refresh token</returns>
     public Task<RefreshToken> GenerateRefreshToken(User user, string deviceIdentifier);
     public Task<RefreshToken?> GetRefreshTokenByToken(String token);
-
+    /// <summary>
+    /// Retrieves the refresh tokens for a given user
+    /// </summary>
+    /// <param name="user">The user to retrieve the tokens for</param>
+    /// <returns>A list of refresh tokens</returns>
+    public Task<List<RefreshToken>> GetRefreshTokensForUser(User user);
     public Task<bool> isExpired(RefreshToken refreshToken);
     /// <summary>
     /// Deletes the expired refresh tokens in the given list 
