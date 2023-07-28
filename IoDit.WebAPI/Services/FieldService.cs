@@ -142,4 +142,33 @@ public class FieldService : IFieldService
         }
         return d.FarmRole == Utilities.Types.FarmRoles.Admin;
     }
+
+    public int CalculateOverAllMoistureLevel(List<DeviceDto> devices)
+    {
+        if (devices.Count == 0)
+        {
+            return 0;
+        }
+        var lastDatas = devices.Select(device =>
+        {
+            if (device.Data.Count == 0)
+            {
+                return new DeviceDataDTO
+                {
+                    Humidity1 = 0,
+                    Humidity2 = 0,
+                    BatteryLevel = 100,
+                    Temperature = 0,
+                    TimeStamp = DateTime.Now
+                };
+            }
+            return device.Data.OrderByDescending(d => d.TimeStamp).First();
+        }).ToList();
+        if (lastDatas.Count == 0)
+        {
+            return 0;
+        }
+
+        return lastDatas.Select(d => d.Humidity2).Min();
+    }
 }

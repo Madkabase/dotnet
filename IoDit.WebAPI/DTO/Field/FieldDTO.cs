@@ -23,7 +23,8 @@ public class FieldDto
             Id = field.Id,
             Name = field.Name,
             Geofence = field.Geofence,
-            Devices = field.Devices.Select(d => DeviceDto.FromEntity(d)).ToList()
+            Devices = field.Devices.Select(d => DeviceDto.FromEntity(d)).ToList(),
+            Threshold = field.Threshold != null ? ThresholdDto.FromEntity(field.Threshold) : null,
         };
     }
 

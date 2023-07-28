@@ -18,16 +18,19 @@ public class FarmController : ControllerBase, IBaseController
     private readonly IFarmService _farmService;
     private readonly IUserService _userService;
     private readonly IFarmUserService _farmUserService;
+    private readonly IFieldService _fieldService;
 
     public FarmController(
         IFarmService farmService,
         IUserService userService,
-        IFarmUserService farmUserService
+        IFarmUserService farmUserService,
+        IFieldService fieldService
     )
     {
         _farmService = farmService;
         _userService = userService;
         _farmUserService = farmUserService;
+        _fieldService = fieldService;
     }
 
     [HttpGet("myFarms")]
@@ -78,6 +81,10 @@ public class FarmController : ControllerBase, IBaseController
             }
         }
         );
+        farm.Fields?.ForEach(f =>
+        {
+            f.OverallMoistureLevel = _fieldService.CalculateOverAllMoistureLevel(f.Devices);
+        });
         return Ok(farm);
     }
 

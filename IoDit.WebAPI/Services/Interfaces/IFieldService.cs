@@ -27,4 +27,7 @@ public interface IFieldService
     /// <returns>true if the user can change the field, false otherwise</returns>
     public Task<bool> UserCanChangeField(long fieldId, User user);
 
+
+    public int CalculateOverAllMoistureLevel(List<DeviceDto> devices);
+
 }
