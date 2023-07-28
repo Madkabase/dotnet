@@ -14,19 +14,11 @@ public class FarmRepository : IFarmRepository
     }
 
     public Task<List<FarmUser>> getUserFarms(User user) =>
-    Task.Run(() => _context.FarmUsers.Include(fu => fu.Farm).ThenInclude(f => f.Owner).Where(fu => fu.User.Id == user.Id).ToList());
-
-    public Task<Farm?> getFarmDetailsById2(long farmId) =>
-    Task.Run(() => _context.Farms
-        .Where(f => f.Id == farmId)
-        .Include(f => f.Owner)
-        .Include(f => f.FarmUsers)
-        .ThenInclude(fu => fu.User)
-        // add Fields' Thresholds
-        .Include(f => f.Fields)
-        .ThenInclude(f => f.Threshold)
-        .Include(f => f.Fields)
-        .FirstOrDefault()
+    Task.Run(() => _context.FarmUsers
+        .Where(fu => fu.User.Id == user.Id)
+        .Include(fu => fu.Farm)
+        .ThenInclude(f => f.Owner)
+        .ToList()
     );
 
     public Task<Farm?> getFarmDetailsById(long farmId)
@@ -51,6 +43,7 @@ public class FarmRepository : IFarmRepository
                 {
                     var lastData = _context.DeviceData
                         .Where(dd => dd.DevEUI == device.DevEUI)
+                        .Where(dd => dd.TimeStamp.ToLocalTime() > DateTime.Now.AddHours(-24).ToLocalTime())
                         .OrderByDescending(dd => dd.TimeStamp)
                         .FirstOrDefault();
                     if (lastData != null)
