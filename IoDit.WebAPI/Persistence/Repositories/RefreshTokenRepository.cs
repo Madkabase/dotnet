@@ -1,4 +1,5 @@
 using IoDit.WebAPI.Persistence.Entities;
+using Microsoft.EntityFrameworkCore;
 
 namespace IoDit.WebAPI.Persistence.Repositories;
 
@@ -19,6 +20,6 @@ public class RefreshTokenRepository : IRefreshTokenRepository
         await Task.Run(() => !DbContext.RefreshTokens.Any(rt => rt.Token == token));
 
     public async Task<RefreshToken?> GetRefreshTokenByToken(string token)
-      => await Task.Run(() => DbContext.RefreshTokens.FirstOrDefault(rt => rt.Token == token));
+      => await Task.Run(() => DbContext.RefreshTokens.Include(rt => rt.User).FirstOrDefault(rt => rt.Token == token));
 
 }

@@ -1,16 +1,21 @@
+using IoDit.WebAPI.DTO;
 using IoDit.WebAPI.DTO.User;
 using IoDit.WebAPI.Persistence.Entities;
 using IoDit.WebAPI.Persistence.Repositories;
+using IoDit.WebAPI.Utilities.Helpers;
 
 namespace IoDit.WebAPI.Services;
 
 public class FarmUserService : IFarmUserService
 {
     IFarmUserRepository _farmUserRepository;
+    IEmailHelper _emailHelper;
 
-    public FarmUserService(IFarmUserRepository farmUserRepository)
+    public FarmUserService(IFarmUserRepository farmUserRepository,
+        IEmailHelper mailHelper)
     {
         _farmUserRepository = farmUserRepository;
+        _emailHelper = mailHelper;
     }
     public async Task<List<UserFarmDto>> getUserFarms(UserDto user)
     {
@@ -81,6 +86,16 @@ public class FarmUserService : IFarmUserService
             FarmRole = role,
         };
 
-        return await _farmUserRepository.AddFarmUser(farmUser);
+        var newFarmer = await _farmUserRepository.AddFarmUser(farmUser);
+        var mail = new CustomEmailMessage
+        {
+            Body = $"Hello {userToAdd.FirstName}, <p> You have been added to the farm {farm.Name} as a {role}. </p><br/>Regards, <br/> The Agrodit Team",
+            Subject = "You have been added to a farm",
+            RecipientEmail = userToAdd.Email,
+            RecipientName = $"{userToAdd.FirstName} {userToAdd.LastName}"
+        };
+        await _emailHelper.SendEmailWithMailKitAsync(mail);
+
+        return newFarmer;
     }
 }

@@ -24,9 +24,11 @@ public class EmailHelper : IEmailHelper
         // Create a new MIME message
         var message = new MimeMessage();
         message.From.Add(new MailboxAddress(senderName, smtpUsername));
-        message.To.Add(new MailboxAddress("Viktor Zhuk", emailMessage.RecipientEmail));
+        message.To.Add(new MailboxAddress(emailMessage.RecipientName, emailMessage.RecipientEmail));
         message.Subject = emailMessage.Subject;
-        message.Body = new TextPart("plain") { Text = emailMessage.Body };
+        emailMessage.Body = emailMessage.Body += "<br/>Regards, <br/> The Agrodit team";
+        message.Body = new TextPart("html") { Text = emailMessage.Body };
+
 
         // Configure the SMTP client and send the email
         using (var client = new MailKit.Net.Smtp.SmtpClient())

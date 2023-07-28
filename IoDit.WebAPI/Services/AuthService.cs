@@ -218,8 +218,8 @@ public class AuthService : IAuthService
         {
             RecipientEmail = user.Email,
             Subject = "Your confirmation code",
-            RecipientName = user.FirstName + " " + user.LastName,
-            Body = "Your confirmation code is: " + user.ConfirmationCode
+            RecipientName = $"{user.FirstName} {user.LastName}",
+            Body = $"Hello {user.FirstName}, <p> Your confirmation code is: {user.ConfirmationCode}. It will expire in 24 hours. </p> "
         });
     }
 
@@ -238,8 +238,8 @@ public class AuthService : IAuthService
         {
             RecipientEmail = user.Email,
             Subject = "Your new confirmation code",
-            RecipientName = user.FirstName + " " + user.LastName,
-            Body = "Your confirmation code is: " + user.ConfirmationCode
+            RecipientName = $"{user.FirstName} {user.LastName}",
+            Body = $"Hello {user.FirstName}, <p> Your confirmation code is: {user.ConfirmationCode}. It will expire in 24 hours. </p> "
         });
     }
 
@@ -308,10 +308,10 @@ public class AuthService : IAuthService
             Subject = "Reset your password",
             RecipientName = user.FirstName + " " + user.LastName,
             //TODO : change the link to the frontend link
-            Body = "Hello,\n You can reset your password on this link: "
-                + _configuration["BackendUrl"] + "/ui/reset-password?token="
-                + resetPasswordToken + " \n\n Best regards, \n The Agrodit team"
+            Body = $"Hello {user.FirstName}, <p> You can reset your password on this link: "
+                + $"{_configuration["BackendUrl"]}/ui/reset-password?token={resetPasswordToken}</p>"
         });
+
 
 
         return new SendResetPasswordMailResponseDto
