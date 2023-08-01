@@ -24,7 +24,6 @@ public class LoginResponseDtoTest
         // Arrange
         var loginResponseDto = new LoginResponseDto
         {
-            User = user,
             RefreshToken = "refreshToken",
             Token = "token"
         };
@@ -33,7 +32,6 @@ public class LoginResponseDtoTest
 
         // Assert
 
-        Assert.Equal(user, loginResponseDto.User);
         Assert.Equal("refreshToken", loginResponseDto.RefreshToken);
         Assert.Equal("token", loginResponseDto.Token);
 

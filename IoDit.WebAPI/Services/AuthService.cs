@@ -73,17 +73,8 @@ public class AuthService : IAuthService
         {
             Token = _jwtHelper.GenerateJwtToken(email),
             RefreshToken = refreshToken.Token,
-            User = new DTO.User.UserDto
-            {
-                Id = user.Id,
-                Email = user.Email,
-                FirstName = user.FirstName,
-                LastName = user.LastName,
-                AppRole = user.AppRole
-            }
-        };
 
-        response.User.Farms = await _farmUserService.getUserFarms(response.User);
+        };
         return response;
     }
 
