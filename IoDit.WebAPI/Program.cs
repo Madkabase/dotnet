@@ -1,6 +1,8 @@
 using Azure.Extensions.AspNetCore.Configuration.Secrets;
 using Azure.Identity;
 using Azure.Security.KeyVault.Secrets;
+using NLog;
+using NLog.Web;
 
 namespace IoDit.WebAPI;
 
@@ -8,7 +10,21 @@ public class Program
 {
     public static void Main(string[] args)
     {
-        CreateHostBuilder(args).Build().Run();
+
+        var logger = NLog.LogManager.Setup().LoadConfigurationFromAppSettings().GetCurrentClassLogger();
+        try
+        {
+            CreateHostBuilder(args).Build().Run();
+        }
+        catch (System.Exception e)
+        {
+            logger.Error(e, "Stopped program because of exception");
+            throw;
+        }
+        finally
+        {
+            NLog.LogManager.Shutdown();
+        }
     }
 
     public static IHostBuilder CreateHostBuilder(string[] args) =>

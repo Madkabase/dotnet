@@ -1,4 +1,5 @@
 ﻿using System.Text;
+using IoDit.WebAPI.ErrorHandling;
 using IoDit.WebAPI.Persistence;
 using IoDit.WebAPI.Utilities;
 using IoDit.WebAPI.Utilities.Loriot;
@@ -32,6 +33,7 @@ public class Startup
     public void ConfigureServices(IServiceCollection services)
     {
         {
+            services.AddHttpContextAccessor();
             services.AddHealthChecks();
             services.AddControllers().AddNewtonsoftJson(options =>
             {
@@ -126,54 +128,46 @@ public class Startup
     [UsedImplicitly]
     public void Configure(IApplicationBuilder app)
     {
-        var logger = NLog.LogManager.Setup().LoadConfigurationFromAppSettings().GetCurrentClassLogger();
-        logger.Debug("init main");
 
-        try
+        if (_isDevelopment || _isStaging)
         {
-
-            if (_isDevelopment || _isStaging)
-            {
-                app.UseSwagger();
-                app.UseSwaggerUI();
-                app.Use(async (context, next) =>
-            {
-                Console.WriteLine(context.Request.Path);
-                await next(context);
-            });
-            }
-            else
-            {
-                app.UseHttpsRedirection();
-            }
-
-            app.UseCors(x =>
-            {
-                x.AllowAnyHeader();
-                x.AllowAnyMethod();
-                x.AllowAnyOrigin();
-            });
-            app.UseRouting();
-            app.UseAuthentication();
-            app.UseAuthorization();
-            app.UseEndpoints(endpoints =>
-            {
-                endpoints.MapHealthChecks("/healthz");
-                endpoints.MapControllers();
-            });
-            app.UseStaticFiles();
-
+            app.UseDeveloperExceptionPage();
         }
-        catch (Exception exception)
+        else
         {
-            // NLog: catch setup errors
-            logger.Error(exception, "Stopped program because of exception");
-            throw;
+            app.UseExceptionHandler("/error");
         }
-        finally
+        app.ConfigureCustomExceptionMiddleware();
+        if (_isDevelopment || _isStaging)
         {
-            // Ensure to flush and stop internal timers/threads before application-exit (Avoid segmentation fault on Linux)
-            NLog.LogManager.Shutdown();
+            app.UseSwagger();
+            app.UseSwaggerUI();
+            app.Use(async (context, next) =>
+        {
+            Console.WriteLine(context.Request.Path);
+            await next(context);
+        });
         }
+        else
+        {
+            app.UseHttpsRedirection();
+        }
+
+        app.UseCors(x =>
+        {
+            x.AllowAnyHeader();
+            x.AllowAnyMethod();
+            x.AllowAnyOrigin();
+        });
+        app.UseRouting();
+        app.UseAuthentication();
+        app.UseAuthorization();
+        app.UseEndpoints(endpoints =>
+        {
+            endpoints.MapHealthChecks("/healthz");
+            endpoints.MapControllers();
+        });
+        app.UseStaticFiles();
+
     }
 }
