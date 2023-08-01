@@ -143,7 +143,7 @@ public class FieldService : IFieldService
         return d.FarmRole == Utilities.Types.FarmRoles.Admin;
     }
 
-    public int CalculateOverAllMoistureLevel(List<DeviceDto> devices)
+    public int CalculateOverAllMoistureLevel(List<DeviceDto> devices, ThresholdDto threshold)
     {
         if (devices.Count == 0)
         {
@@ -168,7 +168,13 @@ public class FieldService : IFieldService
         {
             return 0;
         }
-
-        return lastDatas.Select(d => d.Humidity2).Min();
+        if (threshold.MainSensor == Utilities.Types.MainSensor.SensorDown)
+        {
+            return lastDatas.Select(d => d.Humidity2).Min();
+        }
+        else
+        {
+            return lastDatas.Select(d => d.Humidity1).Min();
+        }
     }
 }
