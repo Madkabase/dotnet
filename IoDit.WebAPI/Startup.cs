@@ -9,6 +9,8 @@ using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using NetTopologySuite.Geometries;
 using Newtonsoft.Json;
+using NLog;
+using NLog.Web;
 
 namespace IoDit.WebAPI;
 
@@ -124,12 +126,21 @@ public class Startup
     [UsedImplicitly]
     public void Configure(IApplicationBuilder app)
     {
+        var logger = NLog.LogManager.Setup().LoadConfigurationFromAppSettings().GetCurrentClassLogger();
+        logger.Debug("init main");
+
+        try
         {
 
             if (_isDevelopment || _isStaging)
             {
                 app.UseSwagger();
                 app.UseSwaggerUI();
+                app.Use(async (context, next) =>
+            {
+                Console.WriteLine(context.Request.Path);
+                await next(context);
+            });
             }
             else
             {
@@ -151,6 +162,18 @@ public class Startup
                 endpoints.MapControllers();
             });
             app.UseStaticFiles();
+
+        }
+        catch (Exception exception)
+        {
+            // NLog: catch setup errors
+            logger.Error(exception, "Stopped program because of exception");
+            throw;
+        }
+        finally
+        {
+            // Ensure to flush and stop internal timers/threads before application-exit (Avoid segmentation fault on Linux)
+            NLog.LogManager.Shutdown();
         }
     }
 }
