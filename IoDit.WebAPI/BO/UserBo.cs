@@ -16,8 +16,6 @@ public class UserBo
     public AppRoles AppRole { get; set; }
     public DateTime ConfirmationExpirationDate { get; set; }
     public int ConfirmationTriesCounter { get; set; }
-    public ICollection<RefreshTokenBo> RefreshTokens { get; set; } = new List<RefreshTokenBo>();
-    public ICollection<FarmUserBo> FarmUsers { get; set; } = new List<FarmUserBo>();
     public UserBo()
     {
         Id = 0;
@@ -30,8 +28,6 @@ public class UserBo
         AppRole = AppRoles.AppUser;
         ConfirmationExpirationDate = DateTime.Now;
         ConfirmationTriesCounter = 0;
-        RefreshTokens = new List<RefreshTokenBo>();
-        FarmUsers = new List<FarmUserBo>();
     }
 
     public UserBo(
@@ -45,7 +41,6 @@ public class UserBo
         AppRoles appRole,
         DateTime confirmationExpirationDate,
         int confirmationTriesCounter,
-        ICollection<RefreshTokenBo> refreshTokens,
         ICollection<FarmUserBo> farmUsers
     )
     {
@@ -59,8 +54,6 @@ public class UserBo
         AppRole = appRole;
         ConfirmationExpirationDate = confirmationExpirationDate;
         ConfirmationTriesCounter = confirmationTriesCounter;
-        RefreshTokens = refreshTokens;
-        FarmUsers = farmUsers;
     }
 
     public static UserBo FromEntity(User entity)
@@ -76,8 +69,7 @@ public class UserBo
             entity.AppRole,
             entity.ConfirmationExpirationDate,
             entity.ConfirmationTriesCounter,
-            entity.RefreshTokens.Select(rt => RefreshTokenBo.FromEntity(rt)).ToList(),
-            entity.FarmUsers.Select(FarmUserBo.FromEntity).ToList()
+           new List<FarmUserBo>()
         );
     }
 
@@ -94,7 +86,6 @@ public class UserBo
             dto.AppRole,
             DateTime.Now,
             0,
-            new List<RefreshTokenBo>(),
             dto.Farms.Select(FarmUserBo.FromDto).ToList()
         );
     }

@@ -1,3 +1,5 @@
+using IoDit.WebAPI.BO;
+
 namespace IoDit.WebAPI.DTO.Device;
 
 public class DeviceDataDTO
@@ -9,19 +11,6 @@ public class DeviceDataDTO
     public float Temperature { get; set; }
     public DateTime TimeStamp { get; set; }
 
-    public static DeviceDataDTO FromEntity(Persistence.Entities.DeviceData deviceData)
-    {
-        return new DeviceDataDTO
-        {
-            Id = deviceData.Id,
-            Humidity1 = deviceData.Humidity1,
-            Humidity2 = deviceData.Humidity2,
-            BatteryLevel = deviceData.BatteryLevel,
-            Temperature = deviceData.Temperature,
-            TimeStamp = deviceData.TimeStamp
-        };
-    }
-
     public static DeviceDataDTO empty()
     {
         return new DeviceDataDTO
@@ -32,6 +21,19 @@ public class DeviceDataDTO
             BatteryLevel = 0,
             Temperature = 0,
             TimeStamp = DateTime.Now
+        };
+    }
+
+    public static DeviceDataDTO FromBo(DeviceDataBo deviceDataBo)
+    {
+        return new DeviceDataDTO
+        {
+            Id = deviceDataBo.Id,
+            Humidity1 = deviceDataBo.Humidity1,
+            Humidity2 = deviceDataBo.Humidity2,
+            BatteryLevel = deviceDataBo.BatteryLevel,
+            Temperature = deviceDataBo.Temperature,
+            TimeStamp = deviceDataBo.TimeStamp
         };
     }
 }

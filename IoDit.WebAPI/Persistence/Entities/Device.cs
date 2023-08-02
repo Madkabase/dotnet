@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using IoDit.WebAPI.BO;
 using IoDit.WebAPI.Persistence.Entities.Base;
 
 namespace IoDit.WebAPI.Persistence.Entities;
@@ -18,4 +19,15 @@ public class Device : IEntity
     // virtual link on the deviceEUI property in the DeviceData class with no db link
     [NotMapped]
     public ICollection<DeviceData> DeviceData { get; set; } = new List<DeviceData>();
+
+    internal static Device FromBo(DeviceBo device)
+    {
+        return new Device
+        {
+            DevEUI = device.DevEUI,
+            Name = device.Name,
+            JoinEUI = device.JoinEUI,
+            AppKey = device.AppKey,
+        };
+    }
 }

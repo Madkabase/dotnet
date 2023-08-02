@@ -1,3 +1,5 @@
+using IoDit.WebAPI.BO;
+
 namespace IoDit.WebAPI.DTO.Device
 {
     public class DeviceDto
@@ -6,13 +8,13 @@ namespace IoDit.WebAPI.DTO.Device
         public List<DeviceDataDTO> Data { get; set; } = new List<DeviceDataDTO>();
         public string Name { get; set; } = "";
 
-        public static DeviceDto FromEntity(Persistence.Entities.Device device)
+        internal static DeviceDto FromBo(DeviceBo device)
         {
             return new DeviceDto
             {
                 Id = device.DevEUI,
                 Name = device.Name,
-                Data = device.DeviceData.Select(d => DeviceDataDTO.FromEntity(d)).ToList()
+                Data = device.DeviceData.Select(DeviceDataDTO.FromBo).ToList()
             };
         }
     }

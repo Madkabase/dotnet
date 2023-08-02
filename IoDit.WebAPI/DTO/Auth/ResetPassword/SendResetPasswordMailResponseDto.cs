@@ -5,5 +5,5 @@ namespace IoDit.WebAPI.DTO.Auth;
 public class ResetPasswordResponseDto
 {
     public ResetPasswordFlowType FlowType { get; set; }
-    public String? Message { get; set; }
+    public string? Message { get; set; }
 }

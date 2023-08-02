@@ -1,3 +1,4 @@
+using IoDit.WebAPI.BO;
 using IoDit.WebAPI.Config.Exceptions;
 using IoDit.WebAPI.DTO.Device;
 using IoDit.WebAPI.Persistence.Entities;
@@ -11,37 +12,40 @@ public class DeviceService : IDeviceService
 {
     private readonly IDeviceRepository _deviceRepository;
     private readonly IFieldService _fieldService;
+    private readonly IFarmService _farmService;
     private readonly LoriotApiClient _loriotApiClient;
 
     public DeviceService(
         IDeviceRepository deviceRepository,
         IFieldService fieldService,
+        IFarmService farmService,
         LoriotApiClient loriotApiClient
     )
     {
         _deviceRepository = deviceRepository;
         _fieldService = fieldService;
+        _farmService = farmService;
         _loriotApiClient = loriotApiClient;
     }
 
-    public async Task<Device?> GetDeviceByDevEUI(string devEUI)
+    public async Task<DeviceBo> GetDeviceByDevEUI(string devEUI)
     {
-        return await _deviceRepository.GetDeviceByDevEUI(devEUI);
+        var device = await _deviceRepository.GetDeviceByDevEUI(devEUI);
+        if (device == null)
+        {
+            throw new EntityNotFoundException("Device not found");
+        }
+        return DeviceBo.FromEntity(device);
     }
 
-    public async Task<Device> CreateDevice(CreateDeviceRequestDto createDeviceRequestDto)
+    public async Task<DeviceBo> CreateDevice(FieldBo fieldBo, DeviceBo deviceBo)
     {
-        var field = await _fieldService.GetFieldById(createDeviceRequestDto.FieldId);
-        if (field == null)
-        {
-            throw new EntityNotFoundException("Field not found");
-        }
+        FarmBo farm = await _farmService.GetFarmByFieldId(fieldBo.Id);
 
         // check if device already exists in loriot for this app
         try
         {
-
-            await _loriotApiClient.GetLoriotAppDevice(field.Farm.AppId, createDeviceRequestDto.DevEUI);
+            await _loriotApiClient.GetLoriotAppDevice(farm.AppId, deviceBo.DevEUI);
         }
         catch (HttpRequestException e)
         {
@@ -51,27 +55,26 @@ public class DeviceService : IDeviceService
                 // create device in loriot
                 await _loriotApiClient.CreateLoriotAppDevice(new Utilities.Loriot.Types.LoriotCreateAppDeviceRequestDto
                 {
-                    deveui = createDeviceRequestDto.DevEUI,
-                    appeui = createDeviceRequestDto.JoinEUI,
-                    appkey = createDeviceRequestDto.AppKey,
-                    title = createDeviceRequestDto.Name,
-                    description = createDeviceRequestDto.Name
-                }, field.Farm.AppId);
+                    deveui = deviceBo.DevEUI,
+                    appeui = deviceBo.JoinEUI,
+                    appkey = deviceBo.AppKey,
+                    title = deviceBo.Name,
+                    description = deviceBo.Name
+                }, farm.AppId);
             }
             else
             {
                 throw;
             }
         }
-        var device = new Device
+        var device = new DeviceBo
         {
-            Name = createDeviceRequestDto.Name,
-            Field = field,
-            DevEUI = createDeviceRequestDto.DevEUI,
-            AppKey = createDeviceRequestDto.AppKey,
-            JoinEUI = createDeviceRequestDto.JoinEUI,
+            JoinEUI = deviceBo.JoinEUI,
+            Name = deviceBo.Name,
+            DevEUI = deviceBo.DevEUI,
+            AppKey = deviceBo.AppKey,
         };
-        return await _deviceRepository.CreateDevice(device);
+        return DeviceBo.FromEntity(await _deviceRepository.CreateDevice(fieldBo, device));
     }
 
 }

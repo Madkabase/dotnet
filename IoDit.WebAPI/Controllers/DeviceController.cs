@@ -1,3 +1,4 @@
+using IoDit.WebAPI.BO;
 using IoDit.WebAPI.DTO.Device;
 using IoDit.WebAPI.Persistence.Entities;
 using IoDit.WebAPI.Services;
@@ -18,31 +19,32 @@ public class DeviceController : ControllerBase, IBaseController
     }
 
     [HttpPost]
-    public async Task<ActionResult<CreateDeviceResponseDto>> CreateDevice([FromBody] CreateDeviceRequestDto createDeviceRequestDto)
+    public async Task<ActionResult<DeviceDto>> CreateDevice([FromBody] CreateDeviceRequestDto createDeviceRequestDto)
     {
-        // TOOD: Check if the user has rigths to create a device
+        // TODO: Check if the user has rigths to create a device
         var getDevice = await _deviceService.GetDeviceByDevEUI(createDeviceRequestDto.DevEUI);
         if (getDevice != null)
         {
             throw new BadHttpRequestException("Device already bounded to a field");
         }
 
-        var device = await _deviceService.CreateDevice(createDeviceRequestDto);
-        return Ok(new CreateDeviceResponseDto
+        DeviceBo deviceBo = new DeviceBo
         {
-            Device = new DeviceDto
-            {
-                Id = device.DevEUI,
-                Name = device.Name,
-            },
-            Message = "Device created successfully"
-        });
+            DevEUI = createDeviceRequestDto.DevEUI,
+            Name = createDeviceRequestDto.Name,
+            AppKey = createDeviceRequestDto.AppKey,
+            JoinEUI = createDeviceRequestDto.JoinEUI,
+        };
+
+
+        var device = await _deviceService.CreateDevice(new FieldBo { Id = createDeviceRequestDto.FieldId }, deviceBo);
+        return Ok(DeviceDto.FromBo(device));
 
 
     }
 
     [ApiExplorerSettings(IgnoreApi = true)]
-    public Task<User> GetRequestDetails()
+    public Task<UserBo> GetRequestDetails()
     {
         throw new NotImplementedException();
     }

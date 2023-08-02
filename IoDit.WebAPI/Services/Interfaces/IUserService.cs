@@ -1,5 +1,4 @@
-using IoDit.WebAPI.Persistence.Entities;
-using IoDit.WebAPI.Persistence.Repositories;
+using IoDit.WebAPI.BO;
 
 namespace IoDit.WebAPI.Services;
 
@@ -10,5 +9,6 @@ public interface IUserService
     /// </summary>
     /// <param name="user">The user to be created.</param>
     /// <returns>The created user.</returns>
-    public Task<User?> GetUserByEmail(string email);
+    /// <exception cref="EntityNotFoundException">Thrown when the user is not found.</exception>s
+    public Task<UserBo> GetUserByEmail(string email);
 }

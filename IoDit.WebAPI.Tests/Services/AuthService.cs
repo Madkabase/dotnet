@@ -1,3 +1,4 @@
+using IoDit.WebAPI.BO;
 using IoDit.WebAPI.Persistence.Entities;
 using IoDit.WebAPI.Persistence.Repositories;
 using IoDit.WebAPI.Services;
@@ -15,7 +16,7 @@ public class AuthServiceTest
     public async void ShouldLogin()
     {
         // Arrange
-        var user = new User
+        var user = new UserBo
         {
             Id = 1,
             Email = "email@test.com",
@@ -35,11 +36,10 @@ public class AuthServiceTest
         mockUserService.Setup(x => x.GetUserByEmail(It.IsAny<string>())).ReturnsAsync(user);
 
         var refreshTokenService = new Mock<IRefreshJwtService>();
-        refreshTokenService.Setup(x => x.GenerateRefreshToken(It.IsAny<User>(), It.IsAny<string>())).ReturnsAsync(
-            new RefreshToken
+        refreshTokenService.Setup(x => x.GenerateRefreshToken(It.IsAny<UserBo>(), It.IsAny<string>())).ReturnsAsync(
+            new RefreshTokenBo
             {
                 Token = "refreshToken",
-                User = user,
                 DeviceIdentifier = "deviceId",
                 Expires = DateTime.Now.AddDays(1)
             });

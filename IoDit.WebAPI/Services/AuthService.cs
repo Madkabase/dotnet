@@ -7,6 +7,7 @@ using IoDit.WebAPI.Persistence.Repositories;
 using IoDit.WebAPI.DTO.Auth;
 using IoDit.WebAPI.Models.Auth;
 using IoDit.WebAPI.Config.Exceptions;
+using IoDit.WebAPI.BO;
 
 namespace IoDit.WebAPI.Services;
 
@@ -50,9 +51,9 @@ public class AuthService : IAuthService
     /// <param name="DeviceId">The device identifier of the user</param>
     /// <returns>A loginResponseDTO</returns>
     /// <exception cref="UnauthorizedAccessException">Thrown when the password is incorrect.</exception>
-    public async Task<LoginResponseDto?> Login(String email, String password, String DeviceId)
+    public async Task<LoginResponseDto?> Login(String email, string password, string DeviceId)
     {
-        var user = await _userService.GetUserByEmail(email);
+        UserBo user = await _userService.GetUserByEmail(email);
         // check if user exists
         if (user == null)
         {
@@ -74,7 +75,6 @@ public class AuthService : IAuthService
         {
             Token = _jwtHelper.GenerateJwtToken(email),
             RefreshToken = refreshToken.Token,
-
         };
         return response;
     }
@@ -87,15 +87,14 @@ public class AuthService : IAuthService
     /// <param name="firstName">The first name of the user</param>
     /// <param name="lastName">The last name of the user</param>
     /// <returns> the registrationResponseDTO</returns>
-    public async Task<RegisterResponseDto> Register(String email, String password, String firstName, String lastName)
+    public async Task<RegisterResponseDto> Register(String email, string password, string firstName, string lastName)
     {
 
-
-        User? user = await _userService.GetUserByEmail(email);
-
-        // Check if the email is already in use
-        if (user != null)
+        try
         {
+            UserBo user = await _userService.GetUserByEmail(email);
+            // Check if the email is already in use
+
             if (user.IsVerified)
             {
                 return new RegisterResponseDto
@@ -110,24 +109,28 @@ public class AuthService : IAuthService
                     Message = "Confirm your email with the confirmation code sent",
                     RegistrationFlowType = RegistrationFlowType.RegisteredNotVerified
                 };
+
         }
-
-        // create new user
-        user = new User
+        catch (EntityNotFoundException)
         {
-            Email = email,
-            // Make sure to hash the password before storing it
-            Password = PasswordEncoder.HashPassword(password),
-            FirstName = firstName,
-            LastName = lastName,
-            AppRole = AppRoles.AppUser,
-            IsVerified = false,
-            ConfirmationCode = GenerateConfirmationCode(),
-            ConfirmationExpirationDate = DateTime.UtcNow.AddHours(24),
-            ConfirmationTriesCounter = 0,
-        };
+            // User not found, continue
+            // create new user
+            UserBo user = new UserBo
+            {
+                Email = email,
+                // Make sure to hash the password before storing it
+                Password = PasswordEncoder.HashPassword(password),
+                FirstName = firstName,
+                LastName = lastName,
+                AppRole = AppRoles.AppUser,
+                IsVerified = false,
+                ConfirmationCode = GenerateConfirmationCode(),
+                ConfirmationExpirationDate = DateTime.UtcNow.AddHours(24),
+                ConfirmationTriesCounter = 0,
+            };
 
-        await SaveUserAndSendEmailConfirmation(user);
+            await SaveUserAndSendEmailConfirmation(user);
+        }
 
         return new RegisterResponseDto
         {
@@ -184,7 +187,7 @@ public class AuthService : IAuthService
         }
 
         user.IsVerified = true;
-        await _utilsRepository.UpdateAsync(user);
+        await _utilsRepository.UpdateAsync(User.FromBo(user));
         return new ConfirmCodeResponseDto
         {
             Message = "User verified",
@@ -197,10 +200,10 @@ public class AuthService : IAuthService
     /// </summary>
     /// <param name="user">The user to be saved</param>
     /// <returns></returns>
-    private async Task SaveUserAndSendEmailConfirmation(User user)
+    private async Task SaveUserAndSendEmailConfirmation(UserBo user)
     {
 
-        await _utilsRepository.CreateAsync(user);
+        await _utilsRepository.CreateAsync(User.FromBo(user));
 
         await _emailService.SendEmailWithMailKitAsync(new CustomEmailMessage
         {
@@ -215,13 +218,13 @@ public class AuthService : IAuthService
     /// Resends the confirmation code to the user
     /// </summary>
     /// <param name="user">The user to resend the confirmation code to</param>
-    private async Task SaveUserAndResendConfirmationCode(User user)
+    private async Task SaveUserAndResendConfirmationCode(UserBo user)
     {
         var newConfirmationCode = GenerateConfirmationCode();
         user.ConfirmationCode = newConfirmationCode;
         user.ConfirmationExpirationDate = DateTime.UtcNow.AddHours(24);
         user.ConfirmationTriesCounter = 0;
-        await _utilsRepository.UpdateAsync(user);
+        await _utilsRepository.UpdateAsync(User.FromBo(user));
         await _emailService.SendEmailWithMailKitAsync(new CustomEmailMessage
         {
             RecipientEmail = user.Email,
@@ -248,7 +251,7 @@ public class AuthService : IAuthService
     /// <param name="user">The user to check</param>
     /// <returns></returns>
     /// <exception cref="UnauthorizedAccessException">Thrown when the verification is not good</exception>
-    private async Task CheckUserVerification(User user, long confirmationCode)
+    private async Task CheckUserVerification(UserBo user, long confirmationCode)
     {
         // check the number of tries
         if (user.ConfirmationTriesCounter >= 5)
@@ -266,7 +269,7 @@ public class AuthService : IAuthService
         if (user.ConfirmationCode != confirmationCode)
         {
             user.ConfirmationTriesCounter++;
-            await _utilsRepository.UpdateAsync(user);
+            await _utilsRepository.UpdateAsync(User.FromBo(user));
             throw new UnauthorizedAccessException("invalidCode");
         }
     }
@@ -278,11 +281,7 @@ public class AuthService : IAuthService
     /// <returns> </returns>
     public async Task<SendResetPasswordMailResponseDto> SendResetPasswordLink(String email)
     {
-        var user = await _userService.GetUserByEmail(email);
-        if (user == null)
-        {
-            throw new EntityNotFoundException("User not found");
-        }
+        UserBo user = await _userService.GetUserByEmail(email);
 
         var resetPasswordToken = _jwtHelper.GenerateResetPasswordToken(email);
 
@@ -318,7 +317,7 @@ public class AuthService : IAuthService
         }
 
         user.Password = PasswordEncoder.HashPassword(newPassword);
-        await _utilsRepository.UpdateAsync(user);
+        await _utilsRepository.UpdateAsync(User.FromBo(user));
 
         return new ResetPasswordResponseDto
         {

@@ -1,4 +1,5 @@
-﻿using IoDit.WebAPI.DTO.User;
+﻿using IoDit.WebAPI.BO;
+using IoDit.WebAPI.DTO.User;
 using IoDit.WebAPI.Persistence.Entities.Base;
 using IoDit.WebAPI.Utilities.Types;
 
@@ -27,6 +28,18 @@ public class User : EntityBase, IEntity
             LastName = userDto.LastName,
             Email = userDto.Email,
             AppRole = userDto.AppRole,
+        };
+    }
+
+    public static User FromBo(UserBo userBo)
+    {
+        return new User
+        {
+            Id = userBo.Id,
+            FirstName = userBo.FirstName,
+            LastName = userBo.LastName,
+            Email = userBo.Email,
+            AppRole = userBo.AppRole,
         };
     }
 }

@@ -7,7 +7,7 @@ namespace IoDit.WebAPI.BO;
 public class ThresholdBo
 {
     public long Id { get; set; }
-    public FieldBo Field { get; set; }
+    // public FieldBo Field { get; set; }
     public int Humidity1Min { get; set; }
     public int Humidity1Max { get; set; }
     public int Humidity2Min { get; set; }
@@ -18,10 +18,23 @@ public class ThresholdBo
     public double TemperatureMax { get; set; }
     public MainSensor MainSensor { get; set; }
 
-    public ThresholdBo(long id, FieldBo field, int humidity1Min, int humidity1Max, int humidity2Min, int humidity2Max, int batteryLevelMin, int batteryLevelMax, double temperatureMin, double temperatureMax, MainSensor mainSensor)
+    public ThresholdBo()
+    {
+        // Field = new FieldBo();
+        MainSensor = MainSensor.SensorDown;
+        Humidity1Min = 0;
+        Humidity1Max = 0;
+        Humidity2Min = 0;
+        Humidity2Max = 0;
+        BatteryLevelMin = 0;
+        BatteryLevelMax = 0;
+        TemperatureMin = 0;
+        TemperatureMax = 0;
+    }
+    public ThresholdBo(long id,/* FieldBo field,*/ int humidity1Min, int humidity1Max, int humidity2Min, int humidity2Max, int batteryLevelMin, int batteryLevelMax, double temperatureMin, double temperatureMax, MainSensor mainSensor)
     {
         Id = id;
-        Field = field;
+        // Field = field;
         Humidity1Min = humidity1Min;
         Humidity1Max = humidity1Max;
         Humidity2Min = humidity2Min;
@@ -38,7 +51,7 @@ public class ThresholdBo
     {
         return new ThresholdBo(
             thresholdDto.Id,
-            new FieldBo(),
+            // new FieldBo(),
             thresholdDto.Humidity1Min,
             thresholdDto.Humidity1Max,
             thresholdDto.Humidity2Min,
@@ -56,7 +69,7 @@ public class ThresholdBo
     {
         return new ThresholdBo(
             entity.Id,
-            FieldBo.FromEntity(entity.Field),
+            // FieldBo.FromEntity(entity.Field),
             entity.Humidity1Min,
             entity.Humidity1Max,
             entity.Humidity2Min,

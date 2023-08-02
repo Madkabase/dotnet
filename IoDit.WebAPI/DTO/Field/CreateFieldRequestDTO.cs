@@ -6,7 +6,7 @@ namespace IoDit.WebAPI.DTO.Field;
 
 public class CreateFieldRequestDTO
 {
-    public FarmDTO Farm { get; set; }
+    public long FarmId { get; set; }
     public string FieldName { get; set; }
     public List<List<double>> Coordinates { get; set; }
     public ThresholdDto Threshold { get; set; }

@@ -5,7 +5,6 @@ namespace IoDit.WebAPI.BO;
 
 public class DeviceDataBo
 {
-
     public long Id;
     public string DevEUI { get; set; }
     public int Humidity1 { get; set; }

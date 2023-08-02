@@ -1,12 +1,10 @@
 using System.Security.Claims;
-using IoDit.WebAPI.Persistence.Entities;
 using IoDit.WebAPI.Services;
 using IoDit.WebAPI.Utilities.Types;
 using IoDit.WebAPI.DTO.Auth;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using IoDit.WebAPI.Utilities.Helpers;
-using IoDit.WebAPI.DTO;
 using IoDit.WebAPI.Models.Auth;
 
 namespace IoDit.WebAPI.Controllers;
@@ -101,7 +99,7 @@ public class AuthController : ControllerBase, IBaseController
         {
             throw new UnauthorizedAccessException("Invalid device identifier");
         }
-        if (await _refreshTokenService.isExpired(token))
+        if (_refreshTokenService.isExpired(token))
         {
             throw new UnauthorizedAccessException("Refresh token expired");
         }
@@ -147,7 +145,7 @@ public class AuthController : ControllerBase, IBaseController
     }
 
     [ApiExplorerSettings(IgnoreApi = true)]
-    public async Task<User> GetRequestDetails()
+    public async Task<BO.UserBo> GetRequestDetails()
     {
         var claimsIdentity = User.Identity as ClaimsIdentity;
         var userIdClaim = claimsIdentity?.FindFirst(ClaimTypes.NameIdentifier);
@@ -157,10 +155,6 @@ public class AuthController : ControllerBase, IBaseController
             throw new UnauthorizedAccessException("Invalid user");
         }
         var user = await _userService.GetUserByEmail(userId);
-        if (user == null)
-        {
-            throw new UnauthorizedAccessException("Invalid user");
-        }
         return user;
     }
 }

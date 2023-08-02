@@ -1,4 +1,5 @@
 using System.Security.Claims;
+using IoDit.WebAPI.BO;
 using IoDit.WebAPI.Config.Exceptions;
 using IoDit.WebAPI.DTO;
 using IoDit.WebAPI.DTO.Device;
@@ -6,7 +7,6 @@ using IoDit.WebAPI.DTO.Farm;
 using IoDit.WebAPI.DTO.Field;
 using IoDit.WebAPI.DTO.Threshold;
 using IoDit.WebAPI.DTO.User;
-using IoDit.WebAPI.Persistence.Entities;
 using IoDit.WebAPI.Services;
 using IoDit.WebAPI.Utilities.Types;
 using Microsoft.AspNetCore.Authorization;
@@ -38,25 +38,28 @@ public class FieldController : ControllerBase, IBaseController
     }
 
     [HttpGet("getFieldsWithDevicesForFarm/{farmId}")]
-    public async Task<ActionResult<List<Field>>> GetFieldsWithDevicesForFarm(int farmId)
+    public async Task<ActionResult<List<FieldDto>>> GetFieldsWithDevicesForFarm(int farmId)
     {
-        var fields = await _fieldService.GetFieldsWithDevicesForFarm(new DTO.Farm.FarmDTO { Id = farmId });
-        fields = fields.Select(f =>
-         {
-             f.OverallMoistureLevel = _fieldService.CalculateOverAllMoistureLevel(f.Devices, f.Threshold);
-             return f;
-         }).ToList();
-        return Ok(fields);
+        List<FieldBo> fields = await _fieldService.GetFieldsWithDevicesForFarm(new BO.FarmBo { Id = farmId });
+
+        List<FieldDto> fieldDtos = fields.Select(f => FieldDto.FromBo(f)).ToList();
+
+        foreach (var (fieldDto, i) in fieldDtos.Select((value, i) => (value, i)))
+        {
+            fieldDto.OverallMoistureLevel = _fieldService.CalculateOverAllMoistureLevel(fields[0].Devices.ToList(), fields[0].Threshold);
+        }
+
+        return Ok(fieldDtos);
     }
 
 
 
     [HttpPost("createField")]
-    public async Task<ActionResult<FieldDto>> CreateField([FromBody] CreateFieldRequestDTO createFieldDTO)
+    public async Task<ActionResult> CreateField([FromBody] CreateFieldRequestDTO createFieldDTO)
     {
         var user = await GetRequestDetails();
 
-        var userFarm = await _farmUserService.GetUserFarm(createFieldDTO.Farm.Id, user.Id);
+        var userFarm = await _farmUserService.GetUserFarm(createFieldDTO.FarmId, user.Id);
         if (userFarm == null)
         {
             throw new UnauthorizedAccessException("User does not have access to this farm");
@@ -66,19 +69,19 @@ public class FieldController : ControllerBase, IBaseController
             throw new UnauthorizedAccessException("User does not have access to this farm");
         }
 
-        var field = new FieldDto
+        var field = new FieldBo
         {
             Name = createFieldDTO.FieldName,
             Geofence = NetTopologySuite.Geometries.Geometry.DefaultFactory.CreatePolygon(
                 createFieldDTO.Coordinates.Select(c => new NetTopologySuite.Geometries.Coordinate(c[0], c[1])).ToArray()
             ),
-            Threshold = createFieldDTO.Threshold,
+            Threshold = ThresholdBo.FromDto(createFieldDTO.Threshold),
         };
 
-        var farm = new DTO.Farm.FarmDTO { Id = createFieldDTO.Farm.Id };
+        var farm = new BO.FarmBo { Id = createFieldDTO.FarmId };
 
-        var fieldE = (await _fieldService.CreateFieldForFarm(field, farm));
-        return Ok(FieldDto.FromEntity(fieldE));
+        FieldBo fieldBo = (await _fieldService.CreateFieldForFarm(field, farm));
+        return Ok(FieldDto.FromBo(fieldBo));
     }
 
     [HttpGet("getFieldDetails/{fieldId}")]
@@ -100,8 +103,8 @@ public class FieldController : ControllerBase, IBaseController
             Id = field.Id,
             Name = field.Name,
             Geofence = field.Geofence,
-            Threshold = field.Threshold != null ? ThresholdDto.FromEntity(field.Threshold) : null,
-            Devices = field.Devices.Select(d => DeviceDto.FromEntity(d)).ToList()
+            Threshold = field.Threshold != null ? ThresholdDto.FromBo(field.Threshold) : null,
+            Devices = field.Devices.Select(d => DeviceDto.FromBo(d)).ToList()
         };
         return Ok(fieldDto);
     }
@@ -120,16 +123,16 @@ public class FieldController : ControllerBase, IBaseController
         {
             throw new UnauthorizedAccessException("User has no right to modify field");
         }
-        var threshold = await _thresholdService.UpdateThreshold(thresholdDto);
+        var threshold = await _thresholdService.UpdateThreshold(ThresholdBo.FromDto(thresholdDto));
         if (threshold == null)
         {
             throw new EntityNotFoundException("Threshold not found");
         }
-        return Ok(ThresholdDto.FromEntity(threshold));
+        return Ok(ThresholdDto.FromBo(threshold));
     }
 
     [ApiExplorerSettings(IgnoreApi = true)]
-    public async Task<User> GetRequestDetails()
+    public async Task<BO.UserBo> GetRequestDetails()
     {
         var claimsIdentity = User.Identity as ClaimsIdentity;
         var userIdClaim = claimsIdentity?.FindFirst(ClaimTypes.NameIdentifier);
@@ -139,10 +142,6 @@ public class FieldController : ControllerBase, IBaseController
             throw new UnauthorizedAccessException("Invalid user");
         }
         var user = await _userService.GetUserByEmail(userId);
-        if (user == null)
-        {
-            throw new UnauthorizedAccessException("Invalid user");
-        }
         return user;
     }
 
@@ -165,7 +164,7 @@ public class FieldController : ControllerBase, IBaseController
     }
 
     [HttpGet("{fieldId}/farm")]
-    public Task<ActionResult<FarmDTO>> GetFarmForField(int fieldId)
+    public Task<ActionResult<FarmDto>> GetFarmForField(int fieldId)
     {
         throw new NotImplementedException();
     }

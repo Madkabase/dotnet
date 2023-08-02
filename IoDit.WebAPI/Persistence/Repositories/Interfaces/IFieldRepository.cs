@@ -1,3 +1,4 @@
+using IoDit.WebAPI.BO;
 using IoDit.WebAPI.Persistence.Entities;
 using Microsoft.EntityFrameworkCore;
 
@@ -7,11 +8,11 @@ public interface IFieldRepository
 {
 
 
-    public Task<List<Field>> GetFieldsByFarm(Farm farm);
+    public Task<List<Field>> GetFieldsByFarm(FarmBo farm);
 
-    public Task<List<Field>> GetFieldsWithDevicesByFarm(Farm farm);
+    public Task<List<Field>> GetFieldsWithDevicesByFarm(FarmBo farm);
 
-    public Task<Field> CreateField(Field field);
+    public Field? CreateField(FarmBo farmBo, FieldBo field);
 
     public Task<Field?> GetFieldById(long id);
 

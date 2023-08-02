@@ -1,3 +1,4 @@
+using IoDit.WebAPI.BO;
 using IoDit.WebAPI.DTO.Threshold;
 using IoDit.WebAPI.Persistence.Entities;
 
@@ -13,13 +14,13 @@ public class ThresholdRepository : IThresholdRepository
         this.context = context;
     }
 
-    public async Task CreateThreshold(Threshold threshold)
+    public async Task CreateThreshold(ThresholdBo threshold)
     {
-        await context.AddAsync<Threshold>(threshold);
+        await context.AddAsync<Threshold>(Threshold.FromBo(threshold));
         await context.SaveChangesAsync();
     }
 
-    public async Task<Threshold?> UpdateThreshold(Threshold threshold)
+    public async Task<Threshold?> UpdateThreshold(ThresholdBo threshold)
     {
         var uThreshold = context.Thresholds.Find(threshold.Id);
         if (threshold == null)
@@ -37,6 +38,6 @@ public class ThresholdRepository : IThresholdRepository
         uThreshold.MainSensor = threshold.MainSensor;
 
         await context.SaveChangesAsync();
-        return threshold;
+        return uThreshold;
     }
 }

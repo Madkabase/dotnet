@@ -66,6 +66,8 @@ public class Startup
                 x.UseNetTopologySuite()
                 .UseQuerySplittingBehavior(QuerySplittingBehavior.SplitQuery)
                 );
+                opts.EnableSensitiveDataLogging();
+                opts.EnableDetailedErrors();
 
             });
             // var issuer = configuration["JwtSettings-Issuer"];

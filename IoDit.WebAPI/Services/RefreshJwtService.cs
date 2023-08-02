@@ -2,6 +2,8 @@
 using IoDit.WebAPI.Persistence.Entities;
 using IoDit.WebAPI.Services;
 using IoDit.WebAPI.Persistence.Repositories;
+using IoDit.WebAPI.BO;
+using IoDit.WebAPI.Config.Exceptions;
 
 namespace IoDit.WebAPI.Services;
 
@@ -32,9 +34,19 @@ public class RefreshJwtService : IRefreshJwtService
     /// <param name="user">The user to generate the token for</param>
     /// <param name="deviceIdentifier">The device identifier of the user</param>
     /// <returns>A refresh token</returns>
-    public async Task<RefreshToken> GenerateRefreshToken(User user, string deviceIdentifier)
+    public async Task<RefreshTokenBo> GenerateRefreshToken(UserBo user, string deviceIdentifier)
     {
-        var userTokens = await _refreshTokenRepository.GetRefreshTokensForUser(user);
+        List<RefreshTokenBo> userTokens = (await _refreshTokenRepository.GetRefreshTokensForUser(user)).Select(x => new RefreshTokenBo
+        {
+            DeviceIdentifier = x.DeviceIdentifier,
+            Expires = x.Expires,
+            Id = x.Id,
+            Token = x.Token,
+            User = new UserBo
+            {
+                Id = x.User.Id,
+            }
+        }).ToList();
 
         await CleanExpiredTokens(userTokens);
 
@@ -54,34 +66,42 @@ public class RefreshJwtService : IRefreshJwtService
         {
             currentToken.Token = newToken;
             currentToken.Expires = DateTime.UtcNow.AddDays(7);
-            await _utilsRepository.UpdateAsync(currentToken);
+            await _refreshTokenRepository.UpdateToken(currentToken);
             return currentToken;
         }
 
-        var refreshToken = new RefreshToken()
+        var refreshToken = new RefreshTokenBo()
         {
             Token = newToken,
             Expires = DateTime.UtcNow.AddDays(7),
             DeviceIdentifier = deviceIdentifier,
-            User = user,
+            User = user
+
         };
 
-        await _utilsRepository.CreateAsync(refreshToken);
+        await _refreshTokenRepository.CreateRefreshToken(refreshToken);
         return refreshToken;
     }
 
-    public async Task<RefreshToken?> GetRefreshTokenByToken(String token)
+    public async Task<RefreshTokenBo> GetRefreshTokenByToken(String token)
     {
-        return await _refreshTokenRepository.GetRefreshTokenByToken(token);
+        var refreshToken = await _refreshTokenRepository.GetRefreshTokenByToken(token);
+        if (refreshToken == null)
+        {
+            throw new EntityNotFoundException("Refresh token not found");
+        }
+        return RefreshTokenBo.FromEntity(refreshToken);
+
     }
 
-    public async Task<List<RefreshToken>> GetRefreshTokensForUser(User user)
+    public async Task<List<RefreshTokenBo>> GetRefreshTokensForUser(UserBo user)
     {
-        return await _refreshTokenRepository.GetRefreshTokensForUser(user);
+        return (await _refreshTokenRepository.GetRefreshTokensForUser(user))
+                    .Select(x => RefreshTokenBo.FromEntity(x)).ToList();
     }
 
 
-    public async Task<bool> isExpired(RefreshToken refreshToken)
+    public bool isExpired(RefreshTokenBo refreshToken)
     {
         return refreshToken.Expires < DateTime.UtcNow;
     }
@@ -89,12 +109,12 @@ public class RefreshJwtService : IRefreshJwtService
     /// Deletes the expired refresh tokens in the given list 
     /// </summary>
     /// <param name="userTokens">The list of refresh tokens to check</param>
-    private async Task CleanExpiredTokens(List<RefreshToken> userTokens)
+    private async Task CleanExpiredTokens(List<RefreshTokenBo> userTokens)
     {
         var expiredTokens = userTokens.Where(t => t.Expires < DateTime.UtcNow).ToList();
         if (expiredTokens.Any())
         {
-            await _utilsRepository.DeleteRangeAsync(expiredTokens);
+            await _utilsRepository.DeleteRangeAsync(expiredTokens.Select(x => RefreshToken.FromBo(x)).ToList());
         }
     }
 

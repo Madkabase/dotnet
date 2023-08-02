@@ -4,25 +4,9 @@ namespace IoDit.WebAPI.DTO.Threshold
 {
     public class ThresholdPresetDto : ThresholdDto
     {
-        public String Name { get; set; }
-        public FarmDTO Farm { get; set; }
+        public string Name { get; set; }
+        public FarmDto Farm { get; set; }
 
 
-        internal static ThresholdPresetDto FromEntity(Persistence.Entities.ThresholdPreset thresholdPreset)
-        {
-            return new ThresholdPresetDto
-            {
-                Id = thresholdPreset.Id,
-                Name = thresholdPreset.Name,
-                Humidity1Min = thresholdPreset.Humidity1Min,
-                Humidity1Max = thresholdPreset.Humidity1Max,
-                Humidity2Min = thresholdPreset.Humidity2Min,
-                Humidity2Max = thresholdPreset.Humidity2Max,
-                TemperatureMin = thresholdPreset.TemperatureMin,
-                TemperatureMax = thresholdPreset.TemperatureMax,
-                BatteryLevelMin = thresholdPreset.BatteryLevelMin,
-                BatteryLevelMax = thresholdPreset.BatteryLevelMax
-            };
-        }
     }
 }

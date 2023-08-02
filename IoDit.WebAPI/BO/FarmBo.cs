@@ -7,12 +7,11 @@ public class FarmBo
     public long Id { get; set; }
     public string Name { get; set; }
     public UserBo Owner { get; set; } = new UserBo();
-    public String AppId { get; set; }
+    public string AppId { get; set; }
     public string AppName { get; set; }
     public int MaxDevices { get; set; }
     public ICollection<FieldBo> Fields { get; set; } = new List<FieldBo>();
     public ICollection<ThresholdPresetBo> ThresholdPresets { get; set; } = new List<ThresholdPresetBo>();
-    public ICollection<FarmUserBo> FarmUsers { get; set; } = new List<FarmUserBo>();
 
     public FarmBo()
     {
@@ -24,7 +23,6 @@ public class FarmBo
         MaxDevices = 0;
         Fields = new List<FieldBo>();
         ThresholdPresets = new List<ThresholdPresetBo>();
-        FarmUsers = new List<FarmUserBo>();
     }
     public FarmBo(long id,
         string name,
@@ -45,10 +43,9 @@ public class FarmBo
         MaxDevices = maxDevices;
         Fields = fields;
         ThresholdPresets = thresholdPresets;
-        FarmUsers = farmUsers;
     }
 
-    public static FarmBo FromDto(FarmDTO farmDto)
+    public static FarmBo FromDto(FarmDto farmDto)
     {
         return new FarmBo
         {
@@ -70,7 +67,8 @@ public class FarmBo
             AppId = farm.AppId,
             AppName = farm.AppName,
             MaxDevices = farm.MaxDevices,
-            Owner = UserBo.FromEntity(farm.Owner)
+            Owner = UserBo.FromEntity(farm.Owner),
+            Fields = farm.Fields.Select(FieldBo.FromEntity).ToList(),
         };
     }
 }

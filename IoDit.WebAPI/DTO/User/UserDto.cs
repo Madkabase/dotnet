@@ -12,7 +12,7 @@ public class UserDto
     public long Id { get; set; }
     public List<FarmUserDto> Farms { get; set; } = new List<FarmUserDto>();
 
-    public static UserDto FromEntity(Persistence.Entities.User user)
+    public static UserDto FromBo(BO.UserBo user)
     {
         return new UserDto
         {

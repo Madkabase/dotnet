@@ -56,4 +56,9 @@ public class FarmRepository : IFarmRepository
         return Task.FromResult(farm);
     }
 
+    public Task<Farm?> getFarmByFieldId(long fieldId)
+    {
+        var farm = _context.Farms.Where(f => f.Fields.Any(f => f.Id == fieldId)).FirstOrDefault();
+        return Task.FromResult(farm);
+    }
 }
