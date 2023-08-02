@@ -4,14 +4,14 @@ using IoDit.WebAPI.Utilities.Types;
 
 namespace IoDit.WebAPI.DTO.User
 {
-    public class UserFarmDto
+    public class FarmUserDto
     {
         public FarmRoles Role { get; set; }
         public FarmDTO Farm { get; set; } = new FarmDTO();
-        public UserDto? User { get; set; } = null;
+        public UserDto User { get; set; } = new UserDto();
 
 
-        public static UserFarmDto FromEntity(FarmUser farmUser) => new UserFarmDto
+        public static FarmUserDto FromEntity(FarmUser farmUser) => new FarmUserDto
         {
             Role = farmUser.FarmRole,
             Farm = FarmDTO.FromEntity(farmUser.Farm)

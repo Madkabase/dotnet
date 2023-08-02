@@ -17,15 +17,15 @@ public class FarmUserService : IFarmUserService
         _farmUserRepository = farmUserRepository;
         _emailHelper = mailHelper;
     }
-    public async Task<List<UserFarmDto>> getUserFarms(UserDto user)
+    public async Task<List<FarmUserDto>> getUserFarms(UserDto user)
     {
         var farms = await _farmUserRepository.getUserFarms(User.FromDTO(user));
         if (farms == null)
         {
-            return new List<UserFarmDto>();
+            return new List<FarmUserDto>();
         }
 
-        return farms.Select(f => UserFarmDto.FromEntity(f)).ToList();
+        return farms.Select(f => FarmUserDto.FromEntity(f)).ToList();
     }
 
     public async Task<FarmUser?> GetUserFarm(long farmId, long userId)

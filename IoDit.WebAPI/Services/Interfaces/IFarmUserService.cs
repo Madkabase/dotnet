@@ -13,7 +13,7 @@ public interface IFarmUserService
     /// </summary>
     /// <param name="user">user object</param>
     /// <returns>list of farms the user is part of</returns>
-    public Task<List<UserFarmDto>> getUserFarms(UserDto user);
+    public Task<List<FarmUserDto>> getUserFarms(UserDto user);
     /// <summary>
     /// Gets the farmuser object for the user
     /// </summary>

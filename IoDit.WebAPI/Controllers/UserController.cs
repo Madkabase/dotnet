@@ -48,7 +48,7 @@ public class UserController : ControllerBase, IBaseController
         if (userFarms != null)
         {
             userDto.Farms = userFarms.Select(f =>
-            new UserFarmDto
+            new FarmUserDto
             {
                 Farm = new FarmDTO
                 {

@@ -7,12 +7,12 @@ public class FarmDTO
 {
     public long Id { get; set; }
     public string Name { get; set; } = "";
-    public UserDto? Owner { get; set; }
+    public UserDto Owner { get; set; }
 
     public String AppId { get; set; } = "";
     public string AppName { get; set; } = "";
     public int MaxDevices { get; set; }
-    public List<UserFarmDto>? Users { get; set; }
+    public List<FarmUserDto>? Users { get; set; }
     public List<FieldDto>? Fields { get; set; }
     public bool isRequesterAdmin { get; set; } = false;
 
@@ -28,7 +28,7 @@ public class FarmDTO
             AppId = farm.AppId,
             AppName = farm.AppName,
             MaxDevices = farm.MaxDevices,
-            Users = farm.FarmUsers.Select(fu => new UserFarmDto
+            Users = farm.FarmUsers.Select(fu => new FarmUserDto
             {
                 Role = fu.FarmRole,
                 User = UserDto.FromEntity(fu.User)

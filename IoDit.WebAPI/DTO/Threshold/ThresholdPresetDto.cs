@@ -4,8 +4,8 @@ namespace IoDit.WebAPI.DTO.Threshold
 {
     public class ThresholdPresetDto : ThresholdDto
     {
-        String Name { get; set; }
-        FarmDTO Farm { get; set; }
+        public String Name { get; set; }
+        public FarmDTO Farm { get; set; }
 
 
         internal static ThresholdPresetDto FromEntity(Persistence.Entities.ThresholdPreset thresholdPreset)
