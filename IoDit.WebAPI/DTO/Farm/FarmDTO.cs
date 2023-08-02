@@ -18,25 +18,4 @@ public class FarmDto
     public List<FarmUserDto>? Users { get; set; }
     public List<FieldDto>? Fields { get; set; }
     public bool isRequesterAdmin { get; set; } = false;
-
-
-
-    public static FarmDTO FromEntity(Persistence.Entities.Farm farm)
-    {
-        return new FarmDTO
-        {
-            Id = farm.Id,
-            Name = farm.Name,
-            Owner = UserDto.FromEntity(farm.Owner),
-            AppId = farm.AppId,
-            AppName = farm.AppName,
-            MaxDevices = farm.MaxDevices,
-            Users = farm.FarmUsers.Select(fu => new FarmUserDto
-            {
-                Role = fu.FarmRole,
-                User = UserDto.FromEntity(fu.User)
-            }).ToList(),
-            Fields = farm.Fields.Select(f => FieldDto.FromEntity(f)).ToList()
-        };
-    }
 }
