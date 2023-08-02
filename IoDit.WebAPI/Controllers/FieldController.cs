@@ -40,7 +40,7 @@ public class FieldController : ControllerBase, IBaseController
         var fields = await _fieldService.GetFieldsWithDevicesForFarm(new DTO.Farm.FarmDTO { Id = farmId });
         fields = fields.Select(f =>
          {
-             f.OverallMoistureLevel = _fieldService.CalculateOverAllMoistureLevel(f.Devices);
+             f.OverallMoistureLevel = _fieldService.CalculateOverAllMoistureLevel(f.Devices, f.Threshold);
              return f;
          }).ToList();
         return Ok(fields);

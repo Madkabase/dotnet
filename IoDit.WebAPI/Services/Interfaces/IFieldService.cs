@@ -1,6 +1,7 @@
 using IoDit.WebAPI.DTO.Device;
 using IoDit.WebAPI.DTO.Farm;
 using IoDit.WebAPI.DTO.Field;
+using IoDit.WebAPI.DTO.Threshold;
 using IoDit.WebAPI.Persistence.Entities;
 using IoDit.WebAPI.Persistence.Repositories;
 
@@ -28,6 +29,6 @@ public interface IFieldService
     public Task<bool> UserCanChangeField(long fieldId, User user);
 
 
-    public int CalculateOverAllMoistureLevel(List<DeviceDto> devices);
+    public int CalculateOverAllMoistureLevel(List<DeviceDto> devices, ThresholdDto threshold);
 
 }
