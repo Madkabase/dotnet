@@ -26,13 +26,13 @@ public class JwtHelper : IJwtHelper
         var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secret));
         var credentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
 
-        var expires = DateTime.UtcNow.AddDays(30);
+        var expires = DateTime.UtcNow.AddHours(24);
         var tokenDesc = new SecurityTokenDescriptor()
         {
             Subject = new ClaimsIdentity(claims),
             Expires = expires,
             SigningCredentials = credentials,
-            Audience = "http://localhost:8100",
+            Audience = "*",
             Issuer = "https://localhost:7161"
         };
 
@@ -51,7 +51,7 @@ public class JwtHelper : IJwtHelper
         var secret = _configuration["JwtSettings-SecretKey"];
         var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secret));
 
-        var expires = DateTime.UtcNow.AddDays(1);
+        var expires = DateTime.UtcNow.AddHours(1);
         var tokenDesc = new SecurityTokenDescriptor()
         {
             Subject = new ClaimsIdentity(claims),

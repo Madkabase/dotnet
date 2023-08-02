@@ -78,7 +78,7 @@ public class FarmController : ControllerBase, IBaseController
         );
         farm.Fields?.ForEach(f =>
         {
-            f.OverallMoistureLevel = _fieldService.CalculateOverAllMoistureLevel(f.Devices);
+            f.OverallMoistureLevel = _fieldService.CalculateOverAllMoistureLevel(f.Devices, f.Threshold);
         });
         return Ok(farm);
     }

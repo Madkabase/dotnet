@@ -1,3 +1,4 @@
+using IoDit.WebAPI.Config.Exceptions;
 using IoDit.WebAPI.DTO.Device;
 using IoDit.WebAPI.Persistence.Entities;
 using IoDit.WebAPI.Persistence.Repositories;
@@ -33,7 +34,7 @@ public class DeviceService : IDeviceService
         var field = await _fieldService.GetFieldById(createDeviceRequestDto.FieldId);
         if (field == null)
         {
-            throw new Exception("Field not found");
+            throw new EntityNotFoundException("Field not found");
         }
 
         // check if device already exists in loriot for this app

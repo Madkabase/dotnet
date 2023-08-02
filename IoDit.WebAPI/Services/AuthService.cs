@@ -6,6 +6,7 @@ using IoDit.WebAPI.Utilities.Types;
 using IoDit.WebAPI.Persistence.Repositories;
 using IoDit.WebAPI.DTO.Auth;
 using IoDit.WebAPI.Models.Auth;
+using IoDit.WebAPI.Config.Exceptions;
 
 namespace IoDit.WebAPI.Services;
 
@@ -55,7 +56,7 @@ public class AuthService : IAuthService
         // check if user exists
         if (user == null)
         {
-            throw new UnauthorizedAccessException("User not found");
+            throw new EntityNotFoundException("User not found");
         }
         // check if user is verified
         if (!user.IsVerified)
@@ -142,11 +143,7 @@ public class AuthService : IAuthService
         // check if user exists
         if (user == null)
         {
-            return new ConfirmCodeResponseDto
-            {
-                Message = "User not found",
-                CodeConfirmationFlowType = ConfirmCodeFlowType.UserNotFound
-            };
+            throw new EntityNotFoundException("User not found");
         }
 
         // check if user is verified
@@ -284,11 +281,7 @@ public class AuthService : IAuthService
         var user = await _userService.GetUserByEmail(email);
         if (user == null)
         {
-            return new SendResetPasswordMailResponseDto
-            {
-                Message = "User not found",
-                FlowType = ResetPasswordFlowType.InvalidEmail
-            };
+            throw new EntityNotFoundException("User not found");
         }
 
         var resetPasswordToken = _jwtHelper.GenerateResetPasswordToken(email);
@@ -303,8 +296,6 @@ public class AuthService : IAuthService
                 + $"{_configuration["BackendUrl"]}/ui/reset-password?token={resetPasswordToken}</p>"
         });
 
-
-
         return new SendResetPasswordMailResponseDto
         {
             Message = "Reset password email sent",
@@ -318,19 +309,12 @@ public class AuthService : IAuthService
         var user = await _userService.GetUserByEmail(decodedToken.Email);
         if (user == null)
         {
-            return new ResetPasswordResponseDto
-            {
-                Message = "User not found",
-                FlowType = ResetPasswordFlowType.InvalidEmail
-            };
+            throw new EntityNotFoundException("User not found");
         }
         if (decodedToken.Expiration.CompareTo(DateTime.Now) < 0)
         {
-            return new ResetPasswordResponseDto
-            {
-                Message = "Token expired",
-                FlowType = ResetPasswordFlowType.TokenExpired
-            };
+            throw new UnauthorizedAccessException("Token expired");
+
         }
 
         user.Password = PasswordEncoder.HashPassword(newPassword);

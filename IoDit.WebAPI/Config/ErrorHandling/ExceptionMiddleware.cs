@@ -1,4 +1,5 @@
 using System.Net;
+using IoDit.WebAPI.Config.Exceptions;
 
 namespace IoDit.WebAPI.Config.ErrorHandling
 {
@@ -20,28 +21,27 @@ namespace IoDit.WebAPI.Config.ErrorHandling
             }
             catch (UnauthorizedAccessException e)
             {
-                _logger.Error(exception: e, message: "A new Unauthorized exception has been thrown: {0}", e.Message);
-
                 httpContext.Response.StatusCode = (int)HttpStatusCode.Unauthorized;
                 await HandleExceptionAsync(httpContext, e);
             }
             catch (BadHttpRequestException ex)
             {
-                _logger.Error(exception: ex, message: "A new BadHttpRequestException exception has been thrown: {0}", ex.Message);
-
                 httpContext.Response.StatusCode = (int)HttpStatusCode.BadRequest;
+                await HandleExceptionAsync(httpContext, ex);
+            }
+            catch (EntityNotFoundException ex)
+            {
+                httpContext.Response.StatusCode = (int)HttpStatusCode.NotFound;
                 await HandleExceptionAsync(httpContext, ex);
             }
             catch (EntryPointNotFoundException ex)
             {
-                _logger.Error("A new EntryPointNotFoundException exception has been thrown: {0}", ex.Message);
 
                 httpContext.Response.StatusCode = (int)HttpStatusCode.NotFound;
                 await HandleExceptionAsync(httpContext, ex);
             }
             catch (Exception ex)
             {
-                _logger.Error(exception: ex, message: "Something went wrong: {0}", ex.Message);
 
                 httpContext.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
                 await HandleExceptionAsync(httpContext, ex);
@@ -50,6 +50,7 @@ namespace IoDit.WebAPI.Config.ErrorHandling
 
         private async Task HandleExceptionAsync(HttpContext context, Exception exception)
         {
+            _logger.Error(exception: exception, message: "A new {0} was thrown: {1}", exception.GetType().Name, exception.Message);
 
             context.Response.ContentType = "application/json";
 
