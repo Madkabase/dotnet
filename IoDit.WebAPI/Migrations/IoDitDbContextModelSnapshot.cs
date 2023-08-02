@@ -160,7 +160,7 @@ namespace IoDit.WebAPI.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<long?>("ThresholdId")
+                    b.Property<long>("ThresholdId")
                         .HasColumnType("bigint");
 
                     b.HasKey("Id");
@@ -458,7 +458,8 @@ namespace IoDit.WebAPI.Migrations
                     b.HasOne("IoDit.WebAPI.Persistence.Entities.Threshold", "Threshold")
                         .WithOne("Field")
                         .HasForeignKey("IoDit.WebAPI.Persistence.Entities.Field", "ThresholdId")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("Farm");
 
