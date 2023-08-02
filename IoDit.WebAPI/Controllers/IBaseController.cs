@@ -4,5 +4,5 @@ namespace IoDit.WebAPI.Controllers;
 
 public interface IBaseController
 {
-    public Task<User?> GetRequestDetails();
+    public Task<User> GetRequestDetails();
 }

@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using IoDit.WebAPI.Utilities.Helpers;
 using IoDit.WebAPI.DTO;
+using IoDit.WebAPI.Models.Auth;
 
 namespace IoDit.WebAPI.Controllers;
 
@@ -34,22 +35,13 @@ public class AuthController : ControllerBase, IBaseController
 
     [AllowAnonymous]
     [HttpPost("login")]
-    public async Task<IActionResult> Login([FromBody] LoginRequestDto model)
+    public async Task<ActionResult<LoginResponseDto>> Login([FromBody] LoginRequestDto model)
     {
-        try
-        {
-            var result = await _authService.Login(model.Email, model.Password, model.DeviceIdentifier);
 
-            return Ok(result);
-        }
-        catch (UnauthorizedAccessException e)
-        {
-            return Unauthorized(new ErrorResponseDTO { Message = e.Message });
-        }
-        catch (Exception e)
-        {
-            return BadRequest(new ErrorResponseDTO { Message = e.Message });
-        }
+        var result = await _authService.Login(model.Email, model.Password, model.DeviceIdentifier);
+
+        return Ok(result);
+
     }
 
     /// <summary>
@@ -59,19 +51,18 @@ public class AuthController : ControllerBase, IBaseController
     /// <returns>A registrationResponseDTO</returns>
     [AllowAnonymous]
     [HttpPost("register")]
-    public async Task<IActionResult> Register([FromBody] RegisterRequestDto model)
+    public async Task<ActionResult<RegisterResponseDto>> Register([FromBody] RegisterRequestDto model)
     {
-
         // Check if the password and the confirm password are the same
         if (model.Password != model.ConfirmPassword)
         {
-            return BadRequest(new ErrorResponseDTO { Message = "Passwords do not match" });
+            throw new BadHttpRequestException("Passwords do not match");
         }
 
         var result = await _authService.Register(model.Email, model.Password, model.FirstName, model.LastName);
         if (result.RegistrationFlowType != RegistrationFlowType.NewUser)
         {
-            return BadRequest(new ErrorResponseDTO { Message = result.Message });
+            throw new BadHttpRequestException(result.Message);
         }
         return Ok(result);
     }
@@ -83,15 +74,13 @@ public class AuthController : ControllerBase, IBaseController
     /// <returns>A confirmationResponseDTO</returns>
     [AllowAnonymous]
     [HttpPost("confirmAccount")]
-    public async Task<IActionResult> ConfirmAccount([FromBody] ConfirmCodeRequestDto model)
+    public async Task<ActionResult<ConfirmCodeResponseDto>> ConfirmAccount([FromBody] ConfirmCodeRequestDto model)
     {
         var result = await _authService.ConfirmCode(model.Email, model.Code);
         if (result.CodeConfirmationFlowType != ConfirmCodeFlowType.Success)
         {
-            return BadRequest(new ErrorResponseDTO
-            {
-                Message = result.Message
-            });
+            throw new BadHttpRequestException(result.Message);
+
         }
         return Ok(result);
     }
@@ -101,27 +90,27 @@ public class AuthController : ControllerBase, IBaseController
     /// </summary>
     [AllowAnonymous]
     [HttpPost("refreshAccessToken")]
-    public async Task<IActionResult> refreshAccessToken([FromBody] RefreshTokenRequestDto model)
+    public async Task<ActionResult<RefreshTokenResponseDto>> refreshAccessToken([FromBody] RefreshTokenRequestDto model)
     {
         var token = await _refreshTokenService.GetRefreshTokenByToken(model.RefreshToken);
         if (token == null)
         {
-            return Unauthorized(new ErrorResponseDTO { Message = "Invalid refresh token" });
+            throw new UnauthorizedAccessException("Invalid refresh token");
         }
         if (token.DeviceIdentifier != model.DeviceIdentifier)
         {
-            return Unauthorized(new ErrorResponseDTO { Message = "Invalid device identifier" });
+            throw new UnauthorizedAccessException("Invalid device identifier");
         }
         if (await _refreshTokenService.isExpired(token))
         {
-            return Unauthorized(new ErrorResponseDTO { Message = "Refresh token expired" });
+            throw new UnauthorizedAccessException("Refresh token expired");
         }
         var newToken = await _refreshTokenService.GenerateRefreshToken(token.User, token.DeviceIdentifier);
 
-        return Ok(new
+        return Ok(new RefreshTokenResponseDto
         {
-            refreshToken = newToken.Token,
-            accessToken = _jwtHelper.GenerateJwtToken(token.User.Email)
+            RefreshToken = newToken.Token,
+            AccessToken = _jwtHelper.GenerateJwtToken(token.User.Email)
         });
     }
 
@@ -132,16 +121,10 @@ public class AuthController : ControllerBase, IBaseController
     /// <returns>A resetPasswordResponseDTO</returns>
     [AllowAnonymous]
     [HttpPost("sendResetMail")]
-    public async Task<IActionResult> SendResetPassword([FromBody] SendResetPasswordMailRequestDto model)
+    public async Task<ActionResult<SendResetPasswordMailResponseDto>> SendResetPassword([FromBody] SendResetPasswordMailRequestDto model)
     {
         var result = await _authService.SendResetPasswordLink(model.Email);
-        if (result.FlowType != ResetPasswordFlowType.MailSent)
-        {
-            return BadRequest(new ErrorResponseDTO
-            {
-                Message = result.Message
-            });
-        }
+
         return Ok(result);
     }
 
@@ -152,40 +135,32 @@ public class AuthController : ControllerBase, IBaseController
     /// <returns>A resetPasswordResponseDTO</returns>
     [AllowAnonymous]
     [HttpPost("resetPassword")]
-    public async Task<IActionResult> ResetPassword([FromBody] ResetPasswordRequestDto model)
+    public async Task<ActionResult<ResetPasswordResponseDto>> ResetPassword([FromBody] ResetPasswordRequestDto model)
     {
         if (model.Password != model.ConfirmPassword)
         {
-            return BadRequest(new ErrorResponseDTO { Message = "Passwords do not match" });
+            throw new BadHttpRequestException("Passwords do not match");
         }
 
         var result = await _authService.ResetPassword(model.Token, model.Password);
-        if (result.FlowType != ResetPasswordFlowType.PasswordReset)
-        {
-            return BadRequest(new ErrorResponseDTO
-            {
-                Message = result.Message
-            });
-        }
         return Ok(result);
     }
 
     [ApiExplorerSettings(IgnoreApi = true)]
-    public async Task<User?> GetRequestDetails()
+    public async Task<User> GetRequestDetails()
     {
         var claimsIdentity = User.Identity as ClaimsIdentity;
         var userIdClaim = claimsIdentity?.FindFirst(ClaimTypes.NameIdentifier);
         var userId = userIdClaim?.Value;
         if (userId == null)
         {
-            return null;
+            throw new UnauthorizedAccessException("Invalid user");
         }
         var user = await _userService.GetUserByEmail(userId);
-        if (user != null)
+        if (user == null)
         {
-            return user;
+            throw new UnauthorizedAccessException("Invalid user");
         }
-
-        return null;
+        return user;
     }
 }

@@ -6,6 +6,7 @@ using IoDit.WebAPI.DTO.User;
 using Microsoft.AspNetCore.Authorization;
 using IoDit.WebAPI.DTO;
 using IoDit.WebAPI.DTO.Farm;
+using IoDit.WebAPI.Config.Exceptions;
 
 namespace IoDit.WebAPI.Controllers;
 
@@ -30,13 +31,10 @@ public class UserController : ControllerBase, IBaseController
     }
 
     [HttpGet("getUser")]
-    public async Task<IActionResult> GetUser()
+    public async Task<ActionResult<UserDto>> GetUser()
     {
         var user = await GetRequestDetails();
-        if (user == null)
-        {
-            return BadRequest(new ErrorResponseDTO { Message = "User not found" });
-        }
+
         var userDto = new UserDto
         {
             Email = user.Email,
@@ -65,21 +63,20 @@ public class UserController : ControllerBase, IBaseController
 
 
     [ApiExplorerSettings(IgnoreApi = true)]
-    public async Task<User?> GetRequestDetails()
+    public async Task<User> GetRequestDetails()
     {
         var claimsIdentity = User.Identity as ClaimsIdentity;
         var userIdClaim = claimsIdentity?.FindFirst(ClaimTypes.NameIdentifier);
         var userId = userIdClaim?.Value;
         if (userId == null)
         {
-            return null;
+            throw new UnauthorizedAccessException("Invalid user");
         }
         var user = await _userService.GetUserByEmail(userId);
-        if (user != null)
+        if (user == null)
         {
-            return user;
+            throw new UnauthorizedAccessException("Invalid user");
         }
-
-        return null;
+        return user;
     }
 }

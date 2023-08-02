@@ -1,4 +1,5 @@
 using System.Security.Claims;
+using IoDit.WebAPI.Config.Exceptions;
 using IoDit.WebAPI.DTO;
 using IoDit.WebAPI.DTO.Threshold;
 using IoDit.WebAPI.Persistence.Entities;
@@ -29,13 +30,9 @@ public class ThresholdPresetController : ControllerBase, IBaseController
 
 
     [HttpGet("globalPresets")]
-    public async Task<IActionResult> GetGlobalThreshold([FromQuery] String? name)
+    public async Task<ActionResult<GlobalThresholdPresetDto>> GetGlobalThreshold([FromQuery] String? name)
     {
         var user = await GetRequestDetails();
-        if (user == null)
-        {
-            return BadRequest(new ErrorResponseDTO { Message = "User not found" });
-        }
 
         var globalThreshold = await _globalThresholdService.GetGlobalThresholdPresets(name);
 
@@ -44,38 +41,33 @@ public class ThresholdPresetController : ControllerBase, IBaseController
     }
 
     [HttpPut("updateGlobalThreshold")]
-    public async Task<IActionResult> UpdateGlobalThreshold([FromBody] GlobalThresholdPresetDto globalThresholdDto)
+    public async Task<ActionResult<GlobalThresholdPresetDto>> UpdateGlobalThreshold([FromBody] GlobalThresholdPresetDto globalThresholdDto)
     {
         var user = await GetRequestDetails();
-        if (user == null)
-        {
-            return BadRequest(new ErrorResponseDTO { Message = "User not found" });
-        }
+
         if (user.AppRole != AppRoles.AppAdmin)
         {
-            return BadRequest(new ErrorResponseDTO { Message = "User does not have access to this farm" });
+            throw new UnauthorizedAccessException("User does not have access to this farm");
         }
 
         var globalThreshold = await _globalThresholdService.UpdateGlobalThreshold(globalThresholdDto);
         return Ok(GlobalThresholdPresetDto.FromEntity(globalThreshold));
     }
     [ApiExplorerSettings(IgnoreApi = true)]
-    public async Task<User?> GetRequestDetails()
+    public async Task<User> GetRequestDetails()
     {
         var claimsIdentity = User.Identity as ClaimsIdentity;
         var userIdClaim = claimsIdentity?.FindFirst(ClaimTypes.NameIdentifier);
         var userId = userIdClaim?.Value;
         if (userId == null)
         {
-            return null;
+            throw new UnauthorizedAccessException("Invalid user");
         }
         var user = await _userService.GetUserByEmail(userId);
-        if (user != null)
+        if (user == null)
         {
-            return user;
+            throw new UnauthorizedAccessException("Invalid user");
         }
-
-        return null;
+        return user;
     }
-
 }

@@ -1,8 +1,11 @@
 using System.Security.Claims;
+using IoDit.WebAPI.Config.Exceptions;
 using IoDit.WebAPI.DTO;
 using IoDit.WebAPI.DTO.Device;
+using IoDit.WebAPI.DTO.Farm;
 using IoDit.WebAPI.DTO.Field;
 using IoDit.WebAPI.DTO.Threshold;
+using IoDit.WebAPI.DTO.User;
 using IoDit.WebAPI.Persistence.Entities;
 using IoDit.WebAPI.Services;
 using IoDit.WebAPI.Utilities.Types;
@@ -35,7 +38,7 @@ public class FieldController : ControllerBase, IBaseController
     }
 
     [HttpGet("getFieldsWithDevicesForFarm/{farmId}")]
-    public async Task<IActionResult> GetFieldsWithDevicesForFarm(int farmId)
+    public async Task<ActionResult<List<Field>>> GetFieldsWithDevicesForFarm(int farmId)
     {
         var fields = await _fieldService.GetFieldsWithDevicesForFarm(new DTO.Farm.FarmDTO { Id = farmId });
         fields = fields.Select(f =>
@@ -49,22 +52,18 @@ public class FieldController : ControllerBase, IBaseController
 
 
     [HttpPost("createField")]
-    public async Task<IActionResult> CreateField([FromBody] CreateFieldRequestDTO createFieldDTO)
+    public async Task<ActionResult<FieldDto>> CreateField([FromBody] CreateFieldRequestDTO createFieldDTO)
     {
         var user = await GetRequestDetails();
-        if (user == null)
-        {
-            return BadRequest(new ErrorResponseDTO { Message = "User not found" });
-        }
 
         var userFarm = await _farmUserService.GetUserFarm(createFieldDTO.Farm.Id, user.Id);
         if (userFarm == null)
         {
-            return BadRequest(new ErrorResponseDTO { Message = "User does not have access to this farm" });
+            throw new UnauthorizedAccessException("User does not have access to this farm");
         }
         if (userFarm.FarmRole != FarmRoles.Admin && AppRoles.AppAdmin != user.AppRole)
         {
-            return BadRequest(new ErrorResponseDTO { Message = "User does not have access to this farm" });
+            throw new UnauthorizedAccessException("User does not have access to this farm");
         }
 
         var field = new FieldDto
@@ -78,19 +77,14 @@ public class FieldController : ControllerBase, IBaseController
 
         var farm = new DTO.Farm.FarmDTO { Id = createFieldDTO.Farm.Id };
 
-
         var fieldE = (await _fieldService.CreateFieldForFarm(field, farm));
         return Ok(FieldDto.FromEntity(fieldE));
     }
 
     [HttpGet("getFieldDetails/{fieldId}")]
-    public async Task<IActionResult> GetFieldDetails(int fieldId)
+    public async Task<ActionResult<FieldDto>> GetFieldDetails(int fieldId)
     {
         var user = await GetRequestDetails();
-        if (user == null)
-        {
-            return BadRequest(new ErrorResponseDTO { Message = "User not found" });
-        }
 
         if (!await _fieldService.UserHasAccessToField(fieldId, user))
         {
@@ -99,7 +93,7 @@ public class FieldController : ControllerBase, IBaseController
         var field = await _fieldService.GetFieldById(fieldId);
         if (field == null)
         {
-            return BadRequest(new ErrorResponseDTO { Message = "Field not found" });
+            throw new EntityNotFoundException("Field not found");
         }
         var fieldDto = new FieldDto
         {
@@ -113,46 +107,66 @@ public class FieldController : ControllerBase, IBaseController
     }
 
     [HttpPatch("{fieldId}/updateThreshold")]
-    public async Task<IActionResult> UpdateThreshold(int fieldId, [FromBody] ThresholdDto thresholdDto)
+    public async Task<ActionResult<ThresholdDto>> UpdateThreshold(int fieldId, [FromBody] ThresholdDto thresholdDto)
     {
         var user = await GetRequestDetails();
-        if (user == null)
-        {
-            return NotFound(new ErrorResponseDTO { Message = "User not found" });
-        }
+
         var field = await _fieldService.GetFieldById(fieldId);
         if (field == null)
         {
-            return NotFound(new ErrorResponseDTO { Message = "Field not found" });
+            throw new EntityNotFoundException("Field not found");
         }
         if (!await _fieldService.UserCanChangeField(fieldId, user))
         {
-            return Unauthorized(new ErrorResponseDTO { Message = "User does no right to modify field" });
+            throw new UnauthorizedAccessException("User has no right to modify field");
         }
         var threshold = await _thresholdService.UpdateThreshold(thresholdDto);
         if (threshold == null)
         {
-            return NotFound(new ErrorResponseDTO { Message = "Threshold not found" });
+            throw new EntityNotFoundException("Threshold not found");
         }
         return Ok(ThresholdDto.FromEntity(threshold));
     }
 
     [ApiExplorerSettings(IgnoreApi = true)]
-    public async Task<User?> GetRequestDetails()
+    public async Task<User> GetRequestDetails()
     {
         var claimsIdentity = User.Identity as ClaimsIdentity;
         var userIdClaim = claimsIdentity?.FindFirst(ClaimTypes.NameIdentifier);
         var userId = userIdClaim?.Value;
         if (userId == null)
         {
-            return null;
+            throw new UnauthorizedAccessException("Invalid user");
         }
         var user = await _userService.GetUserByEmail(userId);
-        if (user != null)
+        if (user == null)
         {
-            return user;
+            throw new UnauthorizedAccessException("Invalid user");
         }
+        return user;
+    }
 
-        return null;
+    [HttpGet("{fieldId}/devices")]
+    public Task<ActionResult<List<DeviceDto>>> GetDevicesForField(int fieldId)
+    {
+        throw new NotImplementedException();
+    }
+
+    [HttpGet("{fieldId}/threshold")]
+    public Task<ActionResult<List<ThresholdDto>>> GetThresholdForField(int fieldId)
+    {
+        throw new NotImplementedException();
+    }
+
+    [HttpGet("{fieldId}/owner")]
+    public Task<ActionResult<UserDto>> GetOwnerForField(int fieldId)
+    {
+        throw new NotImplementedException();
+    }
+
+    [HttpGet("{fieldId}/farm")]
+    public Task<ActionResult<FarmDTO>> GetFarmForField(int fieldId)
+    {
+        throw new NotImplementedException();
     }
 }

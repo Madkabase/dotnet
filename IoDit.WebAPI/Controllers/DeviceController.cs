@@ -18,46 +18,31 @@ public class DeviceController : ControllerBase, IBaseController
     }
 
     [HttpPost]
-    public async Task<IActionResult> CreateDevice([FromBody] CreateDeviceRequestDto createDeviceRequestDto)
+    public async Task<ActionResult<CreateDeviceResponseDto>> CreateDevice([FromBody] CreateDeviceRequestDto createDeviceRequestDto)
     {
-        try
+        // TOOD: Check if the user has rigths to create a device
+        var getDevice = await _deviceService.GetDeviceByDevEUI(createDeviceRequestDto.DevEUI);
+        if (getDevice != null)
         {
-            var getDevice = await _deviceService.GetDeviceByDevEUI(createDeviceRequestDto.DevEUI);
-            if (getDevice != null)
-            {
-                return BadRequest(new CreateDeviceResponseDto
-                {
-                    Message = "Device already bounded to a field"
-                });
-            }
+            throw new BadHttpRequestException("Device already bounded to a field");
+        }
 
-            var device = await _deviceService.CreateDevice(createDeviceRequestDto);
-            return Ok(new CreateDeviceResponseDto
-            {
-                Device = new DeviceDto
-                {
-                    Id = device.DevEUI,
-                    Name = device.Name,
-                },
-                Message = "Device created successfully"
-            });
-        }
-        catch (HttpRequestException e)
+        var device = await _deviceService.CreateDevice(createDeviceRequestDto);
+        return Ok(new CreateDeviceResponseDto
         {
-            return BadRequest(new CreateDeviceResponseDto
+            Device = new DeviceDto
             {
-                Message = e.Message
-            });
-        }
-        catch (System.Exception)
-        {
+                Id = device.DevEUI,
+                Name = device.Name,
+            },
+            Message = "Device created successfully"
+        });
 
-            throw;
-        }
+
     }
 
     [ApiExplorerSettings(IgnoreApi = true)]
-    public Task<User?> GetRequestDetails()
+    public Task<User> GetRequestDetails()
     {
         throw new NotImplementedException();
     }
