@@ -7,6 +7,7 @@ namespace IoDit.WebAPI.Persistence.Entities;
 public class Field : EntityBase, IEntity
 {
     public string Name { get; set; }
+    public long FarmId { get; set; }
     public Farm Farm { get; set; }
     public Geometry Geofence { get; set; }
     public long ThresholdId { get; set; }
