@@ -58,28 +58,26 @@ public class FieldRepository : IFieldRepository
     }
 
     public async Task<Field?> GetFieldById(long id) =>
-    await Task.Run(() => _context.Fields
-        .Where(f => f.Id == id)
-        .Include(f => f.Farm)
-        .Include(f => f.Threshold)
-        .Include(f => f.Devices).ToList()
-        .Select(f =>
-        new Field
+        await Task.Run(() =>
         {
-            Id = f.Id,
-            Name = f.Name,
-            Geofence = f.Geofence,
-            Farm = f.Farm,
-            Threshold = f.Threshold,
-            Devices =
-            f.Devices.Select(d => new Device
+            Field? field = _context.Fields
+            .Include(f => f.Farm)
+            .Include(f => f.Threshold)
+            .Include(f => f.Devices).ToList()
+            .Find(match: f => f.Id == id);
+
+            field?.Devices.Select(d => new Device
             {
                 DevEUI = d.DevEUI,
                 Name = d.Name,
                 AppKey = d.AppKey,
                 JoinEUI = d.JoinEUI,
-                Field = f,
+                Field = field,
                 DeviceData = _context.DeviceData.Where(dd => dd.TimeStamp.ToLocalTime() > DateTime.Now.AddDays(-1).ToLocalTime() && dd.DevEUI == d.DevEUI).ToList()
-            }).ToList()
-        }).FirstOrDefault(f => f.Id == id));
+            }).ToList();
+
+
+            return field;
+        });
+
 }
