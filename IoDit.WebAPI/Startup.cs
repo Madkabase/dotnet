@@ -62,11 +62,14 @@ public class Startup
 
             services.AddDbContext<AgroditDbContext>(opts =>
             {
-                opts.UseNpgsql(connectionString, x =>
-                x.UseNetTopologySuite()
-                .UseQuerySplittingBehavior(QuerySplittingBehavior.SplitQuery)
-                );
-
+                opts
+                    .UseNpgsql(connectionString, x =>
+                        x.UseNetTopologySuite()
+                        .UseQuerySplittingBehavior(QuerySplittingBehavior.SplitQuery)
+                     )
+                    .UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking)
+                    .EnableSensitiveDataLogging()
+                    .EnableDetailedErrors();
             });
             // var issuer = configuration["JwtSettings-Issuer"];
             // var audience = configuration["JwtSettings-Audience"];

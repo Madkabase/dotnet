@@ -10,6 +10,7 @@ public class LoriotApiClient
     private readonly HttpClient _httpClient;
     private readonly IConfiguration _configuration;
     private readonly string apiBaseUrl = "https://eu5pro.loriot.io/1/nwk";
+    private readonly NLog.Logger _logger = NLog.LogManager.GetCurrentClassLogger();
 
     public LoriotApiClient(HttpClient httpClient, IConfiguration configuration)
     {
@@ -210,7 +211,7 @@ public class LoriotApiClient
         }
         else
         {
-            Console.WriteLine(await response.Content.ReadAsStringAsync());
+            _logger.Error(await response.Content.ReadAsStringAsync());
             throw new HttpRequestException($"Error calling external API: {response.ReasonPhrase}", new Exception(), statusCode: response.StatusCode);
         }
     }

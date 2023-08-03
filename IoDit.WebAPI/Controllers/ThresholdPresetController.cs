@@ -1,4 +1,5 @@
 using System.Security.Claims;
+using IoDit.WebAPI.BO;
 using IoDit.WebAPI.Config.Exceptions;
 using IoDit.WebAPI.DTO;
 using IoDit.WebAPI.DTO.Threshold;
@@ -30,14 +31,14 @@ public class ThresholdPresetController : ControllerBase, IBaseController
 
 
     [HttpGet("globalPresets")]
-    public async Task<ActionResult<GlobalThresholdPresetDto>> GetGlobalThreshold([FromQuery] String? name)
+    public async Task<ActionResult<GlobalThresholdPresetDto>> GetGlobalThreshold([FromQuery] string? name)
     {
         var user = await GetRequestDetails();
 
-        var globalThreshold = await _globalThresholdService.GetGlobalThresholdPresets(name);
+        List<GlobalThresholdPresetBo> globalThreshold = await _globalThresholdService.GetGlobalThresholdPresets(name);
 
 
-        return Ok(globalThreshold.Select(GlobalThresholdPresetDto.FromEntity));
+        return Ok(globalThreshold.Select((g) => GlobalThresholdPresetDto.FromBo(g)).ToList());
     }
 
     [HttpPut("updateGlobalThreshold")]
@@ -50,11 +51,11 @@ public class ThresholdPresetController : ControllerBase, IBaseController
             throw new UnauthorizedAccessException("User does not have access to this farm");
         }
 
-        var globalThreshold = await _globalThresholdService.UpdateGlobalThreshold(globalThresholdDto);
-        return Ok(GlobalThresholdPresetDto.FromEntity(globalThreshold));
+        var globalThreshold = await _globalThresholdService.UpdateGlobalThreshold(GlobalThresholdPresetBo.FromDto(globalThresholdDto));
+        return Ok(GlobalThresholdPresetDto.FromBo(globalThreshold));
     }
     [ApiExplorerSettings(IgnoreApi = true)]
-    public async Task<User> GetRequestDetails()
+    public async Task<BO.UserBo> GetRequestDetails()
     {
         var claimsIdentity = User.Identity as ClaimsIdentity;
         var userIdClaim = claimsIdentity?.FindFirst(ClaimTypes.NameIdentifier);
@@ -64,10 +65,6 @@ public class ThresholdPresetController : ControllerBase, IBaseController
             throw new UnauthorizedAccessException("Invalid user");
         }
         var user = await _userService.GetUserByEmail(userId);
-        if (user == null)
-        {
-            throw new UnauthorizedAccessException("Invalid user");
-        }
         return user;
     }
 }

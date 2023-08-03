@@ -14,7 +14,7 @@ public interface IAuthService
     /// <param name="email">The email of the user</param>
     /// <param name="password">The password of the user</param>
     /// <param name="DeviceId">The device id of the user</param>
-    public Task<LoginResponseDto?> Login(String email, String password, String DeviceId);
+    public Task<LoginResponseDto?> Login(String email, string password, string DeviceId);
 
     /// <summary>
     /// Registers a user
@@ -25,7 +25,7 @@ public interface IAuthService
     /// <param name="lastName">The last name of the user</param>
     /// <returns></returns>
 
-    public Task<RegisterResponseDto> Register(String email, String password, String firstName, String lastName);
+    public Task<RegisterResponseDto> Register(String email, string password, string firstName, string lastName);
     /// <summary>
     /// Confirms the code sent to the user's email  
     /// </summary>
@@ -45,5 +45,5 @@ public interface IAuthService
     /// <param name="token">The token sent to the user's email</param>
     /// <param name="newPassword">The new password of the user</param>
     /// <returns></returns>
-    Task<ResetPasswordResponseDto> ResetPassword(string token, String newPassword);
+    Task<ResetPasswordResponseDto> ResetPassword(string token, string newPassword);
 }

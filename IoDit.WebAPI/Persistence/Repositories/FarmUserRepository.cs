@@ -1,3 +1,4 @@
+using IoDit.WebAPI.BO;
 using IoDit.WebAPI.Persistence.Entities;
 using Microsoft.EntityFrameworkCore;
 
@@ -11,16 +12,26 @@ public class FarmUserRepository : IFarmUserRepository
         _context = context;
     }
 
-    public async Task<List<FarmUser>> getUserFarms(User user) =>
+    public async Task<List<FarmUser>> GetUserFarms(UserBo user) =>
          await Task.Run(() => _context.FarmUsers.Include(fu => fu.Farm).Where(fu => fu.User.Id == user.Id).ToList());
 
+    public async Task<List<FarmUser>> GetFarmUsers(FarmBo farm) =>
+        await Task.Run(() => _context.FarmUsers.Include(fu => fu.User).Where(fu => fu.Farm.Id == farm.Id).ToList());
     public async Task<FarmUser?> GetUserFarm(long farmId, long userId) =>
         await Task.Run(() => _context.FarmUsers.Include(fu => fu.Farm).Include(fu => fu.User).FirstOrDefaultAsync(fu => fu.Farm.Id == farmId && fu.User.Id == userId));
 
-    public async Task<FarmUser> AddFarmUser(FarmUser farmUser)
+    public async Task<FarmUser?> AddFarmUser(FarmUserBo farmUser)
     {
-        var user = _context.FarmUsers.Add(farmUser).Entity;
+        FarmUser farmUserE = new()
+        {
+
+            FarmRole = farmUser.FarmRole,
+            FarmId = farmUser.Farm.Id,
+            UserId = farmUser.User.Id,
+        };
+        var user = _context.FarmUsers.Add(farmUserE).Entity;
+
         await _context.SaveChangesAsync();
-        return user!;
+        return user;
     }
 }

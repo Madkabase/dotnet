@@ -1,10 +1,9 @@
-using IoDit.WebAPI.DTO.Device;
-using IoDit.WebAPI.Persistence.Entities;
+using IoDit.WebAPI.BO;
 
 namespace IoDit.WebAPI.Services;
 
 public interface IDeviceService
 {
-    public Task<Device> CreateDevice(CreateDeviceRequestDto createDeviceRequestDto);
-    Task<Device> GetDeviceByDevEUI(string devEUI);
+    public Task<DeviceBo> CreateDevice(FieldBo fieldBo, DeviceBo deviceBo);
+    Task<DeviceBo> GetDeviceByDevEUI(string devEUI);
 }

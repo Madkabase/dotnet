@@ -1,7 +1,9 @@
+using IoDit.WebAPI.BO;
 using IoDit.WebAPI.DTO.Device;
 using IoDit.WebAPI.Persistence.Entities;
 using IoDit.WebAPI.Services;
 using Microsoft.AspNetCore.Mvc;
+using IoDit.WebAPI.Config.Exceptions;
 
 namespace IoDit.WebAPI.Controllers;
 
@@ -18,31 +20,33 @@ public class DeviceController : ControllerBase, IBaseController
     }
 
     [HttpPost]
-    public async Task<ActionResult<CreateDeviceResponseDto>> CreateDevice([FromBody] CreateDeviceRequestDto createDeviceRequestDto)
+    public async Task<ActionResult<DeviceDto>> CreateDevice([FromBody] CreateDeviceRequestDto createDeviceRequestDto)
     {
-        // TOOD: Check if the user has rigths to create a device
-        var getDevice = await _deviceService.GetDeviceByDevEUI(createDeviceRequestDto.DevEUI);
-        if (getDevice != null)
+        // TODO: Check if the user has rigths to create a device
+        try
         {
+            var getDevice = await _deviceService.GetDeviceByDevEUI(createDeviceRequestDto.DevEUI);
             throw new BadHttpRequestException("Device already bounded to a field");
         }
-
-        var device = await _deviceService.CreateDevice(createDeviceRequestDto);
-        return Ok(new CreateDeviceResponseDto
+        catch (EntityNotFoundException)
         {
-            Device = new DeviceDto
+            DeviceBo deviceBo = new()
             {
-                Id = device.DevEUI,
-                Name = device.Name,
-            },
-            Message = "Device created successfully"
-        });
+                DevEUI = createDeviceRequestDto.DevEUI,
+                Name = createDeviceRequestDto.Name,
+                AppKey = createDeviceRequestDto.AppKey,
+                JoinEUI = createDeviceRequestDto.JoinEUI,
+            };
 
-
+            var device = await _deviceService.CreateDevice(new FieldBo { Id = createDeviceRequestDto.FieldId }, deviceBo);
+            return Ok(DeviceDto.FromBo(device));
+        }
+        catch (BadHttpRequestException) { throw; }
+        catch (System.Exception) { throw; }
     }
 
     [ApiExplorerSettings(IgnoreApi = true)]
-    public Task<User> GetRequestDetails()
+    public Task<UserBo> GetRequestDetails()
     {
         throw new NotImplementedException();
     }

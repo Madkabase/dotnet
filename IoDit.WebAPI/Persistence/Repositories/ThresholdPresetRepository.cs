@@ -1,3 +1,4 @@
+using IoDit.WebAPI.BO;
 using IoDit.WebAPI.Persistence.Entities;
 
 namespace IoDit.WebAPI.Persistence.Repositories;
@@ -18,11 +19,12 @@ public class ThresholdPresetRepository : IThresholdPresetRepository
 
     public async Task<List<GlobalThresholdPreset>> GetGlobalThresholdPresets(String name)
     {
-        return await Task.Run(() => _dbContext.GlobalThresholdPresets.Where(x => x.Name.ToUpperInvariant().Contains(name.ToUpperInvariant())).ToList());
+        return await Task.Run(() => _dbContext.GlobalThresholdPresets.Where(x => x.Name.ToUpper().Contains(name.ToUpper())).ToList());
     }
 
-    public Task<GlobalThresholdPreset> UpdateGlobalThresholdPreset(GlobalThresholdPreset globalThresholdPresetDto)
+    public Task<GlobalThresholdPreset> UpdateGlobalThresholdPreset(GlobalThresholdPresetBo globalThresholdPresetDto)
     {
+        //TODO: Implement
         throw new NotImplementedException();
     }
 }

@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Authorization;
 using IoDit.WebAPI.DTO;
 using IoDit.WebAPI.DTO.Farm;
 using IoDit.WebAPI.Config.Exceptions;
+using IoDit.WebAPI.BO;
 
 namespace IoDit.WebAPI.Controllers;
 
@@ -35,35 +36,33 @@ public class UserController : ControllerBase, IBaseController
     {
         var user = await GetRequestDetails();
 
-        var userDto = new UserDto
+
+        List<FarmUserBo> userFarms = await _farmUserService.GetUserFarms(user);
+
+        UserDto userDto = new UserDto
         {
+            Id = user.Id,
             Email = user.Email,
             FirstName = user.FirstName,
             LastName = user.LastName,
-            Id = user.Id,
-            AppRole = user.AppRole
-        };
-        var userFarms = await _farmUserService.getUserFarms(userDto);
-
-        if (userFarms != null)
-        {
-            userDto.Farms = userFarms.Select(f =>
-            new UserFarmDto
+            AppRole = user.AppRole,
+            Farms = userFarms.Select(f =>
+            new FarmUserDto
             {
-                Farm = new FarmDTO
+                Farm = new FarmDto
                 {
                     Id = f.Farm.Id,
                     Name = f.Farm.Name,
-                }
-            }).ToList();
-        }
+                },
+            }).ToList()
+        };
         return Ok(userDto);
     }
 
 
 
     [ApiExplorerSettings(IgnoreApi = true)]
-    public async Task<User> GetRequestDetails()
+    public async Task<UserBo> GetRequestDetails()
     {
         var claimsIdentity = User.Identity as ClaimsIdentity;
         var userIdClaim = claimsIdentity?.FindFirst(ClaimTypes.NameIdentifier);
@@ -73,10 +72,6 @@ public class UserController : ControllerBase, IBaseController
             throw new UnauthorizedAccessException("Invalid user");
         }
         var user = await _userService.GetUserByEmail(userId);
-        if (user == null)
-        {
-            throw new UnauthorizedAccessException("Invalid user");
-        }
         return user;
     }
 }

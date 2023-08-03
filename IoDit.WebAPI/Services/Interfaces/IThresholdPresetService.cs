@@ -1,3 +1,4 @@
+using IoDit.WebAPI.BO;
 using IoDit.WebAPI.DTO.Threshold;
 using IoDit.WebAPI.Persistence.Entities;
 
@@ -13,7 +14,7 @@ public interface IThresholdPresetService
     /// Can be empty, it will retrieve all the presets.
     /// </param>
     /// <returns>the list of the global presets</returns>
-    public Task<List<GlobalThresholdPreset>> GetGlobalThresholdPresets(String? name);
+    public Task<List<GlobalThresholdPresetBo>> GetGlobalThresholdPresets(String? name);
 
     /// <summary>
     /// update a preset.
@@ -21,5 +22,5 @@ public interface IThresholdPresetService
     /// </summary>
     /// <param name="globalThresholdPresetDto">the global threshold preset you want to change</param>
     /// <returns>the global threshold preset</returns>  
-    public Task<GlobalThresholdPreset> UpdateGlobalThreshold(GlobalThresholdPresetDto globalThresholdPresetDto);
+    public Task<GlobalThresholdPresetBo> UpdateGlobalThreshold(GlobalThresholdPresetBo globalThresholdPresetDto);
 }

@@ -1,3 +1,5 @@
+using IoDit.WebAPI.BO;
+using IoDit.WebAPI.Config.Exceptions;
 using IoDit.WebAPI.DTO;
 using IoDit.WebAPI.DTO.User;
 using IoDit.WebAPI.Persistence.Entities;
@@ -8,8 +10,8 @@ namespace IoDit.WebAPI.Services;
 
 public class FarmUserService : IFarmUserService
 {
-    IFarmUserRepository _farmUserRepository;
-    IEmailHelper _emailHelper;
+    private readonly IFarmUserRepository _farmUserRepository;
+    private readonly IEmailHelper _emailHelper;
 
     public FarmUserService(IFarmUserRepository farmUserRepository,
         IEmailHelper mailHelper)
@@ -17,48 +19,36 @@ public class FarmUserService : IFarmUserService
         _farmUserRepository = farmUserRepository;
         _emailHelper = mailHelper;
     }
-    public async Task<List<UserFarmDto>> getUserFarms(UserDto user)
+    public async Task<List<FarmUserBo>> GetUserFarms(UserBo user)
     {
-        var farms = await _farmUserRepository.getUserFarms(User.FromDTO(user));
+        var farms = await _farmUserRepository.GetUserFarms(user);
         if (farms == null)
         {
-            return new List<UserFarmDto>();
+            return new List<FarmUserBo>();
         }
 
-        return farms.Select(f => UserFarmDto.FromEntity(f)).ToList();
+        return farms.Select(f => FarmUserBo.FromEntity(f)).ToList();
     }
 
-    public async Task<FarmUser?> GetUserFarm(long farmId, long userId)
+    public async Task<FarmUserBo> GetUserFarm(long farmId, long userId)
     {
-        var farmUser = await _farmUserRepository.GetUserFarm(farmId, userId);
-        if (farmUser == null)
-        {
-            return null;
-        }
+        var farmUserE = await _farmUserRepository.GetUserFarm(farmId, userId) ?? throw new EntityNotFoundException("User is not part of the farm");
+
+        FarmUserBo farmUser = FarmUserBo.FromEntity(farmUserE);
 
         if (farmUser.FarmRole != Utilities.Types.FarmRoles.Admin)
         {
-            return new FarmUser
+            return new FarmUserBo
             {
 
                 FarmRole = farmUser.FarmRole,
-                Farm = new Farm
+                Farm = new FarmBo
                 {
                     Id = farmUser.Farm.Id,
                     Name = farmUser.Farm.Name,
                     AppId = farmUser.Farm.AppId,
                     AppName = farmUser.Farm.AppName,
-                    MaxDevices = farmUser.Farm.MaxDevices,
-
-                    FarmUsers = farmUser.Farm.FarmUsers.Select(fu => new FarmUser
-                    {
-                        FarmRole = fu.FarmRole,
-                        User = new User
-                        {
-                            FirstName = fu.User.FirstName,
-                            LastName = fu.User.LastName,
-                        }
-                    }).ToList()
+                    MaxDevices = farmUser.Farm.MaxDevices
                 }
             };
         }
@@ -66,27 +56,29 @@ public class FarmUserService : IFarmUserService
         return farmUser;
     }
 
-    public async Task<bool> HasAccessToFarm(Farm farm, User user)
+    public async Task<bool> HasAccessToFarm(FarmBo farm, UserBo user)
     {
         var farmUser = await _farmUserRepository.GetUserFarm(farm.Id, user.Id);
         if (farmUser == null)
         {
             return false;
         }
-
         return true;
     }
 
-    public async Task<FarmUser> AddFarmer(Farm farm, User userToAdd, Utilities.Types.FarmRoles role)
+    public async Task<FarmUserBo> AddFarmer(FarmBo farm, UserBo userToAdd, Utilities.Types.FarmRoles role)
     {
-        var farmUser = new FarmUser
+        var farmUser = new FarmUserBo
         {
             Farm = farm,
             User = userToAdd,
             FarmRole = role,
         };
 
-        var newFarmer = await _farmUserRepository.AddFarmUser(farmUser);
+        var newFarmer =
+            await _farmUserRepository.AddFarmUser(farmUser)
+            ?? throw new Exception("Error while adding the user to the farm");
+        farmUser.Id = newFarmer.Id;
         var mail = new CustomEmailMessage
         {
             Body = $"Hello {userToAdd.FirstName}, <p> You have been added to the farm {farm.Name} as a {role}. </p><br/>Regards, <br/> The Agrodit Team",
@@ -96,6 +88,12 @@ public class FarmUserService : IFarmUserService
         };
         await _emailHelper.SendEmailWithMailKitAsync(mail);
 
-        return newFarmer;
+        return farmUser;
+    }
+
+    public async Task<List<FarmUserBo>> GetFarmUsers(FarmBo farm)
+    {
+
+        return (await _farmUserRepository.GetFarmUsers(farm)).Select(fu => FarmUserBo.FromEntity(fu)).ToList();
     }
 }

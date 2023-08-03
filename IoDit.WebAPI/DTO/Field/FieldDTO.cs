@@ -1,3 +1,4 @@
+using IoDit.WebAPI.BO;
 using IoDit.WebAPI.DTO.Device;
 using IoDit.WebAPI.DTO.Farm;
 using IoDit.WebAPI.DTO.Threshold;
@@ -13,19 +14,19 @@ public class FieldDto
     public Geometry? Geofence { get; set; } = null;
     public List<DeviceDto> Devices { get; set; } = new List<DeviceDto>();
 
-    public ThresholdDto? Threshold { get; set; } = null;
+    public ThresholdDto Threshold { get; set; }
     public long OverallMoistureLevel { get; set; } = 0;
 
-    public static FieldDto FromEntity(Persistence.Entities.Field field)
+    internal static FieldDto FromBo(FieldBo f)
     {
         return new FieldDto
         {
-            Id = field.Id,
-            Name = field.Name,
-            Geofence = field.Geofence,
-            Devices = field.Devices.Select(d => DeviceDto.FromEntity(d)).ToList(),
-            Threshold = field.Threshold != null ? ThresholdDto.FromEntity(field.Threshold) : null,
+            Id = f.Id,
+            Name = f.Name,
+            Geofence = f.Geofence,
+            Threshold = ThresholdDto.FromBo(f.Threshold),
+            Devices = f.Devices.Select(d => DeviceDto.FromBo(d)).ToList(),
+            OverallMoistureLevel = 0
         };
     }
-
 }

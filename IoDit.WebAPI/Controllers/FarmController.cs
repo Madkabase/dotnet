@@ -1,9 +1,10 @@
 using System.Security.Claims;
+using IoDit.WebAPI.BO;
 using IoDit.WebAPI.Config.Exceptions;
-using IoDit.WebAPI.DTO;
 using IoDit.WebAPI.DTO.Farm;
+using IoDit.WebAPI.DTO.Field;
+using IoDit.WebAPI.DTO.Threshold;
 using IoDit.WebAPI.DTO.User;
-using IoDit.WebAPI.Persistence.Entities;
 using IoDit.WebAPI.Services;
 using IoDit.WebAPI.Utilities.Types;
 using Microsoft.AspNetCore.Authorization;
@@ -16,6 +17,7 @@ namespace IoDit.WebAPI.Controllers;
 [Route("[controller]")]
 public class FarmController : ControllerBase, IBaseController
 {
+    private readonly NLog.Logger _logger = NLog.LogManager.GetCurrentClassLogger();
     private readonly IFarmService _farmService;
     private readonly IUserService _userService;
     private readonly IFarmUserService _farmUserService;
@@ -35,16 +37,25 @@ public class FarmController : ControllerBase, IBaseController
     }
 
     [HttpGet("myFarms")]
-    public async Task<ActionResult<List<Farm>>> GetMyFarms()
+    public async Task<ActionResult<List<FarmDto>>> GetMyFarms()
     {
         var user = await GetRequestDetails();
 
-        var farms = await _farmService.getUserFarms(UserDto.FromEntity(user));
-        return Ok(farms);
+        var farms = await _farmService.getUserFarms(user);
+        return Ok(farms.Select(f =>
+        new FarmDto
+        {
+            Id = f.Id,
+            Name = f.Name,
+            AppId = f.AppId,
+            AppName = f.AppName,
+            MaxDevices = f.MaxDevices,
+            Owner = UserDto.FromBo(f.Owner)
+        }).ToList());
     }
 
     [HttpGet("details/{farmId}")]
-    public async Task<ActionResult<FarmDTO>> GetFarmDetails([FromRoute] int farmId)
+    public async Task<ActionResult<FarmDto>> GetFarmDetails([FromRoute] int farmId)
     {
         var user = await GetRequestDetails();
 
@@ -58,29 +69,34 @@ public class FarmController : ControllerBase, IBaseController
         }
 
         var farm = await _farmService.getFarmDetailsById(farmId);
-        if (farm == null)
+        FarmDto farmDto = new()
         {
-            throw new EntityNotFoundException("Farm not found");
-        }
+            isRequesterAdmin = userFarm?.FarmRole == FarmRoles.Admin || user.AppRole == AppRoles.AppAdmin,
+            Id = farm.Id,
+            Name = farm.Name,
+            AppId = farm.AppId,
+            AppName = farm.AppName,
+            MaxDevices = farm.MaxDevices,
+            Owner = UserDto.FromBo(farm.Owner),
 
-        farm.isRequesterAdmin = userFarm?.FarmRole == FarmRoles.Admin || user.AppRole == AppRoles.AppAdmin;
-
-        farm.Users?.ForEach(u =>
+            Fields = farm.Fields?.Select(f =>
+                new FieldDto
+                {
+                    Id = f.Id,
+                    Name = f.Name,
+                    Geofence = f.Geofence,
+                    Threshold = ThresholdDto.FromBo(f.Threshold),
+                    OverallMoistureLevel = _fieldService.CalculateOverAllMoistureLevel(f.Devices.ToList(), f.Threshold)
+                }
+        ).ToList()
+        };
+        farmDto.Users = farmDto.isRequesterAdmin ? (await _farmUserService.GetFarmUsers(farm)).Select(fu =>
+        new FarmUserDto
         {
-            // remove farm from user dto
-            u.Farm = null;
-            // if requester is not admin, remove user details
-            if (!farm.isRequesterAdmin)
-            {
-                u.User = new UserDto { };
-            }
-        }
-        );
-        farm.Fields?.ForEach(f =>
-        {
-            f.OverallMoistureLevel = _fieldService.CalculateOverAllMoistureLevel(f.Devices, f.Threshold);
-        });
-        return Ok(farm);
+            User = UserDto.FromBo(fu.User),
+            Farm = new FarmDto()
+        }).ToList() : null;
+        return Ok(farmDto);
     }
 
     [HttpPut("{farmId}/addFarmer")]
@@ -95,29 +111,26 @@ public class FarmController : ControllerBase, IBaseController
             throw new UnauthorizedAccessException("User does not have access to this farm");
         }
         // check if user to add exists  
-        var userToAdd = await _userService.GetUserByEmail(addFarmerDTO.UserEmail);
+        UserBo userToAdd = await _userService.GetUserByEmail(addFarmerDTO.UserEmail);
         if (userToAdd == null)
         {
             throw new EntityNotFoundException("User not found");
         }
         // chek if user is already part of the farm
-        var newUserFarm = await _farmUserService.GetUserFarm(farmId, userToAdd.Id);
-        if (newUserFarm != null)
+        try
         {
+            FarmUserBo? newUserFarm = await _farmUserService.GetUserFarm(farmId, userToAdd.Id);
             throw new BadHttpRequestException("User is already part of the farm");
         }
-
-        FarmUser userFarmToAdd = await _farmUserService.AddFarmer(userFarm.Farm, userToAdd, addFarmerDTO.Role);
-        if (userFarmToAdd == null)
+        catch (EntityNotFoundException)
         {
-            throw new Exception("Error adding user to farm");
+            await _farmUserService.AddFarmer(userFarm.Farm, userToAdd, addFarmerDTO.Role);
+            return Ok();
         }
-
-        return Ok();
     }
 
     [ApiExplorerSettings(IgnoreApi = true)]
-    public async Task<User> GetRequestDetails()
+    public async Task<BO.UserBo> GetRequestDetails()
     {
         var claimsIdentity = User.Identity as ClaimsIdentity;
         var userIdClaim = claimsIdentity?.FindFirst(ClaimTypes.NameIdentifier);
@@ -127,10 +140,6 @@ public class FarmController : ControllerBase, IBaseController
             throw new UnauthorizedAccessException("Invalid user");
         }
         var user = await _userService.GetUserByEmail(userId);
-        if (user == null)
-        {
-            throw new UnauthorizedAccessException("Invalid user");
-        }
         return user;
     }
 

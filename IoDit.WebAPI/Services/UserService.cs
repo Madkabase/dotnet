@@ -1,3 +1,5 @@
+using IoDit.WebAPI.BO;
+using IoDit.WebAPI.Config.Exceptions;
 using IoDit.WebAPI.Persistence.Entities;
 using IoDit.WebAPI.Persistence.Repositories;
 
@@ -12,18 +14,15 @@ public class UserService : IUserService
         _userRepository = userRepository;
     }
 
-    /// <summary>
-    ///     Creates a new user in the database.
-    /// </summary>
-    /// <param name="user">The user to be created.</param>
-    /// <returns>The created user.</returns>
-    public async Task<User?> GetUserByEmail(string email)
+
+    public async Task<UserBo> GetUserByEmail(string email)
     {
         var user = await _userRepository.GetUserByEmail(email);
         if (user == null)
         {
-            return null;
+            throw new EntityNotFoundException("User not found");
         }
-        return user;
+        return UserBo.FromEntity(user);
+
     }
 }

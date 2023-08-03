@@ -2,5 +2,5 @@ namespace IoDit.WebAPI.DTO.Auth;
 
 public class SendResetPasswordMailRequestDto
 {
-    public String Email { get; set; }
+    public string Email { get; set; }
 }

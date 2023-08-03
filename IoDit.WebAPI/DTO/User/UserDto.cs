@@ -10,9 +10,9 @@ public class UserDto
     public AppRoles AppRole { get; set; }
     public string Email { get; set; }
     public long Id { get; set; }
-    public List<UserFarmDto> Farms { get; set; } = new List<UserFarmDto>();
+    public List<FarmUserDto> Farms { get; set; } = new List<FarmUserDto>();
 
-    public static UserDto FromEntity(Persistence.Entities.User user)
+    public static UserDto FromBo(BO.UserBo user)
     {
         return new UserDto
         {

@@ -1,3 +1,4 @@
+using IoDit.WebAPI.BO;
 using IoDit.WebAPI.Utilities.Types;
 
 namespace IoDit.WebAPI.DTO.Threshold
@@ -15,7 +16,7 @@ namespace IoDit.WebAPI.DTO.Threshold
         public int BatteryLevelMax { get; set; }
         public MainSensor MainSensor { get; set; }
 
-        internal static ThresholdDto FromEntity(Persistence.Entities.Threshold threshold)
+        internal static ThresholdDto FromBo(ThresholdBo threshold)
         {
             return new ThresholdDto
             {

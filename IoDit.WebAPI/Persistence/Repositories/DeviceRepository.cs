@@ -1,3 +1,4 @@
+using IoDit.WebAPI.BO;
 using IoDit.WebAPI.Persistence.Entities;
 using Microsoft.EntityFrameworkCore;
 
@@ -17,9 +18,11 @@ namespace IoDit.WebAPI.Persistence.Repositories
             return await _dbContext.Devices.FirstOrDefaultAsync(d => d.DevEUI == devEUI);
         }
 
-        public async Task<Device> CreateDevice(Device device)
+        public async Task<Device> CreateDevice(FieldBo fieldBo, DeviceBo device)
         {
-            var res = await _dbContext.Devices.AddAsync(device);
+            Device deviceEntity = Device.FromBo(device);
+            deviceEntity.FieldId = fieldBo.Id;
+            var res = await _dbContext.Devices.AddAsync(deviceEntity);
             await _dbContext.SaveChangesAsync();
             return res.Entity;
         }

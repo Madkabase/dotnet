@@ -9,4 +9,6 @@ public interface IFarmRepository
     Task<Farm?> getFarmDetailsById(long farmId);
     public Task<List<FarmUser>> getUserFarms(User user);
 
+    public Task<Farm?> getFarmByFieldId(long fieldId);
+
 }

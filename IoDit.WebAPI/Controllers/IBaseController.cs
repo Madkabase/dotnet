@@ -1,8 +1,9 @@
-﻿using IoDit.WebAPI.Persistence.Entities;
+﻿using IoDit.WebAPI.BO;
+using IoDit.WebAPI.Persistence.Entities;
 
 namespace IoDit.WebAPI.Controllers;
 
 public interface IBaseController
 {
-    public Task<User> GetRequestDetails();
+    public Task<UserBo> GetRequestDetails();
 }

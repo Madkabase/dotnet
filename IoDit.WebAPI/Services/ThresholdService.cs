@@ -1,4 +1,5 @@
 
+using IoDit.WebAPI.BO;
 using IoDit.WebAPI.DTO.Threshold;
 using IoDit.WebAPI.Persistence.Entities;
 using IoDit.WebAPI.Persistence.Repositories;
@@ -7,24 +8,28 @@ namespace IoDit.WebAPI.Services;
 public class ThresholdService : IThresholdService
 {
 
-    private readonly IThresholdRepository thresholdRepository;
+    private readonly IThresholdRepository _thresholdRepository;
 
     public ThresholdService(IThresholdRepository thresholdRepository)
     {
-        this.thresholdRepository = thresholdRepository;
+        this._thresholdRepository = thresholdRepository;
     }
 
-    public async Task CreateThreshold(ThresholdDto thresholdDto, Field field)
+    public async Task CreateThreshold(ThresholdBo thresholdBo, FieldBo field)
     {
-        var threshold = Threshold.FromDto(thresholdDto);
-        threshold.Field = field;
-        await thresholdRepository.CreateThreshold(threshold);
+        var threshold = Threshold.FromBo(thresholdBo);
+        threshold.Field = Field.FromBo(field);
+        await _thresholdRepository.CreateThreshold(thresholdBo);
     }
 
-    public async Task<Threshold?> UpdateThreshold(ThresholdDto thresholdDto)
+    public async Task<ThresholdBo> UpdateThreshold(ThresholdBo thresholdBo)
     {
-        var threshold = Threshold.FromDto(thresholdDto);
-        return await thresholdRepository.UpdateThreshold(threshold);
+        var newThreshold = await _thresholdRepository.UpdateThreshold(thresholdBo);
+        if (newThreshold == null)
+        {
+            throw new Exception();
+        }
+        return ThresholdBo.FromEntity(newThreshold);
     }
 
 

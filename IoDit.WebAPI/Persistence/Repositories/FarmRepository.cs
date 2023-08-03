@@ -26,8 +26,6 @@ public class FarmRepository : IFarmRepository
         var farm = _context.Farms
             .Where(f => f.Id == farmId)
             .Include(f => f.Owner)
-            .Include(f => f.FarmUsers)
-            .ThenInclude(fu => fu.User)
             // add Fields' Thresholds
             .Include(f => f.Fields)
             .ThenInclude(f => f.Threshold)
@@ -56,4 +54,9 @@ public class FarmRepository : IFarmRepository
         return Task.FromResult(farm);
     }
 
+    public Task<Farm?> getFarmByFieldId(long fieldId)
+    {
+        var farm = _context.Farms.Where(f => f.Fields.Any(f => f.Id == fieldId)).FirstOrDefault();
+        return Task.FromResult(farm);
+    }
 }
