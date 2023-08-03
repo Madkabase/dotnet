@@ -46,7 +46,7 @@ public class FieldController : ControllerBase, IBaseController
 
         foreach (var (fieldDto, i) in fieldDtos.Select((value, i) => (value, i)))
         {
-            fieldDto.OverallMoistureLevel = _fieldService.CalculateOverAllMoistureLevel(fields[0].Devices.ToList(), fields[0].Threshold);
+            fieldDto.OverallMoistureLevel = _fieldService.CalculateOverAllMoistureLevel(fields[i].Devices.ToList(), fields[i].Threshold);
         }
 
         return Ok(fieldDtos);

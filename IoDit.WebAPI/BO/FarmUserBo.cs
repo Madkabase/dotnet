@@ -41,8 +41,8 @@ public class FarmUserBo
         return new FarmUserBo
         {
             Id = farmUser.Id,
-            Farm = FarmBo.FromEntity(farmUser.Farm),
-            User = UserBo.FromEntity(farmUser.User),
+            Farm = FarmBo.FromEntity(farmUser.Farm ?? new Persistence.Entities.Farm()),
+            User = UserBo.FromEntity(farmUser.User ?? new Persistence.Entities.User()),
             FarmRole = farmUser.FarmRole
         };
     }
