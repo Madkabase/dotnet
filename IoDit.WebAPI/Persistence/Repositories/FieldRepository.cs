@@ -50,6 +50,7 @@ public class FieldRepository : IFieldRepository
     public Field? CreateField(FarmBo farmBo, FieldBo fieldBo)
     {
         var fieldE = Field.FromBo(fieldBo);
+        fieldE.FarmId = farmBo.Id;
         fieldE = _context.Fields.Add(fieldE).Entity;
         _context.SaveChanges();
 
