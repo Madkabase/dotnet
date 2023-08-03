@@ -37,6 +37,7 @@ public class ThresholdRepository : IThresholdRepository
         uThreshold.TemperatureMin = threshold.TemperatureMin;
         uThreshold.MainSensor = threshold.MainSensor;
 
+        context.Thresholds.Update(uThreshold);
         await context.SaveChangesAsync();
         return uThreshold;
     }
