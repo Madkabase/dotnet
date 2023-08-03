@@ -19,7 +19,6 @@ public class AuthService : IAuthService
     private readonly IJwtHelper _jwtHelper;
     private readonly IEmailHelper _emailService;
     private readonly IUtilsRepository _utilsRepository;
-    private readonly IFarmUserService _farmUserService;
     private readonly IConfiguration _configuration;
 
 
@@ -30,7 +29,6 @@ public class AuthService : IAuthService
         IJwtHelper jwtHelper,
         IEmailHelper emailService,
         IUtilsRepository utilsRepository,
-        IFarmUserService farmUserService,
         IConfiguration configuration
         )
     {
@@ -39,7 +37,6 @@ public class AuthService : IAuthService
         _jwtHelper = jwtHelper;
         _emailService = emailService;
         _utilsRepository = utilsRepository;
-        _farmUserService = farmUserService;
         _configuration = configuration;
     }
 

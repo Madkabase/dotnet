@@ -38,6 +38,11 @@ public class User : EntityBase, IEntity
             Id = userBo.Id,
             FirstName = userBo.FirstName,
             LastName = userBo.LastName,
+            Password = userBo.Password,
+            IsVerified = userBo.IsVerified,
+            ConfirmationCode = userBo.ConfirmationCode,
+            ConfirmationExpirationDate = userBo.ConfirmationExpirationDate,
+            ConfirmationTriesCounter = userBo.ConfirmationTriesCounter,
             Email = userBo.Email,
             AppRole = userBo.AppRole,
         };

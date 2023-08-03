@@ -40,8 +40,7 @@ public class UserBo
         long confirmationCode,
         AppRoles appRole,
         DateTime confirmationExpirationDate,
-        int confirmationTriesCounter,
-        ICollection<FarmUserBo> farmUsers
+        int confirmationTriesCounter
     )
     {
         Id = id;
@@ -68,8 +67,7 @@ public class UserBo
             entity.ConfirmationCode,
             entity.AppRole,
             entity.ConfirmationExpirationDate,
-            entity.ConfirmationTriesCounter,
-           new List<FarmUserBo>()
+            entity.ConfirmationTriesCounter
         );
     }
 
@@ -85,8 +83,7 @@ public class UserBo
             0,
             dto.AppRole,
             DateTime.Now,
-            0,
-            dto.Farms.Select(FarmUserBo.FromDto).ToList()
+            0
         );
     }
 }
