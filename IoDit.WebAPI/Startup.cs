@@ -67,9 +67,13 @@ public class Startup
                         x.UseNetTopologySuite()
                         .UseQuerySplittingBehavior(QuerySplittingBehavior.SplitQuery)
                      )
-                    .UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking)
-                    .EnableSensitiveDataLogging()
+                    .UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking);
+                if (_isDevelopment)
+                {
+                    opts.EnableSensitiveDataLogging()
                     .EnableDetailedErrors();
+                }
+
             });
             // var issuer = configuration["JwtSettings-Issuer"];
             // var audience = configuration["JwtSettings-Audience"];
