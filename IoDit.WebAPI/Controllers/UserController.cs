@@ -37,7 +37,7 @@ public class UserController : ControllerBase, IBaseController
         var user = await GetRequestDetails();
 
 
-        List<FarmUserBo> userFarms = await _farmUserService.getUserFarms(user);
+        List<FarmUserBo> userFarms = await _farmUserService.GetUserFarms(user);
 
         UserDto userDto = new UserDto
         {

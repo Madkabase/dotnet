@@ -1,8 +1,4 @@
 using IoDit.WebAPI.BO;
-using IoDit.WebAPI.DTO.Farm;
-using IoDit.WebAPI.DTO.User;
-using IoDit.WebAPI.Persistence.Entities;
-using IoDit.WebAPI.Persistence.Repositories;
 using IoDit.WebAPI.Utilities.Types;
 
 namespace IoDit.WebAPI.Services;
@@ -14,7 +10,7 @@ public interface IFarmUserService
     /// </summary>
     /// <param name="user">user object</param>
     /// <returns>list of farms the user is part of</returns>
-    public Task<List<FarmUserBo>> getUserFarms(UserBo user);
+    public Task<List<FarmUserBo>> GetUserFarms(UserBo user);
     /// <summary>
     /// Gets the farmuser object for the user
     /// </summary>
@@ -22,6 +18,12 @@ public interface IFarmUserService
     /// <param name="userId">user id</param>
     /// <returns>the farm for the user if user is part of the farm</returns>
     public Task<FarmUserBo> GetUserFarm(long farmId, long userId);
+    /// <summary>
+    /// Gets the users for the farm
+    /// </summary>
+    /// <param name="farm"></param>
+    /// <returns></returns>
+    public Task<List<FarmUserBo>> GetFarmUsers(FarmBo farm);
     /// <summary>
     /// Checks if the user has access to the farm
     /// </summary>

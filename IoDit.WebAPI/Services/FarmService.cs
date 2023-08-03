@@ -9,7 +9,7 @@ namespace IoDit.WebAPI.Services;
 
 public class FarmService : IFarmService
 {
-    IFarmRepository _farmRepository;
+    private readonly IFarmRepository _farmRepository;
 
     public FarmService(IFarmRepository farmRepository)
     {
@@ -28,21 +28,14 @@ public class FarmService : IFarmService
 
     public async Task<FarmBo> getFarmDetailsById(long farmId)
     {
-        var farm = await _farmRepository.getFarmDetailsById(farmId);
-        if (farm == null)
-        {
-            throw new EntityNotFoundException("Farm not found");
-        }
+        var farm = await _farmRepository.getFarmDetailsById(farmId) ?? throw new EntityNotFoundException("Farm not found");
+
         return FarmBo.FromEntity(farm);
     }
 
     public async Task<FarmBo> GetFarmByFieldId(long fieldId)
     {
-        var farm = await _farmRepository.getFarmByFieldId(fieldId);
-        if (farm == null)
-        {
-            throw new EntityNotFoundException("Farm not found");
-        }
+        var farm = await _farmRepository.getFarmByFieldId(fieldId) ?? throw new EntityNotFoundException("Farm not found");
         return FarmBo.FromEntity(farm);
     }
 }
