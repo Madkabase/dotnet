@@ -14,6 +14,7 @@ public class Device : IEntity
     public string Name { get; set; }
     public string JoinEUI { get; set; }
     public string AppKey { get; set; }
+    public long FieldId { get; set; }
     public Field Field { get; set; }
     // virtual link on the deviceEUI property in the DeviceData class with no db link
     [NotMapped]
