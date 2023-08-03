@@ -21,8 +21,8 @@ namespace IoDit.WebAPI.Persistence.Repositories
         public async Task<Device> CreateDevice(FieldBo fieldBo, DeviceBo device)
         {
             Device deviceEntity = Device.FromBo(device);
-            deviceEntity.Field = Field.FromBo(fieldBo);
-            var res = await _dbContext.Devices.AddAsync(Device.FromBo(device));
+            deviceEntity.FieldId = fieldBo.Id;
+            var res = await _dbContext.Devices.AddAsync(deviceEntity);
             await _dbContext.SaveChangesAsync();
             return res.Entity;
         }

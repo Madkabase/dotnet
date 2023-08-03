@@ -11,30 +11,23 @@ namespace IoDit.WebAPI.Services;
 public class DeviceService : IDeviceService
 {
     private readonly IDeviceRepository _deviceRepository;
-    private readonly IFieldService _fieldService;
     private readonly IFarmService _farmService;
     private readonly LoriotApiClient _loriotApiClient;
 
     public DeviceService(
         IDeviceRepository deviceRepository,
-        IFieldService fieldService,
         IFarmService farmService,
         LoriotApiClient loriotApiClient
     )
     {
         _deviceRepository = deviceRepository;
-        _fieldService = fieldService;
         _farmService = farmService;
         _loriotApiClient = loriotApiClient;
     }
 
     public async Task<DeviceBo> GetDeviceByDevEUI(string devEUI)
     {
-        var device = await _deviceRepository.GetDeviceByDevEUI(devEUI);
-        if (device == null)
-        {
-            throw new EntityNotFoundException("Device not found");
-        }
+        var device = await _deviceRepository.GetDeviceByDevEUI(devEUI) ?? throw new EntityNotFoundException("Device not found");
         return DeviceBo.FromEntity(device);
     }
 
@@ -53,7 +46,7 @@ public class DeviceService : IDeviceService
             if (e.StatusCode == System.Net.HttpStatusCode.NotFound)
             {
                 // create device in loriot
-                await _loriotApiClient.CreateLoriotAppDevice(new Utilities.Loriot.Types.LoriotCreateAppDeviceRequestDto
+                await _loriotApiClient.CreateLoriotAppDevice(new LoriotCreateAppDeviceRequestDto
                 {
                     deveui = deviceBo.DevEUI,
                     appeui = deviceBo.JoinEUI,
