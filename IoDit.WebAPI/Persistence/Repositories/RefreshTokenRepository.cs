@@ -14,7 +14,7 @@ public class RefreshTokenRepository : IRefreshTokenRepository
     }
 
     public async Task<List<RefreshToken>> GetRefreshTokensForUser(UserBo User) =>
-        await Task.Run(() => DbContext.RefreshTokens.Where(rt => rt.User.Id == User.Id).ToList());
+        await Task.Run(() => DbContext.RefreshTokens.Include(rt => rt.User).Where(rt => rt.User.Id == User.Id).ToList());
 
 
     public async Task<bool> DoesRefreshTokenExist(string token) =>
