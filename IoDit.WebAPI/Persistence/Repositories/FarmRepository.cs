@@ -26,8 +26,6 @@ public class FarmRepository : IFarmRepository
         var farm = _context.Farms
             .Where(f => f.Id == farmId)
             .Include(f => f.Owner)
-            .Include(f => f.FarmUsers)
-            .ThenInclude(fu => fu.User)
             // add Fields' Thresholds
             .Include(f => f.Fields)
             .ThenInclude(f => f.Threshold)

@@ -69,30 +69,33 @@ public class FarmController : ControllerBase, IBaseController
         }
 
         var farm = await _farmService.getFarmDetailsById(farmId);
-        FarmDto farmDto = new FarmDto();
+        FarmDto farmDto = new()
+        {
+            isRequesterAdmin = userFarm?.FarmRole == FarmRoles.Admin || user.AppRole == AppRoles.AppAdmin,
+            Id = farm.Id,
+            Name = farm.Name,
+            AppId = farm.AppId,
+            AppName = farm.AppName,
+            MaxDevices = farm.MaxDevices,
+            Owner = UserDto.FromBo(farm.Owner),
 
-        farmDto.isRequesterAdmin = userFarm?.FarmRole == FarmRoles.Admin || user.AppRole == AppRoles.AppAdmin;
-        farmDto.Id = farm.Id;
-        farmDto.Name = farm.Name;
-        farmDto.AppId = farm.AppId;
-        farmDto.AppName = farm.AppName;
-        farmDto.MaxDevices = farm.MaxDevices;
-        farmDto.Owner = UserDto.FromBo(farm.Owner);
-
-        //! FIX THIS by adding a new method to get farm users
-        farmDto.Users = new List<FarmUserDto>();
-
-        farmDto.Fields = farm.Fields?.Select(f =>
-            new FieldDto
-            {
-                Id = f.Id,
-                Name = f.Name,
-                Geofence = f.Geofence,
-                Threshold = ThresholdDto.FromBo(f.Threshold),
-                OverallMoistureLevel = _fieldService.CalculateOverAllMoistureLevel(f.Devices.ToList(), f.Threshold)
-            }
-        ).ToList();
-
+            Fields = farm.Fields?.Select(f =>
+                new FieldDto
+                {
+                    Id = f.Id,
+                    Name = f.Name,
+                    Geofence = f.Geofence,
+                    Threshold = ThresholdDto.FromBo(f.Threshold),
+                    OverallMoistureLevel = _fieldService.CalculateOverAllMoistureLevel(f.Devices.ToList(), f.Threshold)
+                }
+        ).ToList()
+        };
+        farmDto.Users = farmDto.isRequesterAdmin ? (await _farmUserService.GetFarmUsers(farm)).Select(fu =>
+        new FarmUserDto
+        {
+            User = UserDto.FromBo(fu.User),
+            Farm = new FarmDto()
+        }).ToList() : null;
         return Ok(farmDto);
     }
 
@@ -114,14 +117,16 @@ public class FarmController : ControllerBase, IBaseController
             throw new EntityNotFoundException("User not found");
         }
         // chek if user is already part of the farm
-        FarmUserBo? newUserFarm = await _farmUserService.GetUserFarm(farmId, userToAdd.Id);
-        if (newUserFarm != null)
+        try
         {
+            FarmUserBo? newUserFarm = await _farmUserService.GetUserFarm(farmId, userToAdd.Id);
             throw new BadHttpRequestException("User is already part of the farm");
         }
-
-        FarmUserBo userFarmToAdd = await _farmUserService.AddFarmer(userFarm.Farm, userToAdd, addFarmerDTO.Role);
-        return Ok();
+        catch (EntityNotFoundException)
+        {
+            await _farmUserService.AddFarmer(userFarm.Farm, userToAdd, addFarmerDTO.Role);
+            return Ok();
+        }
     }
 
     [ApiExplorerSettings(IgnoreApi = true)]
