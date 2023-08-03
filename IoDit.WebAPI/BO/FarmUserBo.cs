@@ -31,7 +31,7 @@ public class FarmUserBo
         {
             Id = 0,
             Farm = FarmBo.FromDto(farmUserDto.Farm),
-            User = UserBo.FromDto(farmUserDto.User),
+            User = farmUserDto.User != null ? UserBo.FromDto(farmUserDto.User) : new UserBo(),
             FarmRole = farmUserDto.Role
         };
     }

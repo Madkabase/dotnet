@@ -59,11 +59,8 @@ public class FieldController : ControllerBase, IBaseController
     {
         var user = await GetRequestDetails();
 
-        var userFarm = await _farmUserService.GetUserFarm(createFieldDTO.FarmId, user.Id);
-        if (userFarm == null)
-        {
-            throw new UnauthorizedAccessException("User does not have access to this farm");
-        }
+        var userFarm = await _farmUserService.GetUserFarm(createFieldDTO.FarmId, user.Id)
+            ?? throw new UnauthorizedAccessException("User does not have access to this farm");
         if (userFarm.FarmRole != FarmRoles.Admin && AppRoles.AppAdmin != user.AppRole)
         {
             throw new UnauthorizedAccessException("User does not have access to this farm");
@@ -93,11 +90,9 @@ public class FieldController : ControllerBase, IBaseController
         {
             return BadRequest(new ErrorResponseDTO { Message = "User does not have access to this field" });
         }
-        var field = await _fieldService.GetFieldById(fieldId);
-        if (field == null)
-        {
-            throw new EntityNotFoundException("Field not found");
-        }
+        var field = await _fieldService.GetFieldById(fieldId)
+            ?? throw new EntityNotFoundException("Field not found");
+
         var fieldDto = new FieldDto
         {
             Id = field.Id,
@@ -114,20 +109,17 @@ public class FieldController : ControllerBase, IBaseController
     {
         var user = await GetRequestDetails();
 
-        var field = await _fieldService.GetFieldById(fieldId);
-        if (field == null)
-        {
-            throw new EntityNotFoundException("Field not found");
-        }
+        _ = await _fieldService.GetFieldById(fieldId)
+            ?? throw new EntityNotFoundException("Field not found");
+
+
         if (!await _fieldService.UserCanChangeField(fieldId, user))
         {
             throw new UnauthorizedAccessException("User has no right to modify field");
         }
-        var threshold = await _thresholdService.UpdateThreshold(ThresholdBo.FromDto(thresholdDto));
-        if (threshold == null)
-        {
-            throw new EntityNotFoundException("Threshold not found");
-        }
+        var threshold = await _thresholdService.UpdateThreshold(ThresholdBo.FromDto(thresholdDto))
+            ?? throw new EntityNotFoundException("Threshold not found");
+
         return Ok(ThresholdDto.FromBo(threshold));
     }
 
@@ -136,11 +128,8 @@ public class FieldController : ControllerBase, IBaseController
     {
         var claimsIdentity = User.Identity as ClaimsIdentity;
         var userIdClaim = claimsIdentity?.FindFirst(ClaimTypes.NameIdentifier);
-        var userId = userIdClaim?.Value;
-        if (userId == null)
-        {
-            throw new UnauthorizedAccessException("Invalid user");
-        }
+        var userId = (userIdClaim?.Value)
+            ?? throw new UnauthorizedAccessException("Invalid user");
         var user = await _userService.GetUserByEmail(userId);
         return user;
     }

@@ -54,11 +54,11 @@ namespace IoDit.WebAPI.Config.ErrorHandling
 
             context.Response.ContentType = "application/json";
 
-            await context.Response.WriteAsync(new ErrorDetails()
-            {
-                StatusCode = context.Response.StatusCode,
-                Message = exception.Message
-            }.ToString());
+            await context.Response.WriteAsync(new ErrorDetails
+            (
+                statusCode: context.Response.StatusCode,
+                message: exception.Message
+            ).ToString());
         }
     }
 }

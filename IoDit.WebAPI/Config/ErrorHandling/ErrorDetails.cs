@@ -10,5 +10,15 @@ namespace IoDit.WebAPI.Config.ErrorHandling
         {
             return JsonSerializer.Serialize(this);
         }
+        public ErrorDetails(int statusCode, string message)
+        {
+            StatusCode = statusCode;
+            Message = message;
+        }
+        public ErrorDetails()
+        {
+            StatusCode = 0;
+            Message = "";
+        }
     }
 }

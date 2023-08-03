@@ -24,11 +24,8 @@ public class ThresholdService : IThresholdService
 
     public async Task<ThresholdBo> UpdateThreshold(ThresholdBo thresholdBo)
     {
-        var newThreshold = await _thresholdRepository.UpdateThreshold(thresholdBo);
-        if (newThreshold == null)
-        {
-            throw new Exception();
-        }
+        var newThreshold = await _thresholdRepository.UpdateThreshold(thresholdBo)
+            ?? throw new Exception();
         return ThresholdBo.FromEntity(newThreshold);
     }
 
