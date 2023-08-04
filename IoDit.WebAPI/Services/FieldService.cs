@@ -55,9 +55,9 @@ public class FieldService : IFieldService
         return Task.Run(() => field);
     }
 
-    public async Task<FieldBo> GetFieldById(long id)
+    public async Task<FieldBo> GetFieldByIdFull(long id)
     {
-        var field = await _fieldRepository.GetFieldById(id)
+        var field = await _fieldRepository.GetFieldByIdFull(id)
             ?? throw new EntityNotFoundException($"Field with id {id} not found");
         return FieldBo.FromEntity(field);
     }

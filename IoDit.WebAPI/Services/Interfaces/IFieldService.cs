@@ -10,7 +10,7 @@ public interface IFieldService
     public Task<List<FieldBo>> GetFieldsForFarm(FarmBo farm);
     public Task<List<FieldBo>> GetFieldsWithDevicesForFarm(FarmBo farm);
     public Task<FieldBo> CreateFieldForFarm(FieldBo field, FarmBo farm);
-    public Task<FieldBo> GetFieldById(long id);
+    public Task<FieldBo> GetFieldByIdFull(long id);
     /// <summary>
     /// checks if a given user has access to a given field
     /// </summary>

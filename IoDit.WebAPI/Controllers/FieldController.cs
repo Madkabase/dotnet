@@ -90,7 +90,7 @@ public class FieldController : ControllerBase, IBaseController
         {
             return BadRequest(new ErrorResponseDTO { Message = "User does not have access to this field" });
         }
-        var field = await _fieldService.GetFieldById(fieldId)
+        var field = await _fieldService.GetFieldByIdFull(fieldId)
             ?? throw new EntityNotFoundException("Field not found");
 
         return Ok(FieldDto.FromBo(field));
@@ -101,7 +101,7 @@ public class FieldController : ControllerBase, IBaseController
     {
         var user = await GetRequestDetails();
 
-        _ = await _fieldService.GetFieldById(fieldId)
+        _ = await _fieldService.GetFieldByIdFull(fieldId)
             ?? throw new EntityNotFoundException("Field not found");
 
 
@@ -124,6 +124,22 @@ public class FieldController : ControllerBase, IBaseController
             ?? throw new UnauthorizedAccessException("Invalid user");
         var user = await _userService.GetUserByEmail(userId);
         return user;
+    }
+
+    [HttpGet("{fieldId}")]
+    public async Task<ActionResult<FieldDto>> GetField(int fieldId)
+    {
+        var user = await GetRequestDetails();
+        if (!await _fieldService.UserHasAccessToField(fieldId, user))
+        {
+            return BadRequest(new ErrorResponseDTO { Message = "User does not have access to this field" });
+        }
+        var field = await _fieldService.GetFieldByIdFull(fieldId)
+            ?? throw new EntityNotFoundException("Field not found");
+
+        var fieldDto = FieldDto.FromBo(field);
+        fieldDto.OverallMoistureLevel = _fieldService.CalculateOverAllMoistureLevel(field.Devices.ToList(), field.Threshold);
+        return Ok(fieldDto);
     }
 
     [HttpGet("{fieldId}/devices")]

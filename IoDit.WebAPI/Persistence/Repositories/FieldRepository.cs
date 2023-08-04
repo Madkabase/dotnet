@@ -57,7 +57,7 @@ public class FieldRepository : IFieldRepository
         return fieldE;
     }
 
-    public async Task<Field?> GetFieldById(long id) =>
+    public async Task<Field?> GetFieldByIdFull(long id) =>
         await Task.Run(() =>
         {
             Field? field = _context.Fields
@@ -78,8 +78,6 @@ public class FieldRepository : IFieldRepository
                     .Where(dd => dd.TimeStamp.ToLocalTime() > DateTime.Now.AddDays(-1).ToLocalTime())
                     .ToList()
             }).ToList() ?? new List<Device>();
-
-
             return field;
         });
 

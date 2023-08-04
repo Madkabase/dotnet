@@ -14,6 +14,6 @@ public interface IFieldRepository
 
     public Field? CreateField(FarmBo farmBo, FieldBo field);
 
-    public Task<Field?> GetFieldById(long id);
+    public Task<Field?> GetFieldByIdFull(long id);
 
 }
