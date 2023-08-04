@@ -19,7 +19,18 @@ public class Device : IEntity
     public Field Field { get; set; }
     // virtual link on the deviceEUI property in the DeviceData class with no db link
     [NotMapped]
-    public ICollection<DeviceData> DeviceData { get; set; } = new List<DeviceData>();
+    public ICollection<DeviceData> DeviceDatas { get; set; } = new List<DeviceData>();
+
+    public Device()
+    {
+        DevEUI = "";
+        Name = "";
+        JoinEUI = "";
+        AppKey = "";
+        FieldId = 0;
+        Field = new Field();
+        DeviceDatas = new List<DeviceData>();
+    }
 
     internal static Device FromBo(DeviceBo device)
     {
@@ -29,6 +40,12 @@ public class Device : IEntity
             Name = device.Name,
             JoinEUI = device.JoinEUI,
             AppKey = device.AppKey,
+            DeviceDatas = device.DeviceData.Select(dd => DeviceData.FromBo(dd)).ToList()
         };
+    }
+    // tostring override for the device class
+    public override string ToString()
+    {
+        return $"DevEUI: {DevEUI}, Name: {Name}, JoinEUI: {JoinEUI}, AppKey: {AppKey}, FieldId: {FieldId}";
     }
 }

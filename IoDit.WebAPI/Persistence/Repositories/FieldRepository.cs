@@ -42,7 +42,7 @@ public class FieldRepository : IFieldRepository
                 AppKey = d.AppKey,
                 JoinEUI = d.JoinEUI,
                 Field = f,
-                DeviceData = _context.DeviceData.Where(dd => dd.TimeStamp.ToLocalTime() > DateTime.Now.AddDays(-1).ToLocalTime() && dd.DevEUI == d.DevEUI).ToList()
+                DeviceDatas = _context.DeviceData.Where(dd => dd.TimeStamp.ToLocalTime() > DateTime.Now.AddDays(-1).ToLocalTime() && dd.DevEUI == d.DevEUI).ToList()
             }).ToList() ?? new List<Device>()
         }).ToList());
 
@@ -66,15 +66,18 @@ public class FieldRepository : IFieldRepository
             .Include(f => f.Devices).ToList()
             .Find(match: f => f.Id == id);
 
-            field?.Devices.Select(d => new Device
+            field.Devices = field?.Devices.Select(d => new Device
             {
                 DevEUI = d.DevEUI,
                 Name = d.Name,
                 AppKey = d.AppKey,
                 JoinEUI = d.JoinEUI,
                 Field = field,
-                DeviceData = _context.DeviceData.Where(dd => dd.TimeStamp.ToLocalTime() > DateTime.Now.AddDays(-1).ToLocalTime() && dd.DevEUI == d.DevEUI).ToList()
-            }).ToList();
+                DeviceDatas = _context.DeviceData
+                    .Where(dd => dd.DevEUI == d.DevEUI)
+                    .Where(dd => dd.TimeStamp.ToLocalTime() > DateTime.Now.AddDays(-1).ToLocalTime())
+                    .ToList()
+            }).ToList() ?? new List<Device>();
 
 
             return field;

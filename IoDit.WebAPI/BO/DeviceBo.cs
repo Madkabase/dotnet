@@ -39,7 +39,7 @@ public class DeviceBo
             joinEUI: device.JoinEUI,
             appKey: device.AppKey,
             // field: FieldBo.FromEntity(device.Field),
-            deviceData: device.DeviceData.Select(dd => DeviceDataBo.FromEntity(dd)).ToList()
+            deviceData: device.DeviceDatas.Select(dd => DeviceDataBo.FromEntity(dd)).ToList()
         );
     }
     public static DeviceBo FromDTO(DTO.Device.DeviceDto device)

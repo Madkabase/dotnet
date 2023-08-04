@@ -46,7 +46,7 @@ public class FarmRepository : IFarmRepository
                         .FirstOrDefault();
                     if (lastData != null)
                     {
-                        device.DeviceData = new List<DeviceData>() { lastData };
+                        device.DeviceDatas = new List<DeviceData>() { lastData };
                     }
                 }
             }

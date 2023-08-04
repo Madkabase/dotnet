@@ -16,4 +16,18 @@ public class DeviceData : EntityBase, IEntity
     {
         return $"DeviceData: devEUI: {DevEUI}, h1: {Humidity1}, h2: {Humidity2}, batteryLevel: {BatteryLevel}, temp: {Temperature}, ts: {TimeStamp}";
     }
+
+    // from Bo
+    internal static DeviceData FromBo(BO.DeviceDataBo deviceData)
+    {
+        return new DeviceData
+        {
+            DevEUI = deviceData.DevEUI,
+            Humidity1 = deviceData.Humidity1,
+            Humidity2 = deviceData.Humidity2,
+            BatteryLevel = deviceData.BatteryLevel,
+            Temperature = deviceData.Temperature,
+            TimeStamp = deviceData.TimeStamp
+        };
+    }
 }

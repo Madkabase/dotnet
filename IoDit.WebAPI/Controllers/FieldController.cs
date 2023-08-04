@@ -77,7 +77,7 @@ public class FieldController : ControllerBase, IBaseController
 
         var farm = new BO.FarmBo { Id = createFieldDTO.FarmId };
 
-        FieldBo fieldBo = (await _fieldService.CreateFieldForFarm(field, farm));
+        FieldBo fieldBo = await _fieldService.CreateFieldForFarm(field, farm);
         return Ok(FieldDto.FromBo(fieldBo));
     }
 
@@ -93,15 +93,7 @@ public class FieldController : ControllerBase, IBaseController
         var field = await _fieldService.GetFieldById(fieldId)
             ?? throw new EntityNotFoundException("Field not found");
 
-        var fieldDto = new FieldDto
-        {
-            Id = field.Id,
-            Name = field.Name,
-            Geofence = field.Geofence,
-            Threshold = field.Threshold != null ? ThresholdDto.FromBo(field.Threshold) : null,
-            Devices = field.Devices.Select(d => DeviceDto.FromBo(d)).ToList()
-        };
-        return Ok(fieldDto);
+        return Ok(FieldDto.FromBo(field));
     }
 
     [HttpPatch("{fieldId}/updateThreshold")]
