@@ -11,18 +11,15 @@ public class FieldService : IFieldService
     private readonly IFieldRepository _fieldRepository;
     private readonly IFarmUserService _farmUserService;
     private readonly IFarmService _farmService;
-    private readonly IThresholdService _thresholdService;
 
     public FieldService(IFieldRepository fieldRepository,
         IFarmUserService farmUserService,
-        IFarmService farmService,
-        IThresholdService thresholdService
+        IFarmService farmService
     )
     {
         _fieldRepository = fieldRepository;
         _farmUserService = farmUserService;
         _farmService = farmService;
-        _thresholdService = thresholdService;
     }
 
     public async Task<List<FieldBo>> GetFieldsForFarm(FarmBo farm)
@@ -51,12 +48,8 @@ public class FieldService : IFieldService
     public Task<FieldBo> CreateFieldForFarm(FieldBo field, FarmBo farm)
     {
 
-        var fieldCreated = _fieldRepository.CreateField(farm, field);
-        if (fieldCreated == null)
-        {
-            throw new Exception("Field not created");
-        }
-
+        var fieldCreated = _fieldRepository.CreateField(farm, field)
+            ?? throw new Exception("Field not created");
         field.Id = fieldCreated.Id;
 
         return Task.Run(() => field);
@@ -71,7 +64,6 @@ public class FieldService : IFieldService
 
     public async Task<bool> UserHasAccessToField(long fieldId, UserBo user)
     {
-        var field = (await GetFieldById(fieldId));
 
         // TODO : when FieldUser is created, implement this
 
@@ -82,19 +74,15 @@ public class FieldService : IFieldService
 
     public async Task<bool> UserCanChangeField(long fieldId, UserBo user)
     {
-        var field = await _fieldRepository.GetFieldById(fieldId);
-        if (field == null)
-        {
-            return false;
-        }
-        // TODO : when FieldUser is created, implement this
+        FarmBo farm = await _farmService.GetFarmByFieldId(fieldId);
 
-        var d = await _farmUserService.GetUserFarm(field.Farm.Id, user.Id);
-        if (d == null)
+        // TODO : when FieldUser is created, implement this
+        FarmUserBo farmUser = await _farmUserService.GetUserFarm(farm.Id, user.Id);
+        if (farmUser == null)
         {
             return false;
         }
-        return d.FarmRole == Utilities.Types.FarmRoles.Admin;
+        return farmUser.FarmRole == Utilities.Types.FarmRoles.Admin;
     }
 
     public int CalculateOverAllMoistureLevel(List<DeviceBo> devices, ThresholdBo threshold)

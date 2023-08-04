@@ -17,11 +17,8 @@ public class UserService : IUserService
 
     public async Task<UserBo> GetUserByEmail(string email)
     {
-        var user = await _userRepository.GetUserByEmail(email);
-        if (user == null)
-        {
-            throw new EntityNotFoundException("User not found");
-        }
+        var user = await _userRepository.GetUserByEmail(email)
+            ?? throw new EntityNotFoundException("User not found");
         return UserBo.FromEntity(user);
 
     }

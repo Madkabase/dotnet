@@ -17,7 +17,6 @@ namespace IoDit.WebAPI.Controllers;
 [Route("[controller]")]
 public class FarmController : ControllerBase, IBaseController
 {
-    private readonly NLog.Logger _logger = NLog.LogManager.GetCurrentClassLogger();
     private readonly IFarmService _farmService;
     private readonly IUserService _userService;
     private readonly IFarmUserService _farmUserService;
@@ -111,11 +110,8 @@ public class FarmController : ControllerBase, IBaseController
             throw new UnauthorizedAccessException("User does not have access to this farm");
         }
         // check if user to add exists  
-        UserBo userToAdd = await _userService.GetUserByEmail(addFarmerDTO.UserEmail);
-        if (userToAdd == null)
-        {
-            throw new EntityNotFoundException("User not found");
-        }
+        UserBo userToAdd = await _userService.GetUserByEmail(addFarmerDTO.UserEmail)
+            ?? throw new EntityNotFoundException("User not found");
         // chek if user is already part of the farm
         try
         {
@@ -134,11 +130,8 @@ public class FarmController : ControllerBase, IBaseController
     {
         var claimsIdentity = User.Identity as ClaimsIdentity;
         var userIdClaim = claimsIdentity?.FindFirst(ClaimTypes.NameIdentifier);
-        var userId = userIdClaim?.Value;
-        if (userId == null)
-        {
-            throw new UnauthorizedAccessException("Invalid user");
-        }
+        var userId = (userIdClaim?.Value)
+            ?? throw new UnauthorizedAccessException("Invalid user");
         var user = await _userService.GetUserByEmail(userId);
         return user;
     }
