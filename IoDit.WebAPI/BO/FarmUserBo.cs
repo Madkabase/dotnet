@@ -29,7 +29,7 @@ public class FarmUserBo
     {
         return new FarmUserBo
         {
-            Id = 0,
+            Id = farmUserDto.Id ?? 0,
             Farm = FarmBo.FromDto(farmUserDto.Farm),
             User = farmUserDto.User != null ? UserBo.FromDto(farmUserDto.User) : new UserBo(),
             FarmRole = farmUserDto.Role
@@ -38,13 +38,19 @@ public class FarmUserBo
 
     public static FarmUserBo FromEntity(Persistence.Entities.FarmUser farmUser)
     {
-        return new FarmUserBo
+        var bo = new FarmUserBo
         {
             Id = farmUser.Id,
-            Farm = FarmBo.FromEntity(farmUser.Farm ?? new Persistence.Entities.Farm()),
-            User = UserBo.FromEntity(farmUser.User ?? new Persistence.Entities.User()),
+
+            Farm = FarmBo.FromEntity(farmUser.Farm ?? new Persistence.Entities.Farm() { Id = farmUser.FarmId, OwnerId = farmUser.UserId }),
+            User = UserBo.FromEntity(farmUser.User ?? new Persistence.Entities.User() { Id = farmUser.UserId }),
             FarmRole = farmUser.FarmRole
         };
+
+        bo.Farm.Id = farmUser.FarmId;
+        bo.User.Id = farmUser.UserId;
+
+        return bo;
     }
 
 }

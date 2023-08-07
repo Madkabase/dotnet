@@ -13,6 +13,7 @@ public class FarmBo
     public ICollection<FieldBo> Fields { get; set; } = new List<FieldBo>();
     public ICollection<ThresholdPresetBo> ThresholdPresets { get; set; } = new List<ThresholdPresetBo>();
 
+
     public FarmBo()
     {
         Id = 0;
@@ -31,8 +32,7 @@ public class FarmBo
         string appName,
         int maxDevices,
         ICollection<FieldBo> fields,
-        ICollection<ThresholdPresetBo> thresholdPresets,
-        ICollection<FarmUserBo> farmUsers
+        ICollection<ThresholdPresetBo> thresholdPresets
     )
     {
         Id = id;
@@ -60,7 +60,7 @@ public class FarmBo
 
     public static FarmBo FromEntity(Persistence.Entities.Farm farm)
     {
-        return new FarmBo
+        var bo = new FarmBo
         {
             Id = farm.Id,
             Name = farm.Name,
@@ -70,5 +70,9 @@ public class FarmBo
             Owner = UserBo.FromEntity(farm.Owner),
             Fields = farm.Fields.Select(FieldBo.FromEntity).ToList(),
         };
+
+        bo.Owner.Id = farm.OwnerId;
+        return bo;
+
     }
 }
