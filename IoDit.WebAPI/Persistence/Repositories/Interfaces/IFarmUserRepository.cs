@@ -10,4 +10,5 @@ public interface IFarmUserRepository
     public Task<List<FarmUser>> GetFarmUsers(FarmBo farm);
     public Task<FarmUser?> GetUserFarm(long farmId, long userId);
     public Task<FarmUser?> AddFarmUser(FarmUserBo farmUser);
+    Task RemoveFarmUser(FarmUserBo farmUser);
 }
