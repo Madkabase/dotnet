@@ -36,7 +36,10 @@ public class FarmUserRepository : IFarmUserRepository
     }
 
     public Task RemoveFarmUser(FarmUserBo farmUser) => Task.Run(() =>
-        _context.FarmUsers.Remove(FarmUser.FromBo(farmUser))
+       {
+           _context.FarmUsers.Remove(FarmUser.FromBo(farmUser));
+           _context.SaveChanges();
+       }
     );
 
 }
