@@ -125,6 +125,44 @@ public class FarmController : ControllerBase, IBaseController
         }
     }
 
+    [HttpPut("{farmId}/removeFarmer")]
+    public async Task RemoveFarmer([FromRoute] long farmId, [FromBody] long userId)
+    {
+        var user = await GetRequestDetails();
+
+        // check if user is farm admin
+        var userFarm = await _farmUserService.GetUserFarm(farmId, user.Id);
+        if (userFarm.FarmRole != FarmRoles.Admin)
+        {
+            throw new UnauthorizedAccessException("User does not have access to this farm");
+        }
+
+        // check if user to remove exists  
+        // chek if user is already part of the farm
+        var userFarmToRemove = await _farmUserService.GetUserFarm(farmId, userId);
+
+        if (userFarm.Farm.Owner.Id == userFarmToRemove.User.Id)
+        {
+            throw new BadHttpRequestException("Cannot remove farm owner");
+        }
+
+        if (userFarmToRemove.FarmRole == FarmRoles.Admin && userFarm.Farm.Owner.Id != user.Id)
+        {
+            throw new BadHttpRequestException("Only farm owner can remove farm admin");
+        }
+
+        // throw new NotImplementedException();
+
+        try
+        {
+            await _farmUserService.RemoveFarmer(userFarmToRemove);
+        }
+        catch (EntityNotFoundException)
+        {
+            throw new BadHttpRequestException("User is not part of the farm");
+        }
+    }
+
     [ApiExplorerSettings(IgnoreApi = true)]
     public async Task<BO.UserBo> GetRequestDetails()
     {
