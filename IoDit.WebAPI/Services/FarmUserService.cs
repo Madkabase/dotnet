@@ -36,23 +36,6 @@ public class FarmUserService : IFarmUserService
 
         FarmUserBo farmUser = FarmUserBo.FromEntity(farmUserE);
 
-        if (farmUser.FarmRole != Utilities.Types.FarmRoles.Admin)
-        {
-            return new FarmUserBo
-            {
-
-                FarmRole = farmUser.FarmRole,
-                Farm = new FarmBo
-                {
-                    Id = farmUser.Farm.Id,
-                    Name = farmUser.Farm.Name,
-                    AppId = farmUser.Farm.AppId,
-                    AppName = farmUser.Farm.AppName,
-                    MaxDevices = farmUser.Farm.MaxDevices
-                }
-            };
-        }
-
         return farmUser;
     }
 
@@ -95,5 +78,18 @@ public class FarmUserService : IFarmUserService
     {
 
         return (await _farmUserRepository.GetFarmUsers(farm)).Select(fu => FarmUserBo.FromEntity(fu)).ToList();
+    }
+
+    public async Task RemoveFarmer(FarmUserBo farmUser)
+    {
+        await _farmUserRepository.RemoveFarmUser(farmUser);
+        var mail = new CustomEmailMessage
+        {
+            Body = $"Hello {farmUser.User.FirstName}, <p> You have been removed from the farm {farmUser.Farm.Name}.",
+            Subject = "You have been removed from a farm",
+            RecipientEmail = farmUser.User.Email,
+            RecipientName = $"{farmUser.User.FirstName} {farmUser.User.LastName}"
+        };
+        await _emailHelper.SendEmailWithMailKitAsync(mail);
     }
 }

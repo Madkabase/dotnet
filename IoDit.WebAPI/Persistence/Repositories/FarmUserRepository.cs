@@ -34,4 +34,12 @@ public class FarmUserRepository : IFarmUserRepository
         await _context.SaveChangesAsync();
         return user;
     }
+
+    public Task RemoveFarmUser(FarmUserBo farmUser) => Task.Run(() =>
+       {
+           _context.FarmUsers.Remove(FarmUser.FromBo(farmUser));
+           _context.SaveChanges();
+       }
+    );
+
 }
