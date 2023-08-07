@@ -88,13 +88,11 @@ public class AuthController : ControllerBase, IBaseController
     /// </summary>
     [AllowAnonymous]
     [HttpPost("refreshAccessToken")]
-    public async Task<ActionResult<RefreshTokenResponseDto>> refreshAccessToken([FromBody] RefreshTokenRequestDto model)
+    public async Task<ActionResult<RefreshTokenResponseDto>> RefreshAccessToken([FromBody] RefreshTokenRequestDto model)
     {
-        var token = await _refreshTokenService.GetRefreshTokenByToken(model.RefreshToken);
-        if (token == null)
-        {
-            throw new UnauthorizedAccessException("Invalid refresh token");
-        }
+        var token = await _refreshTokenService.GetRefreshTokenByToken(model.RefreshToken)
+                ?? throw new UnauthorizedAccessException("Invalid refresh token");
+
         if (token.DeviceIdentifier != model.DeviceIdentifier)
         {
             throw new UnauthorizedAccessException("Invalid device identifier");
@@ -149,11 +147,8 @@ public class AuthController : ControllerBase, IBaseController
     {
         var claimsIdentity = User.Identity as ClaimsIdentity;
         var userIdClaim = claimsIdentity?.FindFirst(ClaimTypes.NameIdentifier);
-        var userId = userIdClaim?.Value;
-        if (userId == null)
-        {
-            throw new UnauthorizedAccessException("Invalid user");
-        }
+        var userId = userIdClaim?.Value
+            ?? throw new UnauthorizedAccessException("Invalid user");
         var user = await _userService.GetUserByEmail(userId);
         return user;
     }
