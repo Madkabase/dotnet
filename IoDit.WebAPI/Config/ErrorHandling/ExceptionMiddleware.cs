@@ -19,39 +19,52 @@ namespace IoDit.WebAPI.Config.ErrorHandling
             {
                 await _next(httpContext);
             }
-            catch (UnauthorizedAccessException e)
+            catch (UnauthorizedAccessException ex)
             {
                 httpContext.Response.StatusCode = (int)HttpStatusCode.Unauthorized;
-                await HandleExceptionAsync(httpContext, e);
+                LogExceptionAsync(httpContext, ex);
+                await HandleExceptionAsync(httpContext, ex);
             }
             catch (BadHttpRequestException ex)
             {
                 httpContext.Response.StatusCode = (int)HttpStatusCode.BadRequest;
+                LogExceptionAsync(httpContext, ex);
                 await HandleExceptionAsync(httpContext, ex);
             }
             catch (EntityNotFoundException ex)
             {
                 httpContext.Response.StatusCode = (int)HttpStatusCode.NotFound;
+                LogExceptionAsync(httpContext, ex);
                 await HandleExceptionAsync(httpContext, ex);
             }
             catch (EntryPointNotFoundException ex)
             {
 
                 httpContext.Response.StatusCode = (int)HttpStatusCode.NotFound;
+                LogExceptionAsync(httpContext, ex);
                 await HandleExceptionAsync(httpContext, ex);
             }
             catch (Exception ex)
             {
-
                 httpContext.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
-                await HandleExceptionAsync(httpContext, ex);
+                LogExceptionAsync(httpContext, ex);
+                await HandleExceptionAsync(httpContext, new Exception("Internal Server Error"));
             }
         }
 
-        private async Task HandleExceptionAsync(HttpContext context, Exception exception)
+        private void LogExceptionAsync(HttpContext context, Exception exception)
         {
-            _logger.Error(exception: exception, message: "A new {0} was thrown: {1}", exception.GetType().Name, exception.Message);
+            _logger.Error(
+                exception: exception,
+                message: "A new {0} was thrown: {1} on route {2}",
+                    exception.GetType().Name,
+                    exception.Message,
+                    context.Request.Path
+            );
+        }
 
+        private static async Task HandleExceptionAsync(HttpContext context, Exception exception)
+        {
             context.Response.ContentType = "application/json";
 
             await context.Response.WriteAsync(new ErrorDetails
