@@ -23,18 +23,21 @@ public class FieldController : ControllerBase, IBaseController
     private readonly IFieldService _fieldService;
     private readonly IFarmUserService _farmUserService;
     private readonly IThresholdService _thresholdService;
+    private readonly IFieldUserService _fieldUserService;
 
     public FieldController(
         IFieldService fieldService,
         IUserService userService,
         IFarmUserService farmUserService,
-        IThresholdService thresholdService
+        IThresholdService thresholdService,
+        IFieldUserService fieldUserService
     )
     {
         _fieldService = fieldService;
         _userService = userService;
         _farmUserService = farmUserService;
         _thresholdService = thresholdService;
+        _fieldUserService = fieldUserService;
     }
 
     [HttpGet("getFieldsWithDevicesForFarm/{farmId}")]
@@ -140,6 +143,24 @@ public class FieldController : ControllerBase, IBaseController
         var fieldDto = FieldDto.FromBo(field);
         fieldDto.OverallMoistureLevel = _fieldService.CalculateOverAllMoistureLevel(field.Devices.ToList(), field.Threshold);
         return Ok(fieldDto);
+    }
+
+    [HttpPut("{fieldId}/addFarmer")]
+    public async Task<ActionResult> AddFarmer(int fieldId, [FromBody] string farmerEmail)
+    {
+        var user = await GetRequestDetails();
+
+        if (!await _fieldService.UserCanChangeField(fieldId, user))
+        {
+            throw new UnauthorizedAccessException("User has no right to modify field");
+        }
+
+        var farmerToAdd = await _userService.GetUserByEmail(farmerEmail);
+
+        await _fieldUserService.AddFieldUser(new FieldBo { Id = fieldId }, farmerToAdd, FieldRoles.User);
+
+        return Ok();
+
     }
 
     [HttpGet("{fieldId}/devices")]
