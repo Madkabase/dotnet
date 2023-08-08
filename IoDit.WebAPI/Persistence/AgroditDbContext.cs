@@ -22,6 +22,7 @@ public class AgroditDbContext : DbContext
     public DbSet<Field> Fields { get; set; }
     public DbSet<SubscriptionRequest> SubscriptionRequests { get; set; }
     public DbSet<DeviceData> DeviceData { get; set; }
+    public DbSet<FieldUser> FieldUsers { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -46,5 +47,10 @@ public class AgroditDbContext : DbContext
         modelBuilder.Entity<FarmUser>()
         .HasOne(fu => fu.User)
         .WithMany(u => u.FarmUsers);
+
+        modelBuilder.Entity<FieldUser>()
+        .HasOne(fu => fu.User)
+        .WithMany(u => u.FieldUsers);
+
     }
 }
