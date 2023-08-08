@@ -48,5 +48,19 @@ public class FieldBo
         );
     }
 
+    //from dto
+    public static FieldBo FromDto(DTO.Field.FieldDto dto)
+    {
+        return new FieldBo(
+            dto.Id,
+            dto.Name ?? "",
+            // FarmBo.FromDto(dto.Farm),
+            dto.Geofence ?? new Point(0, 0),
+            dto.Threshold?.Id ?? 0,
+            dto.Threshold != null ? ThresholdBo.FromDto(dto.Threshold) : null,
+            dto.Devices != null ? dto.Devices.Select(d => DeviceBo.FromDTO(d)).ToList() : new List<DeviceBo>()
+        );
+    }
+
 
 }
