@@ -52,5 +52,10 @@ public class AgroditDbContext : DbContext
         .HasOne(fu => fu.User)
         .WithMany(u => u.FieldUsers);
 
+        modelBuilder.Entity<FieldUser>()
+        .HasOne(fu => fu.Field)
+        .WithMany(f => f.FieldUsers);
+
+
     }
 }
