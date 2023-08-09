@@ -51,6 +51,9 @@ public class FieldUserRepository : IFieldUserRepository
 
     public Task<FieldUser?> GetFieldUser(long fieldId, long userId)
     {
-        return Task.Run(() => _context.FieldUsers.FirstOrDefault(fu => fu.FieldId == fieldId && fu.UserId == userId));
+        return Task.Run(() => _context.FieldUsers.
+        Include(fu => fu.Field)
+        .Include(fu => fu.User)
+        .FirstOrDefault(fu => fu.FieldId == fieldId && fu.UserId == userId));
     }
 }
