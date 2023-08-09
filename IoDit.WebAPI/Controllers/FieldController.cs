@@ -188,9 +188,13 @@ public class FieldController : ControllerBase, IBaseController
 
         if (!await _fieldService.UserHasAccessToField(fieldId, user))
         {
-            return BadRequest(new ErrorResponseDTO { Message = "User does not have access to this field" });
+            throw new UnauthorizedAccessException("User has no right to access field");
         }
 
+        if (!await _fieldService.UserCanChangeField(fieldId, user))
+        {
+            throw new UnauthorizedAccessException("User has no right to access fiel's farmers");
+        }
 
         List<FieldUserBo> fieldUsers = await _fieldUserService.GetFieldUsers(new FieldBo { Id = fieldId });
 
