@@ -91,7 +91,7 @@ public class FieldController : ControllerBase, IBaseController
 
         if (!await _fieldService.UserHasAccessToField(fieldId, user))
         {
-            return BadRequest(new ErrorResponseDTO { Message = "User does not have access to this field" });
+            throw new BadHttpRequestException("User does not have access to this field");
         }
         var field = await _fieldService.GetFieldByIdFull(fieldId)
             ?? throw new EntityNotFoundException("Field not found");
@@ -135,7 +135,7 @@ public class FieldController : ControllerBase, IBaseController
         var user = await GetRequestDetails();
         if (!await _fieldService.UserHasAccessToField(fieldId, user))
         {
-            return BadRequest(new ErrorResponseDTO { Message = "User does not have access to this field" });
+            throw new BadHttpRequestException("User does not have access to this field");
         }
         var field = await _fieldService.GetFieldByIdFull(fieldId)
             ?? throw new EntityNotFoundException("Field not found");
@@ -146,7 +146,7 @@ public class FieldController : ControllerBase, IBaseController
     }
 
     [HttpPut("{fieldId}/addFarmer")]
-    public async Task<ActionResult> AddFarmer(int fieldId, [FromBody] string farmerEmail)
+    public async Task<ActionResult> AddFarmer(int fieldId, [FromBody] AddRemoveFieldFarmerDTO removeFieldFarmerDTO)
     {
         var user = await GetRequestDetails();
 
@@ -155,7 +155,7 @@ public class FieldController : ControllerBase, IBaseController
             throw new UnauthorizedAccessException("User has no right to modify field");
         }
 
-        var farmerToAdd = await _userService.GetUserByEmail(farmerEmail);
+        var farmerToAdd = await _userService.GetUserByEmail(removeFieldFarmerDTO.FarmerEmail);
 
         await _fieldUserService.AddFieldUser(new FieldBo { Id = fieldId }, farmerToAdd, FieldRoles.User);
 
@@ -164,7 +164,7 @@ public class FieldController : ControllerBase, IBaseController
     }
 
     [HttpPut("{fieldId}/removeFarmer")]
-    public async Task<ActionResult> RemoveFarmer(int fieldId, [FromBody] string farmerEmail)
+    public async Task<ActionResult> RemoveFarmer(int fieldId, [FromBody] AddRemoveFieldFarmerDTO removeFieldFarmerDTO)
     {
         var user = await GetRequestDetails();
 
@@ -173,7 +173,7 @@ public class FieldController : ControllerBase, IBaseController
             throw new UnauthorizedAccessException("User has no right to modify field");
         }
 
-        var farmerToRemove = await _userService.GetUserByEmail(farmerEmail);
+        var farmerToRemove = await _userService.GetUserByEmail(removeFieldFarmerDTO.FarmerEmail);
         var userFieldToRemove = await _fieldUserService.GetUserField(fieldId, farmerToRemove.Id);
         userFieldToRemove.User = farmerToRemove;
         await _fieldUserService.RemoveFieldUser(userFieldToRemove);
