@@ -179,7 +179,24 @@ public class FieldController : ControllerBase, IBaseController
         await _fieldUserService.RemoveFieldUser(userFieldToRemove);
 
         return Ok();
+    }
 
+    [HttpGet("{fieldId}/farmers")]
+    public async Task<ActionResult> GetFarmers(int fieldId)
+    {
+        var user = await GetRequestDetails();
+
+        if (!await _fieldService.UserHasAccessToField(fieldId, user))
+        {
+            return BadRequest(new ErrorResponseDTO { Message = "User does not have access to this field" });
+        }
+
+
+        List<FieldUserBo> fieldUsers = await _fieldUserService.GetFieldUsers(new FieldBo { Id = fieldId });
+
+        List<UserDto> fieldUsersDto = fieldUsers.Select(fu => UserDto.FromBo(fu.User)).ToList();
+
+        return Ok(fieldUsersDto);
     }
 
     [HttpGet("{fieldId}/devices")]
