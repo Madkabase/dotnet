@@ -7,9 +7,9 @@ namespace IoDit.WebAPI.Persistence.Entities;
 public class FieldUser : EntityBase, IEntity
 {
     public long UserId { get; set; }
-    public User User { get; set; } = new User();
+    public User User { get; set; }
     public long FieldId { get; set; }
-    public Field Field { get; set; } = new Field();
+    public Field Field { get; set; }
     public FieldRoles FieldRole { get; set; }
 
     public static FieldUser FromBo(FieldUserBo fieldUser)
