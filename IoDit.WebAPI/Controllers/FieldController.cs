@@ -163,6 +163,25 @@ public class FieldController : ControllerBase, IBaseController
 
     }
 
+    [HttpPut("{fieldId}/removeFarmer")]
+    public async Task<ActionResult> RemoveFarmer(int fieldId, [FromBody] string farmerEmail)
+    {
+        var user = await GetRequestDetails();
+
+        if (!await _fieldService.UserCanChangeField(fieldId, user))
+        {
+            throw new UnauthorizedAccessException("User has no right to modify field");
+        }
+
+        var farmerToRemove = await _userService.GetUserByEmail(farmerEmail);
+        var userFieldToRemove = await _fieldUserService.GetUserField(fieldId, farmerToRemove.Id);
+        userFieldToRemove.User = farmerToRemove;
+        await _fieldUserService.RemoveFieldUser(userFieldToRemove);
+
+        return Ok();
+
+    }
+
     [HttpGet("{fieldId}/devices")]
     public Task<ActionResult<List<DeviceDto>>> GetDevicesForField(int fieldId)
     {
