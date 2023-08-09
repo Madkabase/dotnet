@@ -94,9 +94,18 @@ public class FieldUserService : IFieldUserService
         return FieldUserBo.FromEntity(fieldUser);
     }
 
-    public Task<List<FieldUserBo>> GetUserFields(UserBo user)
+    public async Task<List<FieldUserBo>> GetFieldUsers(FieldBo field)
     {
-        throw new NotImplementedException();
+        var fieldUsers = await _fieldUserRepository.GetUsersByField(field)
+        ?? throw new EntityNotFoundException("User not found for this field");
+        return fieldUsers.Select(FieldUserBo.FromEntity).ToList();
+    }
+
+    public async Task<List<FieldUserBo>> GetUserFields(UserBo user)
+    {
+        var fieldUsers = await _fieldUserRepository.GetFieldsByUser(user)
+        ?? throw new EntityNotFoundException("User not found for this field");
+        return fieldUsers.Select(FieldUserBo.FromEntity).ToList();
     }
 
     public async Task RemoveFieldUser(FieldUserBo fieldUser)

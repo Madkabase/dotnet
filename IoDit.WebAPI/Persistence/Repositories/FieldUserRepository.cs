@@ -26,6 +26,17 @@ public class FieldUserRepository : IFieldUserRepository
         );
     }
 
+    public Task<List<FieldUser>> GetUsersByField(FieldBo field)
+    {
+        return Task.Run(() => _context.FieldUsers
+            .Where(fu => fu.FieldId == field.Id)
+            .Include(f => f.Field)
+            .ThenInclude(f => f.Threshold)
+            .Include(fu => fu.User)
+            .ToList()
+        );
+    }
+
     public async Task<FieldUser> AddFieldUser(FieldUserBo fieldUserBo)
     {
         FieldUser fu = new()

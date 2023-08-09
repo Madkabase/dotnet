@@ -11,15 +11,18 @@ public class FieldService : IFieldService
     private readonly IFieldRepository _fieldRepository;
     private readonly IFarmUserService _farmUserService;
     private readonly IFarmService _farmService;
+    private readonly IFieldUserService _fieldUserService;
 
     public FieldService(IFieldRepository fieldRepository,
         IFarmUserService farmUserService,
-        IFarmService farmService
+        IFarmService farmService,
+        IFieldUserService fieldUserService
     )
     {
         _fieldRepository = fieldRepository;
         _farmUserService = farmUserService;
         _farmService = farmService;
+        _fieldUserService = fieldUserService;
     }
 
     public async Task<List<FieldBo>> GetFieldsForFarm(FarmBo farm)
@@ -64,12 +67,20 @@ public class FieldService : IFieldService
 
     public async Task<bool> UserHasAccessToField(long fieldId, UserBo user)
     {
+        bool hasAccess = false;
+        try
+        {
+            await _fieldUserService.GetUserField(fieldId, user.Id);
+            hasAccess = true;
+        }
+        catch (System.Exception)
+        {
 
-        // TODO : when FieldUser is created, implement this
+        }
 
         var d = await _farmUserService.HasAccessToFarm(await _farmService.GetFarmByFieldId(fieldId), user);
 
-        return d;
+        return d || hasAccess;
     }
 
     public async Task<bool> UserCanChangeField(long fieldId, UserBo user)
