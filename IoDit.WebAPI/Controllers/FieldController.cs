@@ -193,7 +193,7 @@ public class FieldController : ControllerBase, IBaseController
 
         if (!await _fieldService.UserCanChangeField(fieldId, user))
         {
-            throw new UnauthorizedAccessException("User has no right to access fiel's farmers");
+            return Ok(new List<FarmUserBo>());
         }
 
         List<FieldUserBo> fieldUsers = await _fieldUserService.GetFieldUsers(new FieldBo { Id = fieldId });
