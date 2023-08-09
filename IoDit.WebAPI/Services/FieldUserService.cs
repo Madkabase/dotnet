@@ -99,8 +99,17 @@ public class FieldUserService : IFieldUserService
         throw new NotImplementedException();
     }
 
-    public Task RemoveFieldUser(FieldUserBo fieldUser)
+    public async Task RemoveFieldUser(FieldUserBo fieldUser)
     {
-        throw new NotImplementedException();
+        await _fieldUserRepository.RemoveFieldUser(fieldUser);
+        var mail = new CustomEmailMessage
+        {
+            Body = $"Hello {fieldUser.User.FirstName}, <p> You have been removed from the field {fieldUser.Field.Name}.",
+            Subject = "You have been removed from a field",
+            RecipientEmail = fieldUser.User.Email,
+            RecipientName = $"{fieldUser.User.FirstName} {fieldUser.User.LastName}"
+        };
+        await _emailHelper.SendEmailWithMailKitAsync(mail);
+
     }
 }
