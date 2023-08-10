@@ -169,12 +169,12 @@ public class Startup
         app.UseRouting();
         app.UseAuthentication();
         app.UseAuthorization();
+        app.UseStaticFiles();
         app.UseEndpoints(endpoints =>
         {
             endpoints.MapHealthChecks("/healthz");
             endpoints.MapControllers();
         });
-        app.UseStaticFiles();
 
     }
 }
