@@ -171,18 +171,16 @@ public class Startup
         app.UseAuthentication();
         app.UseAuthorization();
         app.UseStaticFiles();
-        app.Map("/.well-known", builder =>
-        {
-            builder.UseStaticFiles(new StaticFileOptions
-            {
-                FileProvider = new PhysicalFileProvider(Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", ".well-known")),
-                RequestPath = "/.well-known"
-            });
-        });
         app.UseEndpoints(endpoints =>
         {
             endpoints.MapHealthChecks("/healthz");
             endpoints.MapControllers();
+            endpoints.MapGet("/.well-known/assetlinks.json", async context =>
+         {
+             Console.WriteLine(Directory.GetCurrentDirectory());
+             context.Response.ContentType = "application/json";
+             await context.Response.SendFileAsync(Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "assetlinks.json"));
+         });
         });
 
     }

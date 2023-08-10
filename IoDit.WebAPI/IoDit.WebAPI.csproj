@@ -8,11 +8,7 @@
         <AssemblyName>IoDit.WebAPI</AssemblyName>
         <RootNamespace>IoDit.WebAPI</RootNamespace>
     </PropertyGroup>
-    <ItemGroup>
-        <Content Update="wwwroot/.well-known/**">
-            <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
-        </Content>
-    </ItemGroup>
+
     <ItemGroup>
         <PackageReference Include="Azure.Extensions.AspNetCore.Configuration.Secrets"
             Version="1.2.2" />
