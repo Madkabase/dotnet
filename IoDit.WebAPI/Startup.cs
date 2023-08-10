@@ -175,7 +175,7 @@ public class Startup
         {
             builder.UseStaticFiles(new StaticFileOptions
             {
-                FileProvider = new PhysicalFileProvider(Path.Combine(Directory.GetCurrentDirectory(), ".well-known")),
+                FileProvider = new PhysicalFileProvider(Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", ".well-known")),
                 RequestPath = "/.well-known"
             });
         });
