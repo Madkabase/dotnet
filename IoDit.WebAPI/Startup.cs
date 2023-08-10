@@ -6,6 +6,7 @@ using IoDit.WebAPI.Utilities.Loriot;
 using JetBrains.Annotations;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.FileProviders;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using NetTopologySuite.Geometries;
@@ -170,6 +171,14 @@ public class Startup
         app.UseAuthentication();
         app.UseAuthorization();
         app.UseStaticFiles();
+        app.Map("/.well-known", builder =>
+        {
+            builder.UseStaticFiles(new StaticFileOptions
+            {
+                FileProvider = new PhysicalFileProvider(Path.Combine(Directory.GetCurrentDirectory(), ".well-known")),
+                RequestPath = "/.well-known"
+            });
+        });
         app.UseEndpoints(endpoints =>
         {
             endpoints.MapHealthChecks("/healthz");
