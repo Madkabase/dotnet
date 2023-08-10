@@ -3,6 +3,7 @@ using System;
 using IoDit.WebAPI.Persistence;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using NetTopologySuite.Geometries;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
@@ -12,9 +13,10 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace IoDit.WebAPI.Migrations
 {
     [DbContext(typeof(AgroditDbContext))]
-    partial class IoDitDbContextModelSnapshot : ModelSnapshot
+    [Migration("20230808080322_field_user")]
+    partial class field_user
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -495,7 +497,7 @@ namespace IoDit.WebAPI.Migrations
             modelBuilder.Entity("IoDit.WebAPI.Persistence.Entities.FieldUser", b =>
                 {
                     b.HasOne("IoDit.WebAPI.Persistence.Entities.Field", "Field")
-                        .WithMany("FieldUsers")
+                        .WithMany()
                         .HasForeignKey("FieldId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -556,8 +558,6 @@ namespace IoDit.WebAPI.Migrations
             modelBuilder.Entity("IoDit.WebAPI.Persistence.Entities.Field", b =>
                 {
                     b.Navigation("Devices");
-
-                    b.Navigation("FieldUsers");
                 });
 
             modelBuilder.Entity("IoDit.WebAPI.Persistence.Entities.Threshold", b =>

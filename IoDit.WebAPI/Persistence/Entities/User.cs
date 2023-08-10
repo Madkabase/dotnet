@@ -18,6 +18,7 @@ public class User : EntityBase, IEntity
     public int ConfirmationTriesCounter { get; set; }
     public ICollection<RefreshToken> RefreshTokens { get; set; } = new List<RefreshToken>();
     public ICollection<FarmUser> FarmUsers { get; set; } = new List<FarmUser>();
+    public ICollection<FieldUser> FieldUsers { get; set; } = new List<FieldUser>();
 
     public static User FromDTO(UserDto userDto)
     {

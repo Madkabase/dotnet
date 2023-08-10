@@ -13,6 +13,7 @@ public class Field : EntityBase, IEntity
     public long ThresholdId { get; set; }
     public Threshold Threshold { get; set; }
     public ICollection<Device> Devices { get; set; } = new List<Device>();
+    public ICollection<FieldUser> FieldUsers { get; set; } = new List<FieldUser>();
 
 
     public static Field FromBo(FieldBo field)

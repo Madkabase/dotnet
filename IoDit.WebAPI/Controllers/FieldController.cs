@@ -23,18 +23,21 @@ public class FieldController : ControllerBase, IBaseController
     private readonly IFieldService _fieldService;
     private readonly IFarmUserService _farmUserService;
     private readonly IThresholdService _thresholdService;
+    private readonly IFieldUserService _fieldUserService;
 
     public FieldController(
         IFieldService fieldService,
         IUserService userService,
         IFarmUserService farmUserService,
-        IThresholdService thresholdService
+        IThresholdService thresholdService,
+        IFieldUserService fieldUserService
     )
     {
         _fieldService = fieldService;
         _userService = userService;
         _farmUserService = farmUserService;
         _thresholdService = thresholdService;
+        _fieldUserService = fieldUserService;
     }
 
     [HttpGet("getFieldsWithDevicesForFarm/{farmId}")]
@@ -88,7 +91,7 @@ public class FieldController : ControllerBase, IBaseController
 
         if (!await _fieldService.UserHasAccessToField(fieldId, user))
         {
-            return BadRequest(new ErrorResponseDTO { Message = "User does not have access to this field" });
+            throw new BadHttpRequestException("User does not have access to this field");
         }
         var field = await _fieldService.GetFieldByIdFull(fieldId)
             ?? throw new EntityNotFoundException("Field not found");
@@ -132,7 +135,7 @@ public class FieldController : ControllerBase, IBaseController
         var user = await GetRequestDetails();
         if (!await _fieldService.UserHasAccessToField(fieldId, user))
         {
-            return BadRequest(new ErrorResponseDTO { Message = "User does not have access to this field" });
+            throw new BadHttpRequestException("User does not have access to this field");
         }
         var field = await _fieldService.GetFieldByIdFull(fieldId)
             ?? throw new EntityNotFoundException("Field not found");
@@ -140,6 +143,64 @@ public class FieldController : ControllerBase, IBaseController
         var fieldDto = FieldDto.FromBo(field);
         fieldDto.OverallMoistureLevel = _fieldService.CalculateOverAllMoistureLevel(field.Devices.ToList(), field.Threshold);
         return Ok(fieldDto);
+    }
+
+    [HttpPut("{fieldId}/addFarmer")]
+    public async Task<ActionResult> AddFarmer(int fieldId, [FromBody] AddRemoveFieldFarmerDTO removeFieldFarmerDTO)
+    {
+        var user = await GetRequestDetails();
+
+        if (!await _fieldService.UserCanChangeField(fieldId, user))
+        {
+            throw new UnauthorizedAccessException("User has no right to modify field");
+        }
+
+        var farmerToAdd = await _userService.GetUserByEmail(removeFieldFarmerDTO.FarmerEmail);
+
+        await _fieldUserService.AddFieldUser(new FieldBo { Id = fieldId }, farmerToAdd, FieldRoles.User);
+
+        return Ok();
+
+    }
+
+    [HttpPut("{fieldId}/removeFarmer")]
+    public async Task<ActionResult> RemoveFarmer(int fieldId, [FromBody] AddRemoveFieldFarmerDTO removeFieldFarmerDTO)
+    {
+        var user = await GetRequestDetails();
+
+        if (!await _fieldService.UserCanChangeField(fieldId, user))
+        {
+            throw new UnauthorizedAccessException("User has no right to modify field");
+        }
+
+        var farmerToRemove = await _userService.GetUserByEmail(removeFieldFarmerDTO.FarmerEmail);
+        var userFieldToRemove = await _fieldUserService.GetUserField(fieldId, farmerToRemove.Id);
+        userFieldToRemove.User = farmerToRemove;
+        await _fieldUserService.RemoveFieldUser(userFieldToRemove);
+
+        return Ok();
+    }
+
+    [HttpGet("{fieldId}/farmers")]
+    public async Task<ActionResult> GetFarmers(int fieldId)
+    {
+        var user = await GetRequestDetails();
+
+        if (!await _fieldService.UserHasAccessToField(fieldId, user))
+        {
+            throw new UnauthorizedAccessException("User has no right to access field");
+        }
+
+        if (!await _fieldService.UserCanChangeField(fieldId, user))
+        {
+            return Ok(new List<FarmUserBo>());
+        }
+
+        List<FieldUserBo> fieldUsers = await _fieldUserService.GetFieldUsers(new FieldBo { Id = fieldId });
+
+        List<UserDto> fieldUsersDto = fieldUsers.Select(fu => UserDto.FromBo(fu.User)).ToList();
+
+        return Ok(fieldUsersDto);
     }
 
     [HttpGet("{fieldId}/devices")]

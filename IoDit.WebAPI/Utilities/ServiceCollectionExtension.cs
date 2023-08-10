@@ -1,4 +1,5 @@
 ﻿using IoDit.WebAPI.Persistence.Repositories;
+using IoDit.WebAPI.Persistence.Repositories.Interfaces;
 using IoDit.WebAPI.Services;
 using IoDit.WebAPI.Utilities.Azure;
 using IoDit.WebAPI.Utilities.Helpers;
@@ -24,6 +25,7 @@ public static class ServiceCollectionExtension
         .AddScoped<IThresholdPresetRepository, ThresholdPresetRepository>()
         .AddScoped<IThresholdRepository, ThresholdRepository>()
         .AddScoped<IDeviceRepository, DeviceRepository>()
+        .AddScoped<IFieldUserRepository, FieldUserRepository>()
 
     // services
         .AddScoped<IAuthService, AuthService>()
@@ -35,5 +37,6 @@ public static class ServiceCollectionExtension
         .AddScoped<IThresholdPresetService, ThresholdPresetService>()
         .AddScoped<IThresholdService, ThresholdService>()
         .AddScoped<IDeviceService, DeviceService>()
+        .AddScoped<IFieldUserService, FieldUserService>()
     ;
 }
