@@ -281,16 +281,21 @@ public class AuthService : IAuthService
         UserBo user = await _userService.GetUserByEmail(email);
 
         var resetPasswordToken = _jwtHelper.GenerateResetPasswordToken(email);
-
-        await _emailService.SendEmailWithMailKitAsync(new CustomEmailMessage
+        CustomEmailMessage customEmailMessage = new()
         {
             RecipientEmail = user.Email,
             Subject = "Reset your password",
             RecipientName = user.FirstName + " " + user.LastName,
-            //TODO : change the link to the frontend link
-            Body = $"Hello {user.FirstName}, <p> You can reset your password on this link: "
-                + $"{_configuration["BackendUrl"]}/ui/reset-password?token={resetPasswordToken}</p>"
-        });
+            BodyPath = "Emails/reset-password-email.html",
+            Placeholders = new Dictionary<string, string>
+            {
+                { "USERNAME", user.FirstName },
+                { "BACK_URL_BASE", _configuration["BackendUrl"]},
+                {"RESETTOKEN", resetPasswordToken}
+            }
+        };
+
+        await _emailService.SendEmailWithMailKitAsync(customEmailMessage);
 
         return new SendResetPasswordMailResponseDto
         {
@@ -303,10 +308,6 @@ public class AuthService : IAuthService
     {
         var decodedToken = _jwtHelper.DecodeResetPasswordToken(token);
         var user = await _userService.GetUserByEmail(decodedToken.Email);
-        if (user == null)
-        {
-            throw new EntityNotFoundException("User not found");
-        }
         if (decodedToken.Expiration.CompareTo(DateTime.Now) < 0)
         {
             throw new UnauthorizedAccessException("Token expired");
