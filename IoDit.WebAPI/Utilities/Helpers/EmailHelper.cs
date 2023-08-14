@@ -26,7 +26,11 @@ public class EmailHelper : IEmailHelper
         message.From.Add(new MailboxAddress(senderName, smtpUsername));
         message.To.Add(new MailboxAddress(emailMessage.RecipientName, emailMessage.RecipientEmail));
         message.Subject = emailMessage.Subject;
-        emailMessage.Body = emailMessage.Body += "<br/>Regards, <br/> The Agrodit team";
+        if (emailMessage.BodyPath != string.Empty)
+        {
+            emailMessage.Body = emailMessage.RenderBody();
+        }
+        emailMessage.Body += "<br/>Regards, <br/> The Agrodit team";
         message.Body = new TextPart("html") { Text = emailMessage.Body };
 
 
