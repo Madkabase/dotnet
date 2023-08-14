@@ -87,7 +87,6 @@ public class FieldService : IFieldService
     {
         FarmBo farm = await _farmService.GetFarmByFieldId(fieldId);
 
-        // TODO : when FieldUser is created, implement this
         FarmUserBo farmUser = await _farmUserService.GetUserFarm(farm.Id, user.Id);
         if (farmUser == null)
         {

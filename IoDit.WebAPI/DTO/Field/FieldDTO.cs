@@ -16,6 +16,7 @@ public class FieldDto
 
     public ThresholdDto Threshold { get; set; }
     public long OverallMoistureLevel { get; set; } = 0;
+    public bool IsRequesterAdmin { get; set; } = false;
 
     internal static FieldDto FromBo(FieldBo f)
     {

@@ -50,6 +50,7 @@ public class FieldController : ControllerBase, IBaseController
         foreach (var (fieldDto, i) in fieldDtos.Select((value, i) => (value, i)))
         {
             fieldDto.OverallMoistureLevel = _fieldService.CalculateOverAllMoistureLevel(fields[i].Devices.ToList(), fields[i].Threshold);
+            fieldDto.IsRequesterAdmin = await _fieldService.UserCanChangeField(fieldDto.Id, await GetRequestDetails());
         }
 
         return Ok(fieldDtos);
@@ -95,8 +96,10 @@ public class FieldController : ControllerBase, IBaseController
         }
         var field = await _fieldService.GetFieldByIdFull(fieldId)
             ?? throw new EntityNotFoundException("Field not found");
+        FieldDto fieldDto = FieldDto.FromBo(field);
+        fieldDto.IsRequesterAdmin = await _fieldService.UserCanChangeField(fieldDto.Id, await GetRequestDetails());
 
-        return Ok(FieldDto.FromBo(field));
+        return Ok(fieldDto);
     }
 
     [HttpPatch("{fieldId}/updateThreshold")]
@@ -141,6 +144,7 @@ public class FieldController : ControllerBase, IBaseController
             ?? throw new EntityNotFoundException("Field not found");
 
         var fieldDto = FieldDto.FromBo(field);
+        fieldDto.IsRequesterAdmin = await _fieldService.UserCanChangeField(fieldDto.Id, await GetRequestDetails());
         fieldDto.OverallMoistureLevel = _fieldService.CalculateOverAllMoistureLevel(field.Devices.ToList(), field.Threshold);
         return Ok(fieldDto);
     }
