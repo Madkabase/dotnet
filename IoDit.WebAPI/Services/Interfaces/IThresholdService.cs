@@ -6,6 +6,7 @@ namespace IoDit.WebAPI.Services;
 
 public interface IThresholdService
 {
+    public Task<ThresholdBo> GetThresholdById(long thresholdId);
     public Task CreateThreshold(ThresholdBo thresholdDto, FieldBo field);
     public Task<ThresholdBo> UpdateThreshold(ThresholdBo thresholdDto);
 }

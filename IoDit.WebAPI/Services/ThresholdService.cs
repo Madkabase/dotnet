@@ -1,5 +1,6 @@
 
 using IoDit.WebAPI.BO;
+using IoDit.WebAPI.Config.Exceptions;
 using IoDit.WebAPI.DTO.Threshold;
 using IoDit.WebAPI.Persistence.Entities;
 using IoDit.WebAPI.Persistence.Repositories;
@@ -27,6 +28,12 @@ public class ThresholdService : IThresholdService
         var newThreshold = await _thresholdRepository.UpdateThreshold(thresholdBo)
             ?? throw new Exception();
         return ThresholdBo.FromEntity(newThreshold);
+    }
+
+    public async Task<ThresholdBo> GetThresholdById(long thresholdId)
+    {
+        return ThresholdBo.FromEntity(await _thresholdRepository.GetThresholdById(thresholdId)
+            ?? throw new EntityNotFoundException("Threshold not found"));
     }
 
 
