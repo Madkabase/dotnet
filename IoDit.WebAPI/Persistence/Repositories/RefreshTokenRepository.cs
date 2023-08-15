@@ -1,6 +1,8 @@
 using IoDit.WebAPI.BO;
 using IoDit.WebAPI.Persistence.Entities;
+using IoDit.WebAPI.Utilities.Types;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Query.SqlExpressions;
 
 namespace IoDit.WebAPI.Persistence.Repositories;
 
@@ -44,9 +46,14 @@ public class RefreshTokenRepository : IRefreshTokenRepository
             };
         string sql = "INSERT INTO \"RefreshTokens\" ( \"UserId\", \"Token\", \"Expires\", \"DeviceIdentifier\") VALUES "
         + $"({param[0]}, '{param[1]}', '{param[2]}', '{param[3]}')";
-        // + "({0}, '{1}', '{2}', '{3}')";
-        // + $"(?, '?', '?',' ?')";
 
         await DbContext.Database.ExecuteSqlRawAsync(sql);
+    }
+
+    public Task<List<RefreshToken>> GetRefreshTokensOfFarmAdmins(long farmId)
+    {
+        return DbContext.RefreshTokens
+            .FromSqlInterpolated($"select rt.* from \"RefreshTokens\" rt where rt.\"UserId\" in (select fu.\"UserId\" from \"FarmUsers\" fu where fu.\"FarmId\"={farmId} and fu.\"FarmRole\" = {FarmRoles.Admin})")
+            .Include(t => t.User).ToListAsync();
     }
 }

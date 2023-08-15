@@ -28,5 +28,6 @@ public interface IFieldService
 
 
     public int CalculateOverAllMoistureLevel(List<DeviceBo> devices, ThresholdBo threshold);
-
+    Task<FieldBo> GetFieldFromDeviceEui(string devEui);
+    Task NotifyFarmAdmins(FieldBo field, string v);
 }

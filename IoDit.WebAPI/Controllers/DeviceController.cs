@@ -4,6 +4,8 @@ using IoDit.WebAPI.Services;
 using Microsoft.AspNetCore.Mvc;
 using IoDit.WebAPI.Config.Exceptions;
 using System.Security.Claims;
+using Microsoft.AspNetCore.Authorization;
+using IoDit.WebAPI.DTO.Field;
 
 namespace IoDit.WebAPI.Controllers;
 
@@ -15,16 +17,19 @@ public class DeviceController : ControllerBase, IBaseController
     private readonly IDeviceService _deviceService;
     private readonly IUserService _userService;
     private readonly IFieldService _fieldService;
+    private readonly IConfiguration _configuration;
 
     public DeviceController(
         IDeviceService deviceService,
         IUserService userService,
-        IFieldService fieldService
+        IFieldService fieldService,
+        IConfiguration configuration
     )
     {
         _deviceService = deviceService;
         _userService = userService;
         _fieldService = fieldService;
+        _configuration = configuration;
     }
 
     [HttpPost]
@@ -56,6 +61,32 @@ public class DeviceController : ControllerBase, IBaseController
         }
         catch (BadHttpRequestException) { throw; }
         catch (Exception) { throw; }
+    }
+
+    /// <summary>
+    ///  notify all the farm admins that the field is low on water
+    /// </summary>
+    /// <param name="devEui">the device that is low</param>
+    /// <returns></returns>
+    [HttpPost("{devEui}/notifyFarmAdmins")]
+    [AllowAnonymous]
+    public async Task<ActionResult> NotifyFarmAdmins(string devEui, [FromHeader] string authorization)
+    {
+        // check the bearer token from the sender
+        if (!authorization.Contains("Bearer "))
+        {
+            throw new UnauthorizedAccessException("Invalid token type");
+        }
+        authorization = authorization.Replace("Bearer ", "");
+        if (authorization != _configuration["LoriotSettings-AuthorizationKey"])
+        {
+            throw new UnauthorizedAccessException("Invalid token");
+        }
+
+        var field = await _fieldService.GetFieldFromDeviceEui(devEui);
+        // TODO: check threshold to see if above limits
+        await _fieldService.NotifyFarmAdmins(field, "the field " + field.Name + "is low on water");
+        return Ok();
     }
 
     [ApiExplorerSettings(IgnoreApi = true)]
