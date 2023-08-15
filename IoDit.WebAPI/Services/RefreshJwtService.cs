@@ -118,4 +118,10 @@ public class RefreshJwtService : IRefreshJwtService
         }
     }
 
+    public async Task<List<RefreshTokenBo>> GetRefreshTokensForFarmAdmins(long farmId)
+    {
+        return (await _refreshTokenRepository.GetRefreshTokensOfFarmAdmins(farmId))
+                    .Select(x => RefreshTokenBo.FromEntity(x)).ToList();
+    }
+
 }

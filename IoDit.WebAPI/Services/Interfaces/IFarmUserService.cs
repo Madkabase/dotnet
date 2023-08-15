@@ -40,4 +40,5 @@ public interface IFarmUserService
     /// <returns>the farmuser object for the user</returns>
     Task<FarmUserBo> AddFarmer(FarmBo farm, UserBo userToAdd, FarmRoles role);
     Task RemoveFarmer(FarmUserBo farmUser);
+    Task<List<FarmUserBo>> GetFarmAdmins(long id);
 }

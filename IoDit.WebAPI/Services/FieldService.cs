@@ -1,7 +1,8 @@
 using IoDit.WebAPI.BO;
 using IoDit.WebAPI.Config.Exceptions;
-using IoDit.WebAPI.Persistence.Entities;
 using IoDit.WebAPI.Persistence.Repositories;
+using IoDit.WebAPI.Utilities.Helpers;
+using IoDit.WebAPI.Utilities.Types;
 
 namespace IoDit.WebAPI.Services;
 
@@ -12,17 +13,26 @@ public class FieldService : IFieldService
     private readonly IFarmUserService _farmUserService;
     private readonly IFarmService _farmService;
     private readonly IFieldUserService _fieldUserService;
+    private readonly NotificationsHelper _notificationsHelper;
+    private readonly IRefreshJwtService _refreshTokenService;
+    private readonly NLog.Logger _logger = NLog.LogManager.GetCurrentClassLogger();
 
-    public FieldService(IFieldRepository fieldRepository,
+
+    public FieldService(
+        IFieldRepository fieldRepository,
         IFarmUserService farmUserService,
         IFarmService farmService,
-        IFieldUserService fieldUserService
+        IFieldUserService fieldUserService,
+        NotificationsHelper notificationsHelper,
+        IRefreshJwtService refreshTokenService
     )
     {
         _fieldRepository = fieldRepository;
         _farmUserService = farmUserService;
         _farmService = farmService;
         _fieldUserService = fieldUserService;
+        _notificationsHelper = notificationsHelper;
+        _refreshTokenService = refreshTokenService;
     }
 
     public async Task<List<FieldBo>> GetFieldsForFarm(FarmBo farm)
@@ -129,5 +139,27 @@ public class FieldService : IFieldService
         {
             return lastDatas.Select(d => d.Humidity1).Min();
         }
+    }
+
+    public async Task<FieldBo> GetFieldFromDeviceEui(string devEUI)
+    {
+        var field = await _fieldRepository.GetFieldByDeviceEui(devEUI)
+            ?? throw new EntityNotFoundException($"Field with device eui {devEUI} not found");
+        return FieldBo.FromEntity(field);
+    }
+
+    public async Task NotifyFarmAdmins(FieldBo field, string v)
+    {
+        var farm = await _farmService.GetFarmByFieldId(field.Id);
+        // get refresh tokens fopr farm admins
+        var tokens = await _refreshTokenService.GetRefreshTokensForFarmAdmins(farm.Id);
+        var notif = await _notificationsHelper.sendAlert(tokens.Select(t => t.DeviceIdentifier).ToList(),
+        new AndroidNotification(
+            title: "Field Alert",
+            body: v,
+            data: new Dictionary<string, string> { { "fieldId", field.Id.ToString() } },
+            additionalHeaders: new Dictionary<string, string> { { "priority", "high" } }
+        ));
+        _logger.Info($"Sent notification to {tokens.Count} farm admins", notif);
     }
 }

@@ -42,4 +42,11 @@ public class FarmUserRepository : IFarmUserRepository
        }
     );
 
+    public Task<List<FarmUser>> GetFarmAdmins(long id)
+    {
+        return _context.FarmUsers
+            .Include(fu => fu.User)
+            .Where(fu => fu.Farm.Id == id && fu.FarmRole == Utilities.Types.FarmRoles.Admin)
+            .ToListAsync();
+    }
 }
