@@ -9,7 +9,7 @@ public interface IAlertService
     /// </summary>
     /// <param name="field">the field to check</param>
     /// <returns>a boolean</returns>
-    Task<bool> hasActiveAlert(FieldBo field);
+    Task<bool> HasActiveAlert(FieldBo field);
     /// <summary>
     /// Gets all active alerts for a field
     /// </summary>
