@@ -1,5 +1,6 @@
 using IoDit.WebAPI.BO;
 using IoDit.WebAPI.Persistence.Entities;
+using Microsoft.EntityFrameworkCore;
 
 namespace IoDit.WebAPI.Persistence.Repositories;
 
@@ -37,21 +38,12 @@ public class AlertRepository : IAlertRepository
         );
     }
 
-    public Task CloseOutDatedAlerts(FieldBo fieldbo)
+    public Task CloseOutDatedAlerts(FieldBo fieldbo, int hours)
     {
-        return Task.Run(() =>
-        {
-            var alerts = _context.Alerts.Where(a => a.FieldId == fieldbo.Id)
-            .Where(a => !a.Closed)
-            .Where(a => a.Date < DateTime.Now.ToUniversalTime().AddHours(-72)).ToList();
-            foreach (var alert in alerts)
-            {
-
-                alert.Closed = true;
-            }
-            _context.Alerts.UpdateRange(alerts);
-            _context.SaveChanges();
-        });
+        string sql = "UPDATE \"Alerts\" SET  \"Closed\" = true "
+        + "WHERE \"Id\" in (select a.\"Id\" from \"Alerts\" a where a.\"FieldId\" = {0} and a.\"Date\" < '{1}' )"
+        + ";";
+        return _context.Database.ExecuteSqlRawAsync(string.Format(sql, fieldbo.Id, DateTime.Now.ToLocalTime().AddHours(-hours).ToString("yyyy-MM-dd HH:mm:ss.fff zzz").Remove(27, 1)));
     }
 
 
