@@ -1,4 +1,5 @@
-﻿using IoDit.WebAPI.BO;
+﻿using Azure.Identity;
+using IoDit.WebAPI.BO;
 using IoDit.WebAPI.Persistence.Entities.Base;
 using NetTopologySuite.Geometries;
 
@@ -14,6 +15,7 @@ public class Field : EntityBase, IEntity
     public Threshold Threshold { get; set; }
     public ICollection<Device> Devices { get; set; } = new List<Device>();
     public ICollection<FieldUser> FieldUsers { get; set; } = new List<FieldUser>();
+    public virtual ICollection<Alert> Alerts { get; set; } = new List<Alert>();
 
 
     public static Field FromBo(FieldBo field)
@@ -23,7 +25,7 @@ public class Field : EntityBase, IEntity
             Id = field.Id,
             Name = field.Name,
             Geofence = field.Geofence,
-            Threshold = field.Threshold != null ? Threshold.FromBo(field.Threshold) : new Threshold()
+            Threshold = field.Threshold != null ? Threshold.FromBo(field.Threshold) : new Threshold(),
         };
     }
 }

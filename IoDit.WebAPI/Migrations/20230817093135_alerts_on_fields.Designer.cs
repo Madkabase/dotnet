@@ -3,6 +3,7 @@ using System;
 using IoDit.WebAPI.Persistence;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using NetTopologySuite.Geometries;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
@@ -12,9 +13,10 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace IoDit.WebAPI.Migrations
 {
     [DbContext(typeof(AgroditDbContext))]
-    partial class IoDitDbContextModelSnapshot : ModelSnapshot
+    [Migration("20230817093135_alerts_on_fields")]
+    partial class alerts_on_fields
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

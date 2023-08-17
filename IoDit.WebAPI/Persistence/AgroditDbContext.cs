@@ -1,6 +1,7 @@
 ﻿using IoDit.WebAPI.Persistence.Entities;
 using IoDit.WebAPI.Utilities.Types;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.JSInterop.Infrastructure;
 
 namespace IoDit.WebAPI.Persistence;
 
@@ -23,6 +24,7 @@ public class AgroditDbContext : DbContext
     public DbSet<SubscriptionRequest> SubscriptionRequests { get; set; }
     public DbSet<DeviceData> DeviceData { get; set; }
     public DbSet<FieldUser> FieldUsers { get; set; }
+    public DbSet<Alert> Alerts { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -56,6 +58,21 @@ public class AgroditDbContext : DbContext
         .HasOne(fu => fu.Field)
         .WithMany(f => f.FieldUsers);
 
+        // on Device, the FieldId is nullable
+        modelBuilder.Entity<Device>()
+            .HasOne(d => d.Field)
+            .WithMany(f => f.Devices)
+            .HasForeignKey(d => d.FieldId)
+            .IsRequired(false)
+            .OnDelete(DeleteBehavior.SetNull);
 
+
+        // on Alert, the FieldId is bullable
+        modelBuilder.Entity<Alert>()
+            .HasOne(a => a.Field)
+            .WithMany(f => f.Alerts)
+            .HasForeignKey(a => a.FieldId)
+            .IsRequired(false)
+            .OnDelete(DeleteBehavior.SetNull);
     }
 }
