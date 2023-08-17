@@ -27,14 +27,15 @@ public class AlertService : IAlertService
 
     public async Task<bool> HasActiveAlert(FieldBo field)
     {
+        // TODO : check the exact rule
         await CloseOutDatedAlerts(field);
         List<Alert> alerts = await _alertRepository.GetActiveAlertsByField(field);
-        return !(alerts.Count == 0);
+        return alerts.Count != 0;
     }
 
     public async Task CloseOutDatedAlerts(FieldBo fieldbo)
     {
-        await _alertRepository.CloseOutDatedAlerts(fieldbo);
+        await _alertRepository.CloseOutDatedAlerts(fieldbo, 72);
     }
 
 }
