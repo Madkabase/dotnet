@@ -20,13 +20,16 @@ public class DeviceController : ControllerBase, IBaseController
     private readonly IFieldService _fieldService;
     private readonly IConfiguration _configuration;
     private readonly IThresholdService _thresholdService;
+    private readonly IAlertService _alertService;
+    private readonly NLog.ILogger _logger;
 
     public DeviceController(
         IDeviceService deviceService,
         IUserService userService,
         IFieldService fieldService,
         IConfiguration configuration,
-        IThresholdService thresholdService
+        IThresholdService thresholdService,
+        IAlertService alertService
     )
     {
         _deviceService = deviceService;
@@ -34,6 +37,8 @@ public class DeviceController : ControllerBase, IBaseController
         _fieldService = fieldService;
         _configuration = configuration;
         _thresholdService = thresholdService;
+        _alertService = alertService;
+        _logger = NLog.LogManager.GetCurrentClassLogger();
     }
 
     [HttpPost]
@@ -69,6 +74,7 @@ public class DeviceController : ControllerBase, IBaseController
 
     /// <summary>
     ///  notify all the farm admins that the field is low on water
+    ///  triggered when a new device data is added by the cloud function
     /// </summary>
     /// <param name="devEui">the device that is low</param>
     /// <returns></returns>
@@ -86,10 +92,19 @@ public class DeviceController : ControllerBase, IBaseController
         {
             throw new UnauthorizedAccessException("Invalid token");
         }
-        var device = await _deviceService.GetDeviceByDevEUI(devEui);
         var field = await _fieldService.GetFieldFromDeviceEui(devEui);
+
+        // if the field already has an active alert return Ok()
+        if (await _alertService.hasActiveAlert(field))
+        {
+            _logger.Info("Field already has an active alert");
+            return Ok();
+        }
+
         var threshold = await _thresholdService.GetThresholdById((long)field.ThresholdId!);
+        var device = await _deviceService.GetDeviceByDevEUI(devEui);
         string notificaitonMessage = "the field " + field.Name + "is low on water";
+
         if (threshold.MainSensor == Utilities.Types.MainSensor.SensorUp)
         {
             // if humidity is going up return Ok()
@@ -116,6 +131,13 @@ public class DeviceController : ControllerBase, IBaseController
                 await _fieldService.NotifyFarmAdmins(field, notificaitonMessage);
             }
         }
+
+
+        await _alertService.CreateAlert(new()
+        {
+            AlertType = Utilities.Types.AlertTypes.LowThreshold,
+            Field = field,
+        });
         return Ok();
     }
 
