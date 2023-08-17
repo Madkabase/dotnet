@@ -1,5 +1,4 @@
 ﻿using IoDit.WebAPI.Persistence.Repositories;
-using IoDit.WebAPI.Persistence.Repositories.Interfaces;
 using IoDit.WebAPI.Services;
 using IoDit.WebAPI.Utilities.Azure;
 using IoDit.WebAPI.Utilities.Helpers;

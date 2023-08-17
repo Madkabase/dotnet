@@ -1,7 +1,7 @@
 using IoDit.WebAPI.BO;
 using IoDit.WebAPI.Config.Exceptions;
 using IoDit.WebAPI.DTO;
-using IoDit.WebAPI.Persistence.Repositories.Interfaces;
+using IoDit.WebAPI.Persistence.Repositories;
 using IoDit.WebAPI.Utilities.Helpers;
 using IoDit.WebAPI.Utilities.Types;
 

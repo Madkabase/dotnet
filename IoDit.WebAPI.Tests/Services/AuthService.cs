@@ -54,7 +54,7 @@ public class AuthServiceTest
         var farmUserService = new Mock<IFarmUserService>();
         var _configuration = new Mock<IConfiguration>();
 
-        var authService = new AuthService(mockUserService.Object, refreshTokenService.Object, mockJwtHelper.Object, emailSerivce.Object, utilsRepository.Object, farmUserService.Object, _configuration.Object);
+        var authService = new AuthService(mockUserService.Object, refreshTokenService.Object, mockJwtHelper.Object, emailSerivce.Object, utilsRepository.Object, _configuration.Object);
 
         // Act
         var result = await authService.Login(email: user.Email, password: userPassword, DeviceId: "deviceId");
