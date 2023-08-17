@@ -10,7 +10,7 @@ public class Alert : EntityBase, IEntity
     public AlertTypes AlertType { get; set; } = AlertTypes.LowThreshold;
 
     public long? FieldId { get; set; } = 0;
-    public virtual Field Field { get; set; } = new Field();
+    public virtual Field Field { get; set; }
     public bool Closed { get; set; } = false;
 
     public static Alert FromBo(AlertBo alert)
