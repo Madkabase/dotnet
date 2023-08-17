@@ -6,6 +6,7 @@ using IoDit.WebAPI.Config.Exceptions;
 using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
 using IoDit.WebAPI.DTO.Field;
+using IoDit.WebAPI.Migrations;
 
 namespace IoDit.WebAPI.Controllers;
 
@@ -19,13 +20,15 @@ public class DeviceController : ControllerBase, IBaseController
     private readonly IFieldService _fieldService;
     private readonly IDeviceDataService _deviceDataService;
     private readonly IConfiguration _configuration;
+    private readonly IThresholdService _thresholdService;
 
     public DeviceController(
         IDeviceService deviceService,
         IUserService userService,
         IFieldService fieldService,
         IDeviceDataService deviceDataService,
-        IConfiguration configuration
+        IConfiguration configuration,
+        IThresholdService thresholdService
     )
     {
         _deviceService = deviceService;
@@ -33,6 +36,7 @@ public class DeviceController : ControllerBase, IBaseController
         _fieldService = fieldService;
         _deviceDataService = deviceDataService;
         _configuration = configuration;
+        _thresholdService = thresholdService;
     }
 
     [HttpPost]
@@ -105,10 +109,36 @@ public class DeviceController : ControllerBase, IBaseController
         {
             throw new UnauthorizedAccessException("Invalid token");
         }
-
+        var device = await _deviceService.GetDeviceByDevEUI(devEui);
         var field = await _fieldService.GetFieldFromDeviceEui(devEui);
-        // TODO: check threshold to see if above limits
-        await _fieldService.NotifyFarmAdmins(field, "the field " + field.Name + "is low on water");
+        var threshold = await _thresholdService.GetThresholdById((long)field.ThresholdId!);
+        string notificaitonMessage = "the field " + field.Name + "is low on water";
+        if (threshold.MainSensor == Utilities.Types.MainSensor.SensorUp)
+        {
+            // if humidity is going up return Ok()
+            if (device.DeviceData.First().Humidity1 > device.DeviceData.Last().Humidity1)
+            {
+                return Ok();
+            }
+            // if humidity1 is near the low threshold on a 10% margin send notification
+            if (device.DeviceData.First().Humidity1 <= threshold.Humidity1Min * 1.1)
+            {
+                await _fieldService.NotifyFarmAdmins(field, notificaitonMessage);
+            }
+        }
+        else
+        {
+            // if humidity is going up return Ok()
+            if (device.DeviceData.First().Humidity2 > device.DeviceData.Last().Humidity2)
+            {
+                return Ok();
+            }
+            // if humidity2 is near the low threshold on a 10% margin send notification
+            if (device.DeviceData.First().Humidity2 <= threshold.Humidity2Min * 1.1)
+            {
+                await _fieldService.NotifyFarmAdmins(field, notificaitonMessage);
+            }
+        }
         return Ok();
     }
 
