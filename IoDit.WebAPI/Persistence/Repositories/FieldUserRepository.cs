@@ -1,6 +1,5 @@
 using IoDit.WebAPI.BO;
 using IoDit.WebAPI.Persistence.Entities;
-using IoDit.WebAPI.Persistence.Repositories.Interfaces;
 using Microsoft.EntityFrameworkCore;
 
 namespace IoDit.WebAPI.Persistence.Repositories;
