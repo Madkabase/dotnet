@@ -95,7 +95,7 @@ public class DeviceController : ControllerBase, IBaseController
         var field = await _fieldService.GetFieldFromDeviceEui(devEui);
 
         // if the field already has an active alert return Ok()
-        if (await _alertService.hasActiveAlert(field))
+        if (await _alertService.HasActiveAlert(field))
         {
             _logger.Info("Field already has an active alert");
             return Ok();

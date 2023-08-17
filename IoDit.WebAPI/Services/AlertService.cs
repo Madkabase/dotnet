@@ -25,7 +25,7 @@ public class AlertService : IAlertService
         throw new NotImplementedException();
     }
 
-    public async Task<bool> hasActiveAlert(FieldBo field)
+    public async Task<bool> HasActiveAlert(FieldBo field)
     {
         await CloseOutDatedAlerts(field);
         List<Alert> alerts = await _alertRepository.GetActiveAlertsByField(field);
