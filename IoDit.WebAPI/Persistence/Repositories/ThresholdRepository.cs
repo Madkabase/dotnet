@@ -41,4 +41,9 @@ public class ThresholdRepository : IThresholdRepository
         await context.SaveChangesAsync();
         return uThreshold;
     }
+
+    public Task<Threshold?> GetThresholdById(long id)
+    {
+        return context.Thresholds.FindAsync(id).AsTask();
+    }
 }

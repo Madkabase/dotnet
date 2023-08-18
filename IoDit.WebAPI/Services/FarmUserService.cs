@@ -92,4 +92,9 @@ public class FarmUserService : IFarmUserService
         };
         await _emailHelper.SendEmailWithMailKitAsync(mail);
     }
+
+    public async Task<List<FarmUserBo>> GetFarmAdmins(long id)
+    {
+        return await _farmUserRepository.GetFarmAdmins(id).ContinueWith(t => t.Result.Select(fu => FarmUserBo.FromEntity(fu)).ToList());
+    }
 }

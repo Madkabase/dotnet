@@ -81,4 +81,11 @@ public class FieldRepository : IFieldRepository
             return field;
         });
 
+    public Task<Field?> GetFieldByDeviceEui(string deviceEui)
+    {
+        return _context.Devices
+            .Include(d => d.Field)
+            .FirstOrDefaultAsync(d => d.DevEUI == deviceEui)
+            .ContinueWith(t => t.Result?.Field);
+    }
 }

@@ -13,4 +13,6 @@ public interface IRefreshTokenRepository
     public Task<RefreshToken?> GetRefreshTokenByToken(string token);
     public Task UpdateToken(RefreshTokenBo currentToken);
     public Task CreateRefreshToken(RefreshTokenBo refreshToken);
+
+    public Task<List<RefreshToken>> GetRefreshTokensOfFarmAdmins(long farmId);
 }

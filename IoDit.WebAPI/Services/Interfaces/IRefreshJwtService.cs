@@ -29,4 +29,5 @@ public interface IRefreshJwtService
     /// </summary>
     /// <param name="userTokens">The list of refresh tokens to check</param>
 
+    public Task<List<RefreshTokenBo>> GetRefreshTokensForFarmAdmins(long farmId);
 }
