@@ -42,7 +42,7 @@ public class FieldRepository : IFieldRepository
                 AppKey = d.AppKey,
                 JoinEUI = d.JoinEUI,
                 Field = f,
-                DeviceDatas = _context.DeviceData.Where(dd => dd.TimeStamp.ToLocalTime() > DateTime.Now.AddDays(-1).ToLocalTime() && dd.DevEUI == d.DevEUI).ToList()
+                DeviceDatas = _context.DeviceData.Where(dd => dd.TimeStamp.ToUniversalTime() > DateTime.Now.AddDays(-1).ToLocalTime() && dd.DevEUI == d.DevEUI).ToList()
             }).ToList() ?? new List<Device>()
         }).ToList());
 

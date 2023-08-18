@@ -15,16 +15,19 @@ public class DeviceController : ControllerBase, IBaseController
     private readonly IDeviceService _deviceService;
     private readonly IUserService _userService;
     private readonly IFieldService _fieldService;
+    private readonly IDeviceDataService _deviceDataService;
 
     public DeviceController(
         IDeviceService deviceService,
         IUserService userService,
-        IFieldService fieldService
+        IFieldService fieldService,
+        IDeviceDataService deviceDataService
     )
     {
         _deviceService = deviceService;
         _userService = userService;
         _fieldService = fieldService;
+        _deviceDataService = deviceDataService;
     }
 
     [HttpPost]
@@ -57,6 +60,26 @@ public class DeviceController : ControllerBase, IBaseController
         catch (BadHttpRequestException) { throw; }
         catch (Exception) { throw; }
     }
+
+    [HttpGet("{devEUI}/data")]
+    public async Task<ActionResult<List<DeviceDataDTO>>> GetDeviceData([FromRoute] string devEUI, [FromQuery] DateTime? startDate, [FromQuery] DateTime? endDate)
+    {
+        // TODO: Check if the user has rigths to access device data from field
+
+        if (endDate == null)
+        {
+            endDate = DateTime.Now;
+        }
+        if (startDate == null)
+        {
+            startDate = endDate?.AddDays(-1);
+        }
+
+        var device = await _deviceService.GetDeviceByDevEUI(devEUI);
+        var deviceData = await _deviceDataService.GetDeviceDatasByDevice(device, (DateTime)startDate!, (DateTime)endDate!);
+        return Ok(deviceData.Select(DeviceDataDTO.FromBo).ToList());
+    }
+
 
     [ApiExplorerSettings(IgnoreApi = true)]
     public async Task<UserBo> GetRequestDetails()
