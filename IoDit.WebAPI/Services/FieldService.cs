@@ -150,6 +150,8 @@ public class FieldService : IFieldService
 
     public async Task NotifyFarmAdmins(FieldBo field, string v)
     {
+        // TODO : think about when the notification is sent.
+        //? see =  https://dev.azure.com/agrodit/Agrodit/_workitems/edit/71/
         var farm = await _farmService.GetFarmByFieldId(field.Id);
         // get refresh tokens fopr farm admins
         var tokens = await _refreshTokenService.GetRefreshTokensForFarmAdmins(farm.Id);
