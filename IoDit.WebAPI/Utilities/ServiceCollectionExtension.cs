@@ -25,7 +25,8 @@ public static class ServiceCollectionExtension
             .AddScoped<IThresholdRepository, ThresholdRepository>()
             .AddScoped<IDeviceRepository, DeviceRepository>()
             .AddScoped<IFieldUserRepository, FieldUserRepository>()
-            .AddScoped<IDeviceDataRepository, DeviceDataRepository>()
+            .AddScoped<IAlertRepository, AlertRepository>()
+
             // services
             .AddScoped<IAuthService, AuthService>()
             .AddScoped<IRefreshJwtService, RefreshJwtService>()
@@ -38,5 +39,6 @@ public static class ServiceCollectionExtension
             .AddScoped<IDeviceService, DeviceService>()
             .AddScoped<IFieldUserService, FieldUserService>()
             .AddScoped<IDeviceDataService, DeviceDataService>()
+            .AddScoped<IAlertService, AlertService>()
         ;
 }
