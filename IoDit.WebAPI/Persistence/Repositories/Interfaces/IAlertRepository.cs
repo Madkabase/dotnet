@@ -25,4 +25,5 @@ public interface IAlertRepository
     /// <param name="hours">the considered as outdated</param>
     /// <returns></returns>
     Task CloseOutDatedAlerts(FieldBo fieldbo, int hours);
+    Task DeleteAlertsFromFieldId(long fieldId);
 }
