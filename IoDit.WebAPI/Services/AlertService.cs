@@ -38,4 +38,8 @@ public class AlertService : IAlertService
         await _alertRepository.CloseOutDatedAlerts(fieldbo, 72);
     }
 
+    public async Task DeleteAlertsFromFieldId(long fieldId)
+    {
+        await _alertRepository.DeleteAlertsFromFieldId(fieldId);
+    }
 }
