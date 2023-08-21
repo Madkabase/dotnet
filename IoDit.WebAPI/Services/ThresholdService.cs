@@ -36,5 +36,8 @@ public class ThresholdService : IThresholdService
             ?? throw new EntityNotFoundException("Threshold not found"));
     }
 
-
+    public Task DeleteThresholdFromField(long fieldId)
+    {
+        return _thresholdRepository.DeleteThresholdFromField(fieldId);
+    }
 }

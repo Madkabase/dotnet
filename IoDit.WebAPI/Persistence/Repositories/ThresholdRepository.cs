@@ -46,4 +46,15 @@ public class ThresholdRepository : IThresholdRepository
     {
         return context.Thresholds.FindAsync(id).AsTask();
     }
+
+    public Task DeleteThresholdFromField(long fieldId)
+    {
+        // find field by id, knowing that the id field name is "Id"
+
+        var field = context.Fields.Find(fieldId);
+        Console.WriteLine(field);
+        if (field == null) throw new Exception("Field not found");
+        context.Thresholds.Remove(new() { Id = field.ThresholdId });
+        return context.SaveChangesAsync();
+    }
 }
