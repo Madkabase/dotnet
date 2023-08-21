@@ -164,4 +164,9 @@ public class FieldService : IFieldService
         ));
         _logger.Info($"Sent notification to {tokens.Count} farm admins", notif);
     }
+
+    public async Task DeleteField(long fieldId)
+    {
+        await _fieldRepository.DeleteField(fieldId);
+    }
 }

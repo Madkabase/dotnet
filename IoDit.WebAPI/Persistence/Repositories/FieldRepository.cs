@@ -88,4 +88,10 @@ public class FieldRepository : IFieldRepository
             .FirstOrDefaultAsync(d => d.DevEUI == deviceEui)
             .ContinueWith(t => t.Result?.Field);
     }
+
+    public Task DeleteField(long fieldId)
+    {
+        _context.Fields.Remove(new Field { Id = fieldId });
+        return _context.SaveChangesAsync();
+    }
 }

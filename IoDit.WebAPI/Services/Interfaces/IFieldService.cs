@@ -25,9 +25,30 @@ public interface IFieldService
     /// <param name="user">the user to check</param>
     /// <returns>true if the user can change the field, false otherwise</returns>
     public Task<bool> UserCanChangeField(long fieldId, UserBo user);
-
-
+    /// <summary>
+    /// calculates the overall moisture level of a field
+    /// </summary>
+    /// <param name="devices"></param>
+    /// <param name="threshold"></param>
+    /// <returns>the overall level moisture in pourcentage</returns>
     public int CalculateOverAllMoistureLevel(List<DeviceBo> devices, ThresholdBo threshold);
+    /// <summary>
+    /// gets the field where a given device EUI is
+    /// </summary>
+    /// <param name="devEui"></param>
+    /// <returns></returns>
     Task<FieldBo> GetFieldFromDeviceEui(string devEui);
-    Task NotifyFarmAdmins(FieldBo field, string v);
+    /// <summary>
+    /// sends a notification to all farm admins of a given field
+    /// </summary>
+    /// <param name="field"></param>
+    /// <param name="notificationBody"></param>
+    /// <returns></returns>
+    Task NotifyFarmAdmins(FieldBo field, string notificationBody);
+    /// <summary>
+    /// deletes a field and all data related to : devices and related data, threshold, alert, fieldUsers, farmFields, field
+    /// </summary>
+    /// <param name="fieldId"></param>
+    /// <returns></returns>
+    Task DeleteField(long fieldId);
 }
