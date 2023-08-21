@@ -149,6 +149,21 @@ public class FieldController : ControllerBase, IBaseController
         return Ok(fieldDto);
     }
 
+    [HttpDelete("{fieldId}")]
+    public async Task<ActionResult> DeleteField(int fieldId)
+    {
+        var user = await GetRequestDetails();
+
+        if (!await _fieldService.UserCanChangeField(fieldId, user))
+        {
+            throw new UnauthorizedAccessException("User has no right to modify field");
+        }
+
+        await _fieldService.DeleteField(fieldId);
+
+        return Ok();
+    }
+
     [HttpPut("{fieldId}/addFarmer")]
     public async Task<ActionResult> AddFarmer(int fieldId, [FromBody] AddRemoveFieldFarmerDTO removeFieldFarmerDTO)
     {
