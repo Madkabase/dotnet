@@ -233,7 +233,13 @@ public class LoriotApiClient
 
         throw new HttpRequestException(data!.error ?? "", null, response.StatusCode);
     }
-
+    /// <summary>
+    /// Delete a device from a given app
+    /// </summary>
+    /// <param name="appId">AppId stored in the farm</param>
+    /// <param name="deviceId">the DevEUI</param>
+    /// <returns></returns>
+    /// <exception cref="HttpRequestException"></exception>
     public async Task<string> DeleteLoriotAppDevice(string appId, string deviceId)
     {
         var response = await _httpClient.DeleteAsync($"{apiBaseUrl}/app/{appId}/device/{deviceId}");

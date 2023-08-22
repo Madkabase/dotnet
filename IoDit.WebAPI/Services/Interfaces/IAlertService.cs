@@ -22,5 +22,9 @@ public interface IAlertService
     /// <param name="alert"></param>
     /// <returns>the created alert</returns>
     Task<AlertBo> CreateAlert(AlertBo alert);
-
+    /// <summary>
+    /// Deletes all alerts for a given field
+    /// </summary>
+    /// <param name="field"></param>
+    Task DeleteAlertsFromFieldId(long fieldId);
 }

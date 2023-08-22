@@ -17,5 +17,5 @@ public interface IFieldRepository
     public Task<Field?> GetFieldByIdFull(long id);
 
     public Task<Field?> GetFieldByDeviceEui(string deviceEui);
-
+    Task DeleteField(long fieldId);
 }

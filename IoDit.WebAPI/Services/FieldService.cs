@@ -1,5 +1,6 @@
 using IoDit.WebAPI.BO;
 using IoDit.WebAPI.Config.Exceptions;
+using IoDit.WebAPI.Persistence;
 using IoDit.WebAPI.Persistence.Repositories;
 using IoDit.WebAPI.Utilities.Helpers;
 using IoDit.WebAPI.Utilities.Types;
@@ -15,7 +16,11 @@ public class FieldService : IFieldService
     private readonly IFieldUserService _fieldUserService;
     private readonly NotificationsHelper _notificationsHelper;
     private readonly IRefreshJwtService _refreshTokenService;
+    private readonly IThresholdService _thresholdService;
+    private readonly IAlertService _alertService;
     private readonly NLog.Logger _logger = NLog.LogManager.GetCurrentClassLogger();
+    private readonly AgroditDbContext _context;
+    private readonly IDeviceService _deviceService;
 
 
     public FieldService(
@@ -24,7 +29,11 @@ public class FieldService : IFieldService
         IFarmService farmService,
         IFieldUserService fieldUserService,
         NotificationsHelper notificationsHelper,
-        IRefreshJwtService refreshTokenService
+        IRefreshJwtService refreshTokenService,
+        IThresholdService thresholdService,
+        IAlertService alertService,
+        AgroditDbContext context,
+        IDeviceService deviceService
     )
     {
         _fieldRepository = fieldRepository;
@@ -33,6 +42,10 @@ public class FieldService : IFieldService
         _fieldUserService = fieldUserService;
         _notificationsHelper = notificationsHelper;
         _refreshTokenService = refreshTokenService;
+        _thresholdService = thresholdService;
+        _alertService = alertService;
+        _context = context;
+        _deviceService = deviceService;
     }
 
     public async Task<List<FieldBo>> GetFieldsForFarm(FarmBo farm)
@@ -163,5 +176,25 @@ public class FieldService : IFieldService
             additionalHeaders: new Dictionary<string, string> { { "priority", "high" } }
         ));
         _logger.Info($"Sent notification to {tokens.Count} farm admins", notif);
+    }
+
+    public async Task DeleteField(long fieldId)
+    {
+        using var transaction = _context.Database.BeginTransaction();
+        try
+        {
+            // do we delete all the devices from the field with all the data ?
+            await _deviceService.DeleteDevicesFromField(fieldId);
+            await _alertService.DeleteAlertsFromFieldId(fieldId);
+
+            await _thresholdService.DeleteThresholdFromField(fieldId);
+            await _fieldRepository.DeleteField(fieldId);
+            transaction.Commit();
+        }
+        catch (System.Exception)
+        {
+            transaction.Rollback();
+            throw;
+        }
     }
 }

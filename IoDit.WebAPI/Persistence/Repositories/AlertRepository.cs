@@ -46,5 +46,9 @@ public class AlertRepository : IAlertRepository
         return _context.Database.ExecuteSqlRawAsync(string.Format(sql, fieldbo.Id, DateTime.Now.ToLocalTime().AddHours(-hours).ToString("yyyy-MM-dd HH:mm:ss.fff zzz").Remove(27, 1)));
     }
 
-
+    public Task DeleteAlertsFromFieldId(long fieldId)
+    {
+        _context.RemoveRange(_context.Alerts.Where(a => a.FieldId == fieldId));
+        return _context.SaveChangesAsync();
+    }
 }

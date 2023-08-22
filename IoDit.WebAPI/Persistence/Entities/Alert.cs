@@ -6,10 +6,10 @@ namespace IoDit.WebAPI.Persistence.Entities;
 
 public class Alert : EntityBase, IEntity
 {
-    public DateTime Date { get; set; } = DateTime.Now;
-    public AlertTypes AlertType { get; set; } = AlertTypes.LowThreshold;
+    public DateTime Date { get; set; }
+    public AlertTypes AlertType { get; set; }
 
-    public long? FieldId { get; set; } = 0;
+    public long? FieldId { get; set; }
     public virtual Field Field { get; set; }
     public bool Closed { get; set; } = false;
 

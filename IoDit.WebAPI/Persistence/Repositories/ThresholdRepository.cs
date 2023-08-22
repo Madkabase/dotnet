@@ -1,4 +1,5 @@
 using IoDit.WebAPI.BO;
+using IoDit.WebAPI.Config.Exceptions;
 using IoDit.WebAPI.DTO.Threshold;
 using IoDit.WebAPI.Persistence.Entities;
 
@@ -45,5 +46,15 @@ public class ThresholdRepository : IThresholdRepository
     public Task<Threshold?> GetThresholdById(long id)
     {
         return context.Thresholds.FindAsync(id).AsTask();
+    }
+
+    public Task DeleteThresholdFromField(long fieldId)
+    {
+        // find field by id, knowing that the id field name is "Id"
+
+        var field = context.Fields.Find(fieldId);
+        if (field == null) throw new EntityNotFoundException("Field not found");
+        context.Thresholds.Remove(new() { Id = field.ThresholdId });
+        return context.SaveChangesAsync();
     }
 }
