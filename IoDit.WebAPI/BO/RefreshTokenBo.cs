@@ -33,7 +33,7 @@ public class RefreshTokenBo
     {
         return new RefreshTokenBo(
             refreshToken.Id,
-            UserBo.FromEntity(refreshToken.User),
+            refreshToken.User != null ? UserBo.FromEntity(refreshToken.User) : new UserBo(),
             refreshToken.Token,
             refreshToken.Expires,
             refreshToken.DeviceIdentifier

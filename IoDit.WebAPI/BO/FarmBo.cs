@@ -67,7 +67,7 @@ public class FarmBo
             AppId = farm.AppId,
             AppName = farm.AppName,
             MaxDevices = farm.MaxDevices,
-            Owner = UserBo.FromEntity(farm.Owner),
+            Owner = farm.Owner != null ? UserBo.FromEntity(farm.Owner) : new UserBo(),
             Fields = farm.Fields.Select(FieldBo.FromEntity).ToList(),
         };
 

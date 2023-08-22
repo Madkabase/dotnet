@@ -66,8 +66,15 @@ public class AgroditDbContext : DbContext
             .IsRequired(false)
             .OnDelete(DeleteBehavior.SetNull);
 
+        // on Threshold, The FieldId is nullable
+        modelBuilder.Entity<Threshold>()
+            .HasOne(t => t.Field)
+            .WithOne(f => f.Threshold)
+            .HasForeignKey<Field>(f => f.ThresholdId)
+            .IsRequired(false)
+            .OnDelete(DeleteBehavior.SetNull);
 
-        // on Alert, the FieldId is bullable
+        // on Alert, the FieldId is nullable
         modelBuilder.Entity<Alert>()
             .HasOne(a => a.Field)
             .WithMany(f => f.Alerts)
