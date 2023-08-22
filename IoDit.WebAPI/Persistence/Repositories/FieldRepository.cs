@@ -89,9 +89,16 @@ public class FieldRepository : IFieldRepository
             .ContinueWith(t => t.Result?.Field);
     }
 
-    public Task DeleteField(long fieldId)
+    public async Task DeleteField(long fieldId)
     {
-        _context.Fields.Remove(new Field { Id = fieldId });
-        return _context.SaveChangesAsync();
+        _logger.Info($"Deleting field with id {fieldId}");
+        // transform this raw sql into an ef query
+        // string sql = $"DELETE FROM \"Fields\" WHERE \"Id\" = {fieldId}";
+        // await _context.Database.ExecuteSqlRawAsync(sql);
+        _context.Fields.Remove(new()
+        {
+            Id = fieldId
+        });
+        await _context.SaveChangesAsync();
     }
 }

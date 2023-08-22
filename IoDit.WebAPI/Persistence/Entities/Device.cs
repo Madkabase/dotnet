@@ -21,16 +21,16 @@ public class Device : IEntity
     [NotMapped]
     public ICollection<DeviceData> DeviceDatas { get; set; } = new List<DeviceData>();
 
-    public Device()
-    {
-        DevEUI = "";
-        Name = "";
-        JoinEUI = "";
-        AppKey = "";
-        FieldId = 0;
-        Field = new Field();
-        DeviceDatas = new List<DeviceData>();
-    }
+    // public Device()
+    // {
+    //     DevEUI = "";
+    //     Name = "";
+    //     JoinEUI = "";
+    //     AppKey = "";
+    //     FieldId = 0;
+    //     Field = new Field();
+    //     DeviceDatas = new List<DeviceData>();
+    // }
 
     internal static Device FromBo(DeviceBo device)
     {

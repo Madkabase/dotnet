@@ -70,7 +70,7 @@ public class FarmController : ControllerBase, IBaseController
         var farm = await _farmService.getFarmDetailsById(farmId);
         FarmDto farmDto = new()
         {
-            isRequesterAdmin = userFarm?.FarmRole == FarmRoles.Admin || user.AppRole == AppRoles.AppAdmin,
+            isRequesterAdmin = userFarm?.FarmRole == FarmRoles.Admin, //? useless, because app Admin won't change the field ?  || user.AppRole == AppRoles.AppAdmin
             Id = farm.Id,
             Name = farm.Name,
             AppId = farm.AppId,

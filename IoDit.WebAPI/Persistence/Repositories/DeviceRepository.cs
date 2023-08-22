@@ -38,6 +38,20 @@ namespace IoDit.WebAPI.Persistence.Repositories
             await _dbContext.SaveChangesAsync();
             return res.Entity;
         }
+
+        public Task<List<Device>> GetDevicesFromField(long fieldId)
+        {
+            return _dbContext.Devices.Where(d => d.FieldId == fieldId).ToListAsync();
+        }
+
+        public Task DeleteDevice(DeviceBo device)
+        {
+            return Task.Run(() => _dbContext.Devices.Remove(new()
+            {
+                DevEUI = device.DevEUI
+            }
+            ));
+        }
     }
 
 }

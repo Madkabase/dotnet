@@ -13,6 +13,7 @@ public class DeviceService : IDeviceService
     private readonly IDeviceRepository _deviceRepository;
     private readonly IFarmService _farmService;
     private readonly LoriotApiClient _loriotApiClient;
+    private readonly NLog.Logger _logger = NLog.LogManager.GetCurrentClassLogger();
 
     public DeviceService(
         IDeviceRepository deviceRepository,
@@ -70,4 +71,15 @@ public class DeviceService : IDeviceService
         return DeviceBo.FromEntity(await _deviceRepository.CreateDevice(fieldBo, device));
     }
 
+    public async Task DeleteDevicesFromField(long fieldId)
+    {
+        FarmBo farm = await _farmService.GetFarmByFieldId(fieldId);
+        List<DeviceBo> devices = await _deviceRepository.GetDevicesFromField(fieldId).ContinueWith((el) => el.Result.Select(DeviceBo.FromEntity).ToList());
+        foreach (var device in devices)
+        {
+            _logger.Info($"Deleting device {device.DevEUI} from loriot and db");
+            await _deviceRepository.DeleteDevice(device);
+            // await _loriotApiClient.DeleteLoriotAppDevice(farm.AppId, device.DevEUI);
+        }
+    }
 }

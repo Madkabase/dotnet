@@ -7,5 +7,7 @@ namespace IoDit.WebAPI.Persistence.Repositories
     {
         public Task<Device> CreateDevice(FieldBo fieldBo, DeviceBo device);
         public Task<Device?> GetDeviceByDevEUI(string devEUI);
+        Task<List<Device>> GetDevicesFromField(long fieldId);
+        Task DeleteDevice(DeviceBo device);
     }
 }

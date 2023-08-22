@@ -8,7 +8,7 @@ public class Farm : EntityBase, IEntity
 {
     public string Name { get; set; }
     public long OwnerId { get; set; }
-    public User Owner { get; set; } = new User();
+    public User Owner { get; set; }
     public string AppId { get; set; }
     public string AppName { get; set; }
     public int MaxDevices { get; set; }
