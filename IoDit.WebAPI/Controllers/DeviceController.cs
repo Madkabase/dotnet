@@ -18,6 +18,7 @@ public class DeviceController : ControllerBase, IBaseController
     private readonly IDeviceService _deviceService;
     private readonly IUserService _userService;
     private readonly IFieldService _fieldService;
+    private readonly IDeviceDataService _deviceDataService;
     private readonly IConfiguration _configuration;
     private readonly IThresholdService _thresholdService;
     private readonly IAlertService _alertService;
@@ -27,6 +28,7 @@ public class DeviceController : ControllerBase, IBaseController
         IDeviceService deviceService,
         IUserService userService,
         IFieldService fieldService,
+        IDeviceDataService deviceDataService,
         IConfiguration configuration,
         IThresholdService thresholdService,
         IAlertService alertService
@@ -35,6 +37,7 @@ public class DeviceController : ControllerBase, IBaseController
         _deviceService = deviceService;
         _userService = userService;
         _fieldService = fieldService;
+        _deviceDataService = deviceDataService;
         _configuration = configuration;
         _thresholdService = thresholdService;
         _alertService = alertService;
@@ -71,6 +74,25 @@ public class DeviceController : ControllerBase, IBaseController
         catch (BadHttpRequestException) { throw; }
         catch (Exception) { throw; }
     }
+    [HttpGet("{devEUI}/data")]
+    public async Task<ActionResult<List<DeviceDataDTO>>> GetDeviceData([FromRoute] string devEUI, [FromQuery] DateTime? startDate, [FromQuery] DateTime? endDate)
+    {
+        // TODO: Check if the user has rigths to access device data from field
+
+        if (endDate == null)
+        {
+            endDate = DateTime.Now;
+        }
+        if (startDate == null)
+        {
+            startDate = endDate?.AddDays(-1);
+        }
+
+        var device = await _deviceService.GetDeviceByDevEUI(devEUI);
+        var deviceData = await _deviceDataService.GetDeviceDatasByDevice(device, (DateTime)startDate!, (DateTime)endDate!);
+        return Ok(deviceData.Select(DeviceDataDTO.FromBo).ToList());
+    }
+
 
     /// <summary>
     ///  notify all the farm admins that the field is low on water

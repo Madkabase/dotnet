@@ -41,7 +41,7 @@ public class FarmRepository : IFarmRepository
                 {
                     var lastData = _context.DeviceData
                         .Where(dd => dd.DevEUI == device.DevEUI)
-                        .Where(dd => dd.TimeStamp.ToLocalTime() > DateTime.Now.AddHours(-24).ToLocalTime())
+                        .Where(dd => dd.TimeStamp.ToUniversalTime() > DateTime.Now.AddHours(-24).ToUniversalTime())
                         .OrderByDescending(dd => dd.TimeStamp)
                         .FirstOrDefault();
                     if (lastData != null)

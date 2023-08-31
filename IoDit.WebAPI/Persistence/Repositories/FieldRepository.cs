@@ -42,7 +42,10 @@ public class FieldRepository : IFieldRepository
                 AppKey = d.AppKey,
                 JoinEUI = d.JoinEUI,
                 Field = f,
-                DeviceDatas = _context.DeviceData.Where(dd => dd.TimeStamp.ToLocalTime() > DateTime.Now.AddDays(-1).ToLocalTime() && dd.DevEUI == d.DevEUI).ToList()
+                DeviceDatas = _context.DeviceData
+                    .Where(dd => dd.TimeStamp.ToUniversalTime() > DateTime.Now.AddDays(-1).ToUniversalTime() && dd.DevEUI == d.DevEUI)
+                    .OrderByDescending(d => d.TimeStamp)
+                    .ToList()
             }).ToList() ?? new List<Device>()
         }).ToList());
 
@@ -76,6 +79,7 @@ public class FieldRepository : IFieldRepository
                 DeviceDatas = _context.DeviceData
                     .Where(dd => dd.DevEUI == d.DevEUI)
                     .Where(dd => dd.TimeStamp.ToLocalTime() > DateTime.Now.AddDays(-1).ToLocalTime())
+                    .OrderByDescending(d => d.TimeStamp)
                     .ToList()
             }).ToList() ?? new List<Device>();
             return field;

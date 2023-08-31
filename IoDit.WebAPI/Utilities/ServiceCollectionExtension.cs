@@ -14,7 +14,7 @@ public static class ServiceCollectionExtension
         .AddSingleton<IEmailHelper, EmailHelper>()
         .AddSingleton<IJwtHelper, JwtHelper>()
         .AddSingleton<NotificationsHelper>()
-    // reposoitories
+        // reposoitories
         .AddScoped<IRefreshTokenRepository, RefreshTokenRepository>()
         .AddScoped<IUtilsRepository, UtilsRepository>()
         .AddScoped<IUserRepository, UserRepository>()
@@ -25,9 +25,11 @@ public static class ServiceCollectionExtension
         .AddScoped<IThresholdRepository, ThresholdRepository>()
         .AddScoped<IDeviceRepository, DeviceRepository>()
         .AddScoped<IFieldUserRepository, FieldUserRepository>()
-        .AddScoped<IAlertRepository, AlertRepository>()
 
-    // services
+        .AddScoped<IAlertRepository, AlertRepository>()
+        .AddScoped<IDeviceDataRepository, DeviceDataRepository>()
+
+        // services
         .AddScoped<IAuthService, AuthService>()
         .AddScoped<IRefreshJwtService, RefreshJwtService>()
         .AddScoped<IUserService, UserService>()
@@ -38,6 +40,7 @@ public static class ServiceCollectionExtension
         .AddScoped<IThresholdService, ThresholdService>()
         .AddScoped<IDeviceService, DeviceService>()
         .AddScoped<IFieldUserService, FieldUserService>()
+        .AddScoped<IDeviceDataService, DeviceDataService>()
         .AddScoped<IAlertService, AlertService>()
     ;
 }
