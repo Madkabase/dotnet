@@ -16,7 +16,8 @@ public class DeviceDataRepository : IDeviceDataRepository
     public Task<List<DeviceData>> GetDeviceDatasByDevice(DeviceBo deviceBo, DateTime startDate, DateTime endDate)
     {
         return _context.DeviceData.Where(dd => dd.DevEUI == deviceBo.DevEUI)
-        .Where(dd => dd.TimeStamp.ToUniversalTime() >= startDate.ToUniversalTime() && dd.TimeStamp.ToUniversalTime() <= endDate.ToUniversalTime()).ToListAsync();
+        .Where(dd => dd.TimeStamp.ToUniversalTime() >= startDate.ToUniversalTime() && dd.TimeStamp.ToUniversalTime() <= endDate.ToUniversalTime())
+        .OrderByDescending(d => d.TimeStamp).ToListAsync();
 
     }
 }
