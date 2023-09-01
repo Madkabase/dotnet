@@ -46,11 +46,12 @@ namespace IoDit.WebAPI.Persistence.Repositories
 
         public Task DeleteDevice(DeviceBo device)
         {
-            return Task.Run(() => _dbContext.Devices.Remove(new()
+            _dbContext.Devices.Remove(new()
             {
                 DevEUI = device.DevEUI
             }
-            ));
+            );
+            return _dbContext.SaveChangesAsync();
         }
     }
 
