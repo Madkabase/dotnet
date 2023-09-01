@@ -5,8 +5,6 @@ using Microsoft.AspNetCore.Mvc;
 using IoDit.WebAPI.Config.Exceptions;
 using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
-using IoDit.WebAPI.DTO.Field;
-using IoDit.WebAPI.Migrations;
 
 namespace IoDit.WebAPI.Controllers;
 
@@ -74,6 +72,20 @@ public class DeviceController : ControllerBase, IBaseController
         catch (BadHttpRequestException) { throw; }
         catch (Exception) { throw; }
     }
+
+    [HttpDelete("{devEUI}")]
+    public async Task<ActionResult> DeleteDevice([FromRoute] string devEUI)
+    {
+        FieldBo field = await _fieldService.GetFieldFromDeviceEui(devEUI);
+
+        if (!await _fieldService.UserCanChangeField(field.Id, await GetRequestDetails()))
+        {
+            throw new UnauthorizedAccessException("User does not have rights to change this field");
+        }
+        await _deviceService.DeleteDevice(devEUI, field);
+        return Ok();
+    }
+
     [HttpGet("{devEUI}/data")]
     public async Task<ActionResult<List<DeviceDataDTO>>> GetDeviceData([FromRoute] string devEUI, [FromQuery] DateTime? startDate, [FromQuery] DateTime? endDate)
     {

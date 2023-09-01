@@ -71,6 +71,14 @@ public class DeviceService : IDeviceService
         return DeviceBo.FromEntity(await _deviceRepository.CreateDevice(fieldBo, device));
     }
 
+    public async Task DeleteDevice(string devEUI, FieldBo fieldBo)
+    {
+        FarmBo farm = await _farmService.GetFarmByFieldId(fieldBo.Id);
+        _logger.Info($"Deleting device {devEUI} from loriot and db");
+        await _deviceRepository.DeleteDevice(new DeviceBo() { DevEUI = devEUI });
+        await _loriotApiClient.DeleteLoriotAppDevice(farm.AppId, devEUI);
+    }
+
     public async Task DeleteDevicesFromField(long fieldId)
     {
         FarmBo farm = await _farmService.GetFarmByFieldId(fieldId);
@@ -79,7 +87,7 @@ public class DeviceService : IDeviceService
         {
             _logger.Info($"Deleting device {device.DevEUI} from loriot and db");
             await _deviceRepository.DeleteDevice(device);
-            // await _loriotApiClient.DeleteLoriotAppDevice(farm.AppId, device.DevEUI);
+            await _loriotApiClient.DeleteLoriotAppDevice(farm.AppId, device.DevEUI);
         }
     }
 }
