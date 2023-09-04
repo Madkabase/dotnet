@@ -18,11 +18,11 @@ public class ThresholdPresetController : ControllerBase, IBaseController
 {
 
     private readonly IUserService _userService;
-    private readonly IThresholdPresetService _globalThresholdService;
+    private readonly IGlobalThresholdPresetService _globalThresholdService;
 
     public ThresholdPresetController(
         IUserService userService,
-        IThresholdPresetService globalThresholdService
+        IGlobalThresholdPresetService globalThresholdService
     )
     {
         _userService = userService;

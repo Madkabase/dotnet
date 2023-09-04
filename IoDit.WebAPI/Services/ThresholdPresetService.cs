@@ -1,31 +1,22 @@
 using IoDit.WebAPI.BO;
-using IoDit.WebAPI.DTO.Threshold;
-using IoDit.WebAPI.Persistence.Entities;
 using IoDit.WebAPI.Persistence.Repositories;
 
 namespace IoDit.WebAPI.Services;
 
 public class ThresholdPresetService : IThresholdPresetService
 {
-    private readonly IThresholdPresetRepository thresholdPresetRepository;
 
-    public ThresholdPresetService(IThresholdPresetRepository thresholdPresetRepository)
+    private readonly IThresholdPresetRespository _thresholdPresetRespository;
+
+    public ThresholdPresetService(IThresholdPresetRespository thresholdPresetRespository)
     {
-        this.thresholdPresetRepository = thresholdPresetRepository;
+        _thresholdPresetRespository = thresholdPresetRespository;
     }
 
-    public async Task<List<GlobalThresholdPresetBo>> GetGlobalThresholdPresets(String? name)
+    public async Task<ThresholdPresetBo> CreateThresholdPreset(long farmId, ThresholdPresetBo thresholdBo)
     {
-        if (name == null)
-        {
-            return (await thresholdPresetRepository.GetGlobalThresholdPresets()).Select(x => GlobalThresholdPresetBo.FromEntity(x)).ToList();
-        }
-        return (await thresholdPresetRepository.GetGlobalThresholdPresets(name)).Select(x => GlobalThresholdPresetBo.FromEntity(x)).ToList();
-
+        thresholdBo.Farm.Id = farmId;
+        return ThresholdPresetBo.FromEntity(await _thresholdPresetRespository.CreateThresholdPreset(thresholdBo));
     }
 
-    public Task<GlobalThresholdPresetBo> UpdateGlobalThreshold(GlobalThresholdPresetBo globalThresholdPresetDto)
-    {
-        throw new NotImplementedException();
-    }
 }

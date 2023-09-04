@@ -1,9 +1,8 @@
 using IoDit.WebAPI.BO;
 using IoDit.WebAPI.Persistence.Entities;
-using IoDit.WebAPI.Persistence.Repositories;
 
 namespace IoDit.WebAPI.Persistence.Repositories;
-public interface IThresholdPresetRepository
+public interface IGlobalThresholdPresetRepository
 {
     Task<List<GlobalThresholdPreset>> GetGlobalThresholdPresets();
     Task<List<GlobalThresholdPreset>> GetGlobalThresholdPresets(String name);

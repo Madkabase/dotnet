@@ -3,12 +3,12 @@ using IoDit.WebAPI.Persistence.Entities;
 
 namespace IoDit.WebAPI.Persistence.Repositories;
 
-public class ThresholdPresetRepository : IThresholdPresetRepository
+public class GlobalThresholdPresetRepository : IGlobalThresholdPresetRepository
 {
 
     private readonly AgroditDbContext _dbContext;
 
-    public ThresholdPresetRepository(AgroditDbContext dbContext)
+    public GlobalThresholdPresetRepository(AgroditDbContext dbContext)
     {
         _dbContext = dbContext;
     }
