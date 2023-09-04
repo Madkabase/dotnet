@@ -178,7 +178,7 @@ public class FarmController : ControllerBase, IBaseController
     }
 
     [HttpPost("{farmId}/thresholdPreset")]
-    public async Task<ActionResult<ThresholdPresetDto>> CreateThresholdPreset([FromRoute] int farmId, [FromBody] ThresholdPresetDto thresholdPresetDto)
+    public async Task<ActionResult<ThresholdPresetDto>> CreateThresholdPreset([FromRoute] long farmId, [FromBody] ThresholdPresetDto thresholdPresetDto)
     {
 
         var user = await GetRequestDetails();
