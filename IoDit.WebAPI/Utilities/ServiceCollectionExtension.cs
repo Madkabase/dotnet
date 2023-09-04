@@ -21,13 +21,13 @@ public static class ServiceCollectionExtension
         .AddScoped<IFarmRepository, FarmRepository>()
         .AddScoped<IFarmUserRepository, FarmUserRepository>()
         .AddScoped<IFieldRepository, FieldRepository>()
-        .AddScoped<IThresholdPresetRepository, ThresholdPresetRepository>()
+        .AddScoped<IGlobalThresholdPresetRepository, GlobalThresholdPresetRepository>()
         .AddScoped<IThresholdRepository, ThresholdRepository>()
         .AddScoped<IDeviceRepository, DeviceRepository>()
         .AddScoped<IFieldUserRepository, FieldUserRepository>()
-
         .AddScoped<IAlertRepository, AlertRepository>()
         .AddScoped<IDeviceDataRepository, DeviceDataRepository>()
+        .AddScoped<IThresholdPresetRespository, ThresholdPresetRespository>()
 
         // services
         .AddScoped<IAuthService, AuthService>()
@@ -36,11 +36,12 @@ public static class ServiceCollectionExtension
         .AddScoped<IFarmService, FarmService>()
         .AddScoped<IFarmUserService, FarmUserService>()
         .AddScoped<IFieldService, FieldService>()
-        .AddScoped<IThresholdPresetService, ThresholdPresetService>()
+        .AddScoped<IGlobalThresholdPresetService, GlobalThresholdPresetService>()
         .AddScoped<IThresholdService, ThresholdService>()
         .AddScoped<IDeviceService, DeviceService>()
         .AddScoped<IFieldUserService, FieldUserService>()
-        .AddScoped<IDeviceDataService, DeviceDataService>()
         .AddScoped<IAlertService, AlertService>()
+        .AddScoped<IDeviceDataService, DeviceDataService>()
+        .AddScoped<IThresholdPresetService, ThresholdPresetService>()
     ;
 }
