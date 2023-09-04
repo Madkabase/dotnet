@@ -21,18 +21,32 @@ public class FarmController : ControllerBase, IBaseController
     private readonly IUserService _userService;
     private readonly IFarmUserService _farmUserService;
     private readonly IFieldService _fieldService;
+    private readonly IThresholdPresetService _thresholdPresetService;
 
     public FarmController(
         IFarmService farmService,
         IUserService userService,
         IFarmUserService farmUserService,
-        IFieldService fieldService
+        IFieldService fieldService,
+        IThresholdPresetService thresholdPresetService
     )
     {
         _farmService = farmService;
         _userService = userService;
         _farmUserService = farmUserService;
         _fieldService = fieldService;
+        _thresholdPresetService = thresholdPresetService;
+    }
+
+    [ApiExplorerSettings(IgnoreApi = true)]
+    public async Task<BO.UserBo> GetRequestDetails()
+    {
+        var claimsIdentity = User.Identity as ClaimsIdentity;
+        var userIdClaim = claimsIdentity?.FindFirst(ClaimTypes.NameIdentifier);
+        var userId = (userIdClaim?.Value)
+            ?? throw new UnauthorizedAccessException("Invalid user");
+        var user = await _userService.GetUserByEmail(userId);
+        return user;
     }
 
     [HttpGet("myFarms")]
@@ -163,16 +177,23 @@ public class FarmController : ControllerBase, IBaseController
         }
     }
 
-    [ApiExplorerSettings(IgnoreApi = true)]
-    public async Task<BO.UserBo> GetRequestDetails()
+    [HttpPost("{farmId}/thresholdPreset")]
+    public async Task<ActionResult<ThresholdPresetDto>> CreateThresholdPreset([FromRoute] int farmId, [FromBody] ThresholdPresetDto thresholdPresetDto)
     {
-        var claimsIdentity = User.Identity as ClaimsIdentity;
-        var userIdClaim = claimsIdentity?.FindFirst(ClaimTypes.NameIdentifier);
-        var userId = (userIdClaim?.Value)
-            ?? throw new UnauthorizedAccessException("Invalid user");
-        var user = await _userService.GetUserByEmail(userId);
-        return user;
-    }
 
+        var user = await GetRequestDetails();
+
+        FarmUserBo farmUser = await _farmUserService.GetUserFarm(farmId, user.Id);
+        if (!farmUser.FarmRole.Equals(FarmRoles.Admin))
+        {
+            throw new UnauthorizedAccessException("User does not have rights to change this farm");
+        }
+
+        ThresholdPresetBo thresholdPresetBo = ThresholdPresetBo.FromDto(thresholdPresetDto);
+
+        ThresholdPresetDto dto = ThresholdPresetDto.FromBo(await _thresholdPresetService.CreateThresholdPreset(farmId, thresholdPresetBo));
+
+        return Ok(dto);
+    }
 
 }
