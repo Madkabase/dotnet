@@ -24,4 +24,10 @@ public interface IThresholdPresetService
     /// <param name="thresholdPresetId"></param>
     /// <returns></returns>
     Task DeleteThresholdPreset(long thresholdPresetId);
+    /// <summary>
+    /// update a threshold preset
+    /// </summary>
+    /// <param name="thresholdPreset"></param>
+    /// <returns></returns>
+    Task UpdateThresholdPreset(ThresholdPresetBo thresholdPreset);
 }

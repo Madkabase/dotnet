@@ -28,4 +28,9 @@ public class ThresholdPresetService : IThresholdPresetService
     {
         await _thresholdPresetRespository.DeleteThresholdPreset(thresholdPresetId);
     }
+
+    public Task UpdateThresholdPreset(ThresholdPresetBo thresholdPreset)
+    {
+        return _thresholdPresetRespository.UpdateThresholdPreset(thresholdPreset);
+    }
 }
