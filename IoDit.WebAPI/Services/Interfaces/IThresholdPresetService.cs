@@ -12,4 +12,10 @@ public interface IThresholdPresetService
     /// <returns></returns>
     Task<ThresholdPresetBo> CreateThresholdPreset(long farmId, ThresholdPresetBo thresholdBo);
 
+    /// <summary>
+    /// get the threshold presets from a farm
+    /// </summary>
+    /// <param name="farmId"></param>
+    /// <returns></returns>
+    Task<List<ThresholdPresetBo>> GetThresholdPresets(long farmId);
 }

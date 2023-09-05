@@ -1,5 +1,6 @@
 using IoDit.WebAPI.BO;
 using IoDit.WebAPI.Persistence.Entities;
+using Microsoft.EntityFrameworkCore;
 
 namespace IoDit.WebAPI.Persistence.Repositories;
 
@@ -22,8 +23,9 @@ public class ThresholdPresetRespository : IThresholdPresetRespository
         return newPreset.Entity;
     }
 
-    public Task<List<ThresholdPreset>> GetThresholdPresets(long farmId)
+    public async Task<List<ThresholdPreset>> GetThresholdPresets(long farmId)
     {
-        throw new NotImplementedException();
+        return await _dbContext.ThresholdPresets.Where(t => t.FarmId == farmId).ToListAsync();
+
     }
 }

@@ -177,7 +177,7 @@ public class FarmController : ControllerBase, IBaseController
         }
     }
 
-    [HttpPost("{farmId}/thresholdPreset")]
+    [HttpPost("{farmId}/thresholdPresets")]
     public async Task<ActionResult<ThresholdPresetDto>> CreateThresholdPreset([FromRoute] long farmId, [FromBody] ThresholdPresetDto thresholdPresetDto)
     {
 
@@ -194,6 +194,19 @@ public class FarmController : ControllerBase, IBaseController
         ThresholdPresetDto dto = ThresholdPresetDto.FromBo(await _thresholdPresetService.CreateThresholdPreset(farmId, thresholdPresetBo));
 
         return Ok(dto);
+    }
+
+    [HttpGet("{farmId}/thresholdPresets")]
+    public async Task<ActionResult<List<ThresholdPresetDto>>> GetThresholdPresets([FromRoute] long farmId)
+    {
+        var user = await GetRequestDetails();
+
+        // checks if user is oart of the farm
+        FarmUserBo farmUser = await _farmUserService.GetUserFarm(farmId, user.Id);
+
+        List<ThresholdPresetDto> dtos = (await _thresholdPresetService.GetThresholdPresets(farmId)).Select(tp => ThresholdPresetDto.FromBo(tp)).ToList();
+
+        return Ok(dtos);
     }
 
 }
