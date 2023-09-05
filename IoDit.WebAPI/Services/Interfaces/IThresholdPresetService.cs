@@ -18,4 +18,10 @@ public interface IThresholdPresetService
     /// <param name="farmId"></param>
     /// <returns></returns>
     Task<List<ThresholdPresetBo>> GetThresholdPresets(long farmId);
+    /// <summary>
+    /// delete a threshold preset
+    /// </summary>
+    /// <param name="thresholdPresetId"></param>
+    /// <returns></returns>
+    Task DeleteThresholdPreset(long thresholdPresetId);
 }

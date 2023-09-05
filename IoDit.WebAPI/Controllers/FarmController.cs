@@ -209,4 +209,22 @@ public class FarmController : ControllerBase, IBaseController
         return Ok(dtos);
     }
 
+    [HttpDelete("{farmId}/thresholdPresets/{thresholdPresetId}")]
+
+    public async Task<ActionResult> DeleteThresholdPreset([FromRoute] long farmId, [FromRoute] long thresholdPresetId)
+    {
+        var user = await GetRequestDetails();
+
+        // checks if user is oart of the farm
+        FarmUserBo farmUser = await _farmUserService.GetUserFarm(farmId, user.Id);
+
+        if (!farmUser.FarmRole.Equals(FarmRoles.Admin))
+        {
+            throw new UnauthorizedAccessException("User does not have rights to change this farm");
+        }
+
+        await _thresholdPresetService.DeleteThresholdPreset(thresholdPresetId);
+
+        return Ok();
+    }
 }

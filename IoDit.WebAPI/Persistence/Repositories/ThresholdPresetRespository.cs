@@ -28,4 +28,13 @@ public class ThresholdPresetRespository : IThresholdPresetRespository
         return await _dbContext.ThresholdPresets.Where(t => t.FarmId == farmId).ToListAsync();
 
     }
+
+    public async Task DeleteThresholdPreset(long thresholdPresetId)
+    {
+        _dbContext.ThresholdPresets.Remove(new()
+        {
+            Id = thresholdPresetId
+        });
+        await _dbContext.SaveChangesAsync();
+    }
 }

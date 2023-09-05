@@ -24,4 +24,8 @@ public class ThresholdPresetService : IThresholdPresetService
     {
         return await _thresholdPresetRespository.GetThresholdPresets(farmId).ContinueWith(t => t.Result.Select(ThresholdPresetBo.FromEntity).ToList());
     }
+    public async Task DeleteThresholdPreset(long thresholdPresetId)
+    {
+        await _thresholdPresetRespository.DeleteThresholdPreset(thresholdPresetId);
+    }
 }
