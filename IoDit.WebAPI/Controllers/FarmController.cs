@@ -227,4 +227,25 @@ public class FarmController : ControllerBase, IBaseController
 
         return Ok();
     }
+
+    [HttpPut("{farmId}/thresholdPresets/{thresholdPresetId}")]
+    public async Task<ActionResult> UpdateThresholdPreset([FromRoute] long farmId, [FromRoute] long thresholdPresetId, [FromBody] ThresholdPresetDto thresholdPresetDto)
+    {
+        var user = await GetRequestDetails();
+
+        // checks if user is oart of the farm
+        FarmUserBo farmUser = await _farmUserService.GetUserFarm(farmId, user.Id);
+
+        if (!farmUser.FarmRole.Equals(FarmRoles.Admin))
+        {
+            throw new UnauthorizedAccessException("User does not have rights to change this farm");
+        }
+
+        ThresholdPresetBo thresholdPresetBo = ThresholdPresetBo.FromDto(thresholdPresetDto);
+        thresholdPresetBo.Id = thresholdPresetId;
+
+        await _thresholdPresetService.UpdateThresholdPreset(thresholdPresetBo);
+
+        return Ok();
+    }
 }
