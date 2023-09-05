@@ -37,4 +37,22 @@ public class ThresholdPresetRespository : IThresholdPresetRespository
         });
         await _dbContext.SaveChangesAsync();
     }
+
+    public async Task UpdateThresholdPreset(ThresholdPresetBo thresholdPreset)
+    {
+        ThresholdPreset preset = _dbContext.ThresholdPresets.Find(thresholdPreset.Id) ?? throw new ArgumentException("Threshold preset not found");
+        preset.Name = thresholdPreset.Name;
+        preset.Humidity1Min = thresholdPreset.Humidity1Min;
+        preset.Humidity1Max = thresholdPreset.Humidity1Max;
+        preset.Humidity2Min = thresholdPreset.Humidity2Min;
+        preset.Humidity2Max = thresholdPreset.Humidity2Max;
+        preset.TemperatureMin = thresholdPreset.TemperatureMin;
+        preset.TemperatureMax = thresholdPreset.TemperatureMax;
+        preset.BatteryLevelMin = thresholdPreset.BatteryLevelMin;
+        preset.BatteryLevelMax = thresholdPreset.BatteryLevelMax;
+
+
+        _dbContext.ThresholdPresets.Update(preset);
+        await _dbContext.SaveChangesAsync();
+    }
 }
