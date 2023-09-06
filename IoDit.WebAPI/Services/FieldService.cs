@@ -109,13 +109,15 @@ public class FieldService : IFieldService
     public async Task<bool> UserCanChangeField(long fieldId, UserBo user)
     {
         FarmBo farm = await _farmService.GetFarmByFieldId(fieldId);
-
-        FarmUserBo farmUser = await _farmUserService.GetUserFarm(farm.Id, user.Id);
-        if (farmUser == null)
+        try
+        {
+            FarmUserBo farmUser = await _farmUserService.GetUserFarm(farm.Id, user.Id);
+            return farmUser.FarmRole == Utilities.Types.FarmRoles.Admin;
+        }
+        catch (System.Exception)
         {
             return false;
         }
-        return farmUser.FarmRole == Utilities.Types.FarmRoles.Admin;
     }
 
     public int CalculateOverAllMoistureLevel(List<DeviceBo> devices, ThresholdBo threshold)
