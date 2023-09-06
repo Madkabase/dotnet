@@ -197,14 +197,25 @@ public class FarmController : ControllerBase, IBaseController
     }
 
     [HttpGet("{farmId}/thresholdPresets")]
-    public async Task<ActionResult<List<ThresholdPresetDto>>> GetThresholdPresets([FromRoute] long farmId)
+    public async Task<ActionResult<List<ThresholdPresetDto>>> GetThresholdPresets([FromRoute] long farmId, [FromQuery] String? name)
     {
         var user = await GetRequestDetails();
 
-        // checks if user is oart of the farm
+        // checks if user is part of the farm
         FarmUserBo farmUser = await _farmUserService.GetUserFarm(farmId, user.Id);
+        List<ThresholdPresetDto> dtos;
 
-        List<ThresholdPresetDto> dtos = (await _thresholdPresetService.GetThresholdPresets(farmId)).Select(tp => ThresholdPresetDto.FromBo(tp)).ToList();
+        if (string.IsNullOrEmpty(name))
+        {
+            dtos
+             = (await _thresholdPresetService.GetThresholdPresets(farmId)).Select(tp => ThresholdPresetDto.FromBo(tp)).ToList();
+        }
+        else
+        {
+            dtos
+             = (await _thresholdPresetService.GetThresholdPresetsByName(farmId, name)).Select(tp => ThresholdPresetDto.FromBo(tp)).ToList();
+        }
+
 
         return Ok(dtos);
     }
