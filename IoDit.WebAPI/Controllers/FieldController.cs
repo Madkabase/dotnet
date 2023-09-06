@@ -58,12 +58,12 @@ public class FieldController : ControllerBase, IBaseController
         return Ok(fieldDtos);
     }
 
-    [HttpGet("myFieldsWithDevices")]
+    [HttpGet("myFields")]
     public async Task<ActionResult<List<FieldDto>>> GetMyFieldsWithDevices()
     {
         var user = await GetRequestDetails();
 
-        List<FieldUserBo> fields = await _fieldUserService.GetUserFields(user);
+        List<FieldUserBo> fields = await _fieldUserService.GetUserFieldsWithDevices(user);
 
         List<FieldDto> fieldDtos = fields.Select(f => FieldDto.FromBo(f.Field)).ToList();
 
@@ -73,7 +73,11 @@ public class FieldController : ControllerBase, IBaseController
             fieldDto.IsRequesterAdmin = await _fieldService.UserCanChangeField(fieldDto.Id, await GetRequestDetails());
         }
 
-        return Ok(fieldDtos);
+        return Ok(fieldDtos.Select(f =>
+        {
+            f.Devices.RemoveAll(d => true);
+            return f;
+        }));
     }
 
     [HttpPost("createField")]
