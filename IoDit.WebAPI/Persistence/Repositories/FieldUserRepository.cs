@@ -66,4 +66,31 @@ public class FieldUserRepository : IFieldUserRepository
         .Include(fu => fu.User)
         .FirstOrDefault(fu => fu.FieldId == fieldId && fu.UserId == userId));
     }
+
+    public async Task<List<FieldUser>> GetFieldsWithDevicesByUser(UserBo user)
+    {
+        var userFields = await _context.FieldUsers
+            .Where(fu => fu.UserId == user.Id)
+            .Include(f => f.Field)
+            .ThenInclude(f => f.Threshold)
+            .Include(fu => fu.Field)
+            .ThenInclude(f => f.Devices)
+            .ToListAsync();
+
+        foreach (var uf in userFields)
+        {
+            foreach (var device in uf.Field.Devices)
+            {
+                device.DeviceDatas = await _context.DeviceData
+                    .Where(dd => dd.DevEUI == device.DevEUI)
+                    .Where(dd => dd.TimeStamp.ToUniversalTime() > DateTime.Now.ToUniversalTime().AddDays(-1))
+
+                    .OrderByDescending(dd => dd.TimeStamp)
+                    .ToListAsync();
+            }
+        }
+
+        return userFields;
+    }
+
 }
