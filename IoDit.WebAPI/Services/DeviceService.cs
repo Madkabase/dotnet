@@ -90,4 +90,9 @@ public class DeviceService : IDeviceService
             await _loriotApiClient.DeleteLoriotAppDevice(farm.AppId, device.DevEUI);
         }
     }
+
+    public Task<List<DeviceBo>> GetFieldDevices(FieldBo fieldBo)
+    {
+        return _deviceRepository.GetDevicesFromField(fieldBo.Id).ContinueWith((el) => el.Result.Select(DeviceBo.FromEntity).ToList());
+    }
 }
