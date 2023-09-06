@@ -10,5 +10,5 @@ public interface IFieldUserService
     public Task<FieldUserBo> GetUserField(long fieldId, long userId);
     public Task<FieldUserBo> AddFieldUser(FieldBo field, UserBo userToAdd, FieldRoles role);
     public Task RemoveFieldUser(FieldUserBo fieldUser);
-
+    Task<List<FieldUserBo>> GetUserFieldsWithDevices(UserBo user);
 }
