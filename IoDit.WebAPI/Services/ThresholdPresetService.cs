@@ -33,4 +33,9 @@ public class ThresholdPresetService : IThresholdPresetService
     {
         return _thresholdPresetRespository.UpdateThresholdPreset(thresholdPreset);
     }
+
+    public Task<IEnumerable<ThresholdPresetBo>> GetThresholdPresetsByName(long farmId, string name)
+    {
+        return _thresholdPresetRespository.GetThresholdPresetsByName(farmId, name).ContinueWith(t => t.Result.Select(ThresholdPresetBo.FromEntity));
+    }
 }

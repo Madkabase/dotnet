@@ -30,4 +30,11 @@ public interface IThresholdPresetService
     /// <param name="thresholdPreset"></param>
     /// <returns></returns>
     Task UpdateThresholdPreset(ThresholdPresetBo thresholdPreset);
+    /// <summary>
+    /// get the threshold presets from a farm, filtered by name
+    /// </summary>
+    /// <param name="farmId">the id of the farm we want </param>
+    /// <param name="name">filtered name</param>
+    /// <returns></returns>
+    Task<IEnumerable<ThresholdPresetBo>> GetThresholdPresetsByName(long farmId, string name);
 }
