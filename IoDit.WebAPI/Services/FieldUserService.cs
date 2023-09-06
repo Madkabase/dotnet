@@ -121,4 +121,11 @@ public class FieldUserService : IFieldUserService
         await _emailHelper.SendEmailWithMailKitAsync(mail);
 
     }
+
+    public async Task<List<FieldUserBo>> GetUserFieldsWithDevices(UserBo user)
+    {
+        var fieldUsers = await _fieldUserRepository.GetFieldsWithDevicesByUser(user)
+            ?? throw new EntityNotFoundException("User not found for this field");
+        return fieldUsers.Select(FieldUserBo.FromEntity).ToList();
+    }
 }

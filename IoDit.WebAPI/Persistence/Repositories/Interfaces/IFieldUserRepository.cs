@@ -26,6 +26,17 @@ public interface IFieldUserRepository
     /// <param name="fieldUser">user to remove from the field</param>
     /// <returns>a task</returns>
     public Task RemoveFieldUser(FieldUserBo fieldUser);
-
+    /// <summary>
+    /// get a field user by field id and user id
+    /// </summary>
+    /// <param name="fieldId"></param>
+    /// <param name="userId"></param>
+    /// <returns></returns>
     public Task<FieldUser?> GetFieldUser(long fieldId, long userId);
+    /// <summary>
+    /// Get all fields with devices by user
+    /// </summary>
+    /// <param name="user"></param>
+    /// <returns></returns>
+    Task<List<FieldUser>> GetFieldsWithDevicesByUser(UserBo user);
 }

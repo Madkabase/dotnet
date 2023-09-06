@@ -58,7 +58,27 @@ public class FieldController : ControllerBase, IBaseController
         return Ok(fieldDtos);
     }
 
+    [HttpGet("myFields")]
+    public async Task<ActionResult<List<FieldDto>>> GetMyFieldsWithDevices()
+    {
+        var user = await GetRequestDetails();
 
+        List<FieldUserBo> fields = await _fieldUserService.GetUserFieldsWithDevices(user);
+
+        List<FieldDto> fieldDtos = fields.Select(f => FieldDto.FromBo(f.Field)).ToList();
+
+        foreach (var (fieldDto, i) in fieldDtos.Select((value, i) => (value, i)))
+        {
+            fieldDto.OverallMoistureLevel = _fieldService.CalculateOverAllMoistureLevel(fields[i].Field.Devices.ToList(), fields[i].Field.Threshold);
+            fieldDto.IsRequesterAdmin = await _fieldService.UserCanChangeField(fieldDto.Id, await GetRequestDetails());
+        }
+
+        return Ok(fieldDtos.Select(f =>
+        {
+            f.Devices.RemoveAll(d => true);
+            return f;
+        }));
+    }
 
     [HttpPost("createField")]
     public async Task<ActionResult> CreateField([FromBody] CreateFieldRequestDTO createFieldDTO)
