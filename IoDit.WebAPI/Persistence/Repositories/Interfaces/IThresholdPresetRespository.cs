@@ -29,4 +29,11 @@ public interface IThresholdPresetRespository
     /// <param name="thresholdPreset"></param>
     /// <returns></returns>
     Task UpdateThresholdPreset(ThresholdPresetBo thresholdPreset);
+    /// <summary>
+    /// get the threshold presets from a farm, filtered by name
+    /// </summary>
+    /// <param name="farmId"></param>
+    /// <param name="name"></param>
+    /// <returns></returns>
+    Task<List<ThresholdPreset>> GetThresholdPresetsByName(long farmId, string name);
 }

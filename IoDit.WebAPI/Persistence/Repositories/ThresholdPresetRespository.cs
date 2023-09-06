@@ -55,4 +55,11 @@ public class ThresholdPresetRespository : IThresholdPresetRespository
         _dbContext.ThresholdPresets.Update(preset);
         await _dbContext.SaveChangesAsync();
     }
+
+    public async Task<List<ThresholdPreset>> GetThresholdPresetsByName(long farmId, string name)
+    {
+        return await _dbContext.ThresholdPresets.Where(t => t.FarmId == farmId)
+        .Where(t => t.Name.Contains(name))
+        .ToListAsync();
+    }
 }
