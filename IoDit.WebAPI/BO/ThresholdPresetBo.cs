@@ -43,7 +43,6 @@ public class ThresholdPresetBo : GlobalThresholdPresetBo
         {
             Id = thresholdPresetDto.Id,
             Name = thresholdPresetDto.Name,
-            Farm = FarmBo.FromDto(thresholdPresetDto.Farm),
             Humidity1Min = thresholdPresetDto.Humidity1Min,
             Humidity1Max = thresholdPresetDto.Humidity1Max,
             Humidity2Min = thresholdPresetDto.Humidity2Min,
@@ -61,7 +60,7 @@ public class ThresholdPresetBo : GlobalThresholdPresetBo
         {
             Id = thresholdPreset.Id,
             Name = thresholdPreset.Name,
-            Farm = FarmBo.FromEntity(thresholdPreset.Farm),
+            Farm = new FarmBo(),
             Humidity1Min = thresholdPreset.Humidity1Min,
             Humidity1Max = thresholdPreset.Humidity1Max,
             Humidity2Min = thresholdPreset.Humidity2Min,

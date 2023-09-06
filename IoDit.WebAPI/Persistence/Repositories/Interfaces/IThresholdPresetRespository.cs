@@ -1,23 +1,22 @@
 using IoDit.WebAPI.BO;
+using IoDit.WebAPI.Persistence.Entities;
 
-namespace IoDit.WebAPI.Services;
+namespace IoDit.WebAPI.Persistence.Repositories;
 
-public interface IThresholdPresetService
+public interface IThresholdPresetRespository
 {
-    /// <summary>
-    /// Create a threshold preset for a farm
-    /// </summary>
-    /// <param name="farmId"></param>
-    /// <param name="thresholdBo"></param>
-    /// <returns></returns>
-    Task<ThresholdPresetBo> CreateThresholdPreset(long farmId, ThresholdPresetBo thresholdBo);
-
     /// <summary>
     /// get the threshold presets from a farm
     /// </summary>
     /// <param name="farmId"></param>
     /// <returns></returns>
-    Task<List<ThresholdPresetBo>> GetThresholdPresets(long farmId);
+    Task<List<ThresholdPreset>> GetThresholdPresets(long farmId);
+    /// <summary>
+    /// Create a threshold preset for a farms
+    /// </summary>
+    /// <param name="thresholdPreset"></param>
+    /// <returns></returns>
+    Task<ThresholdPreset> CreateThresholdPreset(ThresholdPresetBo thresholdPreset);
     /// <summary>
     /// delete a threshold preset
     /// </summary>
