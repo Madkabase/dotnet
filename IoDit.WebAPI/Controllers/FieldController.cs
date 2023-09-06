@@ -1,7 +1,6 @@
 using System.Security.Claims;
 using IoDit.WebAPI.BO;
 using IoDit.WebAPI.Config.Exceptions;
-using IoDit.WebAPI.DTO;
 using IoDit.WebAPI.DTO.Device;
 using IoDit.WebAPI.DTO.Farm;
 using IoDit.WebAPI.DTO.Field;
@@ -24,13 +23,15 @@ public class FieldController : ControllerBase, IBaseController
     private readonly IFarmUserService _farmUserService;
     private readonly IThresholdService _thresholdService;
     private readonly IFieldUserService _fieldUserService;
+    private readonly IDeviceService _deviceService;
 
     public FieldController(
         IFieldService fieldService,
         IUserService userService,
         IFarmUserService farmUserService,
         IThresholdService thresholdService,
-        IFieldUserService fieldUserService
+        IFieldUserService fieldUserService,
+        IDeviceService deviceService
     )
     {
         _fieldService = fieldService;
@@ -38,6 +39,7 @@ public class FieldController : ControllerBase, IBaseController
         _farmUserService = farmUserService;
         _thresholdService = thresholdService;
         _fieldUserService = fieldUserService;
+        _deviceService = deviceService;
     }
 
     [HttpGet("getFieldsWithDevicesForFarm/{farmId}")]
@@ -223,9 +225,10 @@ public class FieldController : ControllerBase, IBaseController
     }
 
     [HttpGet("{fieldId}/devices")]
-    public Task<ActionResult<List<DeviceDto>>> GetDevicesForField(int fieldId)
+    public async Task<ActionResult<List<DeviceDto>>> GetDevicesForField(int fieldId)
     {
-        throw new NotImplementedException();
+        return await _deviceService.GetFieldDevices(new FieldBo { Id = fieldId })
+            .ContinueWith(res => res.Result.Select(d => DeviceDto.FromBo(d)).ToList());
     }
 
     [HttpGet("{fieldId}/threshold")]
