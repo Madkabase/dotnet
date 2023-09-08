@@ -5,3 +5,4 @@ bin
 .vscode
 IOdit.sln.DotSettings.user
 .DS_Store
+*.log

@@ -1,0 +1,14 @@
+[
+  {
+    "relation": [
+      "delegate_permission/common.handle_all_urls"
+    ],
+    "target": {
+      "namespace": "agrodit",
+      "package_name": "se.agrodit.agrodit",
+      "sha256_cert_fingerprints": [
+        "B2:DC:F4:84:4E:1F:03:D7:A3:24:21:A7:07:F7:E9:A9:3A:C0:94:72:53:C5:C1:49:27:4C:1B:42:19:98:DC:53"
+      ]
+    }
+  }
+]

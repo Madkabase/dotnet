@@ -11,7 +11,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 namespace IoDit.WebAPI.Migrations
 {
-    [DbContext(typeof(IoDitDbContext))]
+    [DbContext(typeof(AgroditDbContext))]
     partial class IoDitDbContextModelSnapshot : ModelSnapshot
     {
         protected override void BuildModel(ModelBuilder modelBuilder)
@@ -23,7 +23,93 @@ namespace IoDit.WebAPI.Migrations
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
-            modelBuilder.Entity("IoDit.WebAPI.Persistence.Entities.Company.Company", b =>
+            modelBuilder.Entity("IoDit.WebAPI.Persistence.Entities.Alert", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
+
+                    b.Property<int>("AlertType")
+                        .HasColumnType("integer");
+
+                    b.Property<bool>("Closed")
+                        .HasColumnType("boolean");
+
+                    b.Property<DateTime>("Date")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<long?>("FieldId")
+                        .HasColumnType("bigint");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("FieldId");
+
+                    b.ToTable("Alerts");
+                });
+
+            modelBuilder.Entity("IoDit.WebAPI.Persistence.Entities.Device", b =>
+                {
+                    b.Property<string>("DevEUI")
+                        .HasColumnType("text");
+
+                    b.Property<string>("AppKey")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<long>("FieldId")
+                        .HasColumnType("bigint");
+
+                    b.Property<string>("JoinEUI")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("DevEUI");
+
+                    b.HasIndex("FieldId");
+
+                    b.ToTable("Devices");
+                });
+
+            modelBuilder.Entity("IoDit.WebAPI.Persistence.Entities.DeviceData", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
+
+                    b.Property<int>("BatteryLevel")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("DevEUI")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<int>("Humidity1")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("Humidity2")
+                        .HasColumnType("integer");
+
+                    b.Property<float>("Temperature")
+                        .HasColumnType("real");
+
+                    b.Property<DateTime>("TimeStamp")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("DeviceData");
+                });
+
+            modelBuilder.Entity("IoDit.WebAPI.Persistence.Entities.Farm", b =>
                 {
                     b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
@@ -39,12 +125,12 @@ namespace IoDit.WebAPI.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<string>("CompanyName")
-                        .IsRequired()
-                        .HasColumnType("text");
-
                     b.Property<int>("MaxDevices")
                         .HasColumnType("integer");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("text");
 
                     b.Property<long>("OwnerId")
                         .HasColumnType("bigint");
@@ -53,78 +139,36 @@ namespace IoDit.WebAPI.Migrations
 
                     b.HasIndex("OwnerId");
 
-                    b.ToTable("Companies");
+                    b.ToTable("Farms");
                 });
 
-            modelBuilder.Entity("IoDit.WebAPI.Persistence.Entities.Company.CompanyDevice", b =>
+            modelBuilder.Entity("IoDit.WebAPI.Persistence.Entities.FarmUser", b =>
                 {
                     b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("bigint");
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
-
-                    b.Property<string>("AppKey")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<long>("CompanyId")
-                        .HasColumnType("bigint");
-
-                    b.Property<long>("DefaultBatteryLevelMax")
-                        .HasColumnType("bigint");
-
-                    b.Property<long>("DefaultBatteryLevelMin")
-                        .HasColumnType("bigint");
-
-                    b.Property<long>("DefaultHumidity1Max")
-                        .HasColumnType("bigint");
-
-                    b.Property<long>("DefaultHumidity1Min")
-                        .HasColumnType("bigint");
-
-                    b.Property<long>("DefaultHumidity2Max")
-                        .HasColumnType("bigint");
-
-                    b.Property<long>("DefaultHumidity2Min")
-                        .HasColumnType("bigint");
-
-                    b.Property<long>("DefaultTemperatureMax")
-                        .HasColumnType("bigint");
-
-                    b.Property<long>("DefaultTemperatureMin")
-                        .HasColumnType("bigint");
-
-                    b.Property<string>("DevEUI")
-                        .IsRequired()
-                        .HasColumnType("text");
 
                     b.Property<long>("FarmId")
                         .HasColumnType("bigint");
 
-                    b.Property<long?>("FieldId")
+                    b.Property<int>("FarmRole")
+                        .HasColumnType("integer");
+
+                    b.Property<long>("UserId")
                         .HasColumnType("bigint");
 
-                    b.Property<string>("JoinEUI")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("text");
-
                     b.HasKey("Id");
-
-                    b.HasIndex("CompanyId");
 
                     b.HasIndex("FarmId");
 
-                    b.HasIndex("FieldId");
+                    b.HasIndex("UserId");
 
-                    b.ToTable("CompanyDevices");
+                    b.ToTable("FarmUsers");
                 });
 
-            modelBuilder.Entity("IoDit.WebAPI.Persistence.Entities.Company.CompanyDeviceData", b =>
+            modelBuilder.Entity("IoDit.WebAPI.Persistence.Entities.Field", b =>
                 {
                     b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
@@ -132,96 +176,7 @@ namespace IoDit.WebAPI.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
 
-                    b.Property<int>("BatteryLevel")
-                        .HasColumnType("integer");
-
-                    b.Property<long>("DeviceId")
-                        .HasColumnType("bigint");
-
-                    b.Property<int>("Sensor1")
-                        .HasColumnType("integer");
-
-                    b.Property<int>("Sensor2")
-                        .HasColumnType("integer");
-
-                    b.Property<float>("Temperature")
-                        .HasColumnType("real");
-
-                    b.Property<DateTime>("TimeStamp")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("DeviceId");
-
-                    b.ToTable("CompanyDeviceData");
-                });
-
-            modelBuilder.Entity("IoDit.WebAPI.Persistence.Entities.Company.CompanyFarm", b =>
-                {
-                    b.Property<long>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
-
-                    b.Property<long>("CompanyId")
-                        .HasColumnType("bigint");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("CompanyId");
-
-                    b.ToTable("CompanyFarms");
-                });
-
-            modelBuilder.Entity("IoDit.WebAPI.Persistence.Entities.Company.CompanyFarmUser", b =>
-                {
-                    b.Property<long>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
-
-                    b.Property<long>("CompanyFarmId")
-                        .HasColumnType("bigint");
-
-                    b.Property<int>("CompanyFarmRole")
-                        .HasColumnType("integer");
-
-                    b.Property<long>("CompanyId")
-                        .HasColumnType("bigint");
-
-                    b.Property<long>("CompanyUserId")
-                        .HasColumnType("bigint");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("CompanyFarmId");
-
-                    b.HasIndex("CompanyId");
-
-                    b.HasIndex("CompanyUserId");
-
-                    b.ToTable("CompanyFarmUsers");
-                });
-
-            modelBuilder.Entity("IoDit.WebAPI.Persistence.Entities.Company.CompanyField", b =>
-                {
-                    b.Property<long>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
-
-                    b.Property<long>("CompanyFarmId")
-                        .HasColumnType("bigint");
-
-                    b.Property<long>("CompanyId")
+                    b.Property<long>("FarmId")
                         .HasColumnType("bigint");
 
                     b.Property<Geometry>("Geofence")
@@ -232,16 +187,20 @@ namespace IoDit.WebAPI.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
+                    b.Property<long>("ThresholdId")
+                        .HasColumnType("bigint");
+
                     b.HasKey("Id");
 
-                    b.HasIndex("CompanyFarmId");
+                    b.HasIndex("FarmId");
 
-                    b.HasIndex("CompanyId");
+                    b.HasIndex("ThresholdId")
+                        .IsUnique();
 
-                    b.ToTable("CompanyFields");
+                    b.ToTable("Fields");
                 });
 
-            modelBuilder.Entity("IoDit.WebAPI.Persistence.Entities.Company.CompanyThresholdPreset", b =>
+            modelBuilder.Entity("IoDit.WebAPI.Persistence.Entities.FieldUser", b =>
                 {
                     b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
@@ -249,150 +208,63 @@ namespace IoDit.WebAPI.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
 
-                    b.Property<long>("CompanyId")
+                    b.Property<long>("FieldId")
                         .HasColumnType("bigint");
 
-                    b.Property<long>("DefaultBatteryLevelMax")
+                    b.Property<int>("FieldRole")
+                        .HasColumnType("integer");
+
+                    b.Property<long>("UserId")
                         .HasColumnType("bigint");
 
-                    b.Property<long>("DefaultBatteryLevelMin")
+                    b.HasKey("Id");
+
+                    b.HasIndex("FieldId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("FieldUsers");
+                });
+
+            modelBuilder.Entity("IoDit.WebAPI.Persistence.Entities.GlobalThresholdPreset", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
                         .HasColumnType("bigint");
 
-                    b.Property<long>("DefaultHumidity1Max")
-                        .HasColumnType("bigint");
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
 
-                    b.Property<long>("DefaultHumidity1Min")
-                        .HasColumnType("bigint");
+                    b.Property<int>("BatteryLevelMax")
+                        .HasColumnType("integer");
 
-                    b.Property<long>("DefaultHumidity2Max")
-                        .HasColumnType("bigint");
+                    b.Property<int>("BatteryLevelMin")
+                        .HasColumnType("integer");
 
-                    b.Property<long>("DefaultHumidity2Min")
-                        .HasColumnType("bigint");
+                    b.Property<int>("Humidity1Max")
+                        .HasColumnType("integer");
 
-                    b.Property<long>("DefaultTemperatureMax")
-                        .HasColumnType("bigint");
+                    b.Property<int>("Humidity1Min")
+                        .HasColumnType("integer");
 
-                    b.Property<long>("DefaultTemperatureMin")
-                        .HasColumnType("bigint");
+                    b.Property<int>("Humidity2Max")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("Humidity2Min")
+                        .HasColumnType("integer");
 
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.HasKey("Id");
+                    b.Property<double>("TemperatureMax")
+                        .HasColumnType("double precision");
 
-                    b.HasIndex("CompanyId");
-
-                    b.ToTable("CompanyThresholdPreset");
-                });
-
-            modelBuilder.Entity("IoDit.WebAPI.Persistence.Entities.Company.CompanyUser", b =>
-                {
-                    b.Property<long>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
-
-                    b.Property<long>("CompanyId")
-                        .HasColumnType("bigint");
-
-                    b.Property<int>("CompanyRole")
-                        .HasColumnType("integer");
-
-                    b.Property<bool>("IsDefault")
-                        .HasColumnType("boolean");
-
-                    b.Property<long>("UserId")
-                        .HasColumnType("bigint");
+                    b.Property<double>("TemperatureMin")
+                        .HasColumnType("double precision");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("CompanyId");
-
-                    b.HasIndex("UserId");
-
-                    b.ToTable("CompanyUsers");
-                });
-
-            modelBuilder.Entity("IoDit.WebAPI.Persistence.Entities.Company.CompanyUserDeviceData", b =>
-                {
-                    b.Property<long>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
-
-                    b.Property<long>("BatteryLevelMax")
-                        .HasColumnType("bigint");
-
-                    b.Property<long>("BatteryLevelMin")
-                        .HasColumnType("bigint");
-
-                    b.Property<long>("DeviceId")
-                        .HasColumnType("bigint");
-
-                    b.Property<long>("Humidity1Max")
-                        .HasColumnType("bigint");
-
-                    b.Property<long>("Humidity1Min")
-                        .HasColumnType("bigint");
-
-                    b.Property<long>("Humidity2Max")
-                        .HasColumnType("bigint");
-
-                    b.Property<long>("Humidity2Min")
-                        .HasColumnType("bigint");
-
-                    b.Property<long>("TemperatureMax")
-                        .HasColumnType("bigint");
-
-                    b.Property<long>("TemperatureMin")
-                        .HasColumnType("bigint");
-
-                    b.Property<long>("UserId")
-                        .HasColumnType("bigint");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("DeviceId");
-
-                    b.HasIndex("UserId");
-
-                    b.ToTable("CompanyUserDeviceData");
-                });
-
-            modelBuilder.Entity("IoDit.WebAPI.Persistence.Entities.Company.SubscriptionRequest", b =>
-                {
-                    b.Property<long>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
-
-                    b.Property<string>("CompanyName")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<string>("Email")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<bool>("IsFulfilled")
-                        .HasColumnType("boolean");
-
-                    b.Property<int>("MaxDevices")
-                        .HasColumnType("integer");
-
-                    b.Property<long>("UserId")
-                        .HasColumnType("bigint");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("UserId");
-
-                    b.ToTable("SubscriptionRequests");
+                    b.ToTable("GlobalThresholdPresets");
                 });
 
             modelBuilder.Entity("IoDit.WebAPI.Persistence.Entities.RefreshToken", b =>
@@ -422,6 +294,122 @@ namespace IoDit.WebAPI.Migrations
                     b.HasIndex("UserId");
 
                     b.ToTable("RefreshTokens");
+                });
+
+            modelBuilder.Entity("IoDit.WebAPI.Persistence.Entities.SubscriptionRequest", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
+
+                    b.Property<string>("FarmName")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<bool>("IsFulfilled")
+                        .HasColumnType("boolean");
+
+                    b.Property<int>("MaxDevices")
+                        .HasColumnType("integer");
+
+                    b.Property<long>("UserId")
+                        .HasColumnType("bigint");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("SubscriptionRequests");
+                });
+
+            modelBuilder.Entity("IoDit.WebAPI.Persistence.Entities.Threshold", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
+
+                    b.Property<int>("BatteryLevelMax")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("BatteryLevelMin")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("Humidity1Max")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("Humidity1Min")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("Humidity2Max")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("Humidity2Min")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("MainSensor")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer")
+                        .HasDefaultValue(1);
+
+                    b.Property<double>("TemperatureMax")
+                        .HasColumnType("double precision");
+
+                    b.Property<double>("TemperatureMin")
+                        .HasColumnType("double precision");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Thresholds");
+                });
+
+            modelBuilder.Entity("IoDit.WebAPI.Persistence.Entities.ThresholdPreset", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
+
+                    b.Property<int>("BatteryLevelMax")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("BatteryLevelMin")
+                        .HasColumnType("integer");
+
+                    b.Property<long>("FarmId")
+                        .HasColumnType("bigint");
+
+                    b.Property<int>("Humidity1Max")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("Humidity1Min")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("Humidity2Max")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("Humidity2Min")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<double>("TemperatureMax")
+                        .HasColumnType("double precision");
+
+                    b.Property<double>("TemperatureMin")
+                        .HasColumnType("double precision");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("FarmId");
+
+                    b.ToTable("ThresholdPresets");
                 });
 
             modelBuilder.Entity("IoDit.WebAPI.Persistence.Entities.User", b =>
@@ -471,10 +459,30 @@ namespace IoDit.WebAPI.Migrations
                     b.ToTable("Users");
                 });
 
-            modelBuilder.Entity("IoDit.WebAPI.Persistence.Entities.Company.Company", b =>
+            modelBuilder.Entity("IoDit.WebAPI.Persistence.Entities.Alert", b =>
+                {
+                    b.HasOne("IoDit.WebAPI.Persistence.Entities.Field", "Field")
+                        .WithMany("Alerts")
+                        .HasForeignKey("FieldId")
+                        .OnDelete(DeleteBehavior.SetNull);
+
+                    b.Navigation("Field");
+                });
+
+            modelBuilder.Entity("IoDit.WebAPI.Persistence.Entities.Device", b =>
+                {
+                    b.HasOne("IoDit.WebAPI.Persistence.Entities.Field", "Field")
+                        .WithMany("Devices")
+                        .HasForeignKey("FieldId")
+                        .OnDelete(DeleteBehavior.SetNull);
+
+                    b.Navigation("Field");
+                });
+
+            modelBuilder.Entity("IoDit.WebAPI.Persistence.Entities.Farm", b =>
                 {
                     b.HasOne("IoDit.WebAPI.Persistence.Entities.User", "Owner")
-                        .WithMany("Companies")
+                        .WithMany()
                         .HasForeignKey("OwnerId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -482,156 +490,58 @@ namespace IoDit.WebAPI.Migrations
                     b.Navigation("Owner");
                 });
 
-            modelBuilder.Entity("IoDit.WebAPI.Persistence.Entities.Company.CompanyDevice", b =>
+            modelBuilder.Entity("IoDit.WebAPI.Persistence.Entities.FarmUser", b =>
                 {
-                    b.HasOne("IoDit.WebAPI.Persistence.Entities.Company.Company", "Company")
-                        .WithMany("Devices")
-                        .HasForeignKey("CompanyId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("IoDit.WebAPI.Persistence.Entities.Company.CompanyFarm", "Farm")
-                        .WithMany("Devices")
+                    b.HasOne("IoDit.WebAPI.Persistence.Entities.Farm", "Farm")
+                        .WithMany("FarmUsers")
                         .HasForeignKey("FarmId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("IoDit.WebAPI.Persistence.Entities.Company.CompanyField", "Field")
-                        .WithMany("Devices")
-                        .HasForeignKey("FieldId")
-                        .OnDelete(DeleteBehavior.Cascade);
-
-                    b.Navigation("Company");
+                    b.HasOne("IoDit.WebAPI.Persistence.Entities.User", "User")
+                        .WithMany("FarmUsers")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("Farm");
 
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("IoDit.WebAPI.Persistence.Entities.Field", b =>
+                {
+                    b.HasOne("IoDit.WebAPI.Persistence.Entities.Farm", "Farm")
+                        .WithMany("Fields")
+                        .HasForeignKey("FarmId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("IoDit.WebAPI.Persistence.Entities.Threshold", "Threshold")
+                        .WithOne("Field")
+                        .HasForeignKey("IoDit.WebAPI.Persistence.Entities.Field", "ThresholdId")
+                        .OnDelete(DeleteBehavior.SetNull);
+
+                    b.Navigation("Farm");
+
+                    b.Navigation("Threshold");
+                });
+
+            modelBuilder.Entity("IoDit.WebAPI.Persistence.Entities.FieldUser", b =>
+                {
+                    b.HasOne("IoDit.WebAPI.Persistence.Entities.Field", "Field")
+                        .WithMany("FieldUsers")
+                        .HasForeignKey("FieldId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("IoDit.WebAPI.Persistence.Entities.User", "User")
+                        .WithMany("FieldUsers")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.Navigation("Field");
-                });
-
-            modelBuilder.Entity("IoDit.WebAPI.Persistence.Entities.Company.CompanyDeviceData", b =>
-                {
-                    b.HasOne("IoDit.WebAPI.Persistence.Entities.Company.CompanyDevice", "Device")
-                        .WithMany("DeviceData")
-                        .HasForeignKey("DeviceId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Device");
-                });
-
-            modelBuilder.Entity("IoDit.WebAPI.Persistence.Entities.Company.CompanyFarm", b =>
-                {
-                    b.HasOne("IoDit.WebAPI.Persistence.Entities.Company.Company", "Company")
-                        .WithMany("Farms")
-                        .HasForeignKey("CompanyId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Company");
-                });
-
-            modelBuilder.Entity("IoDit.WebAPI.Persistence.Entities.Company.CompanyFarmUser", b =>
-                {
-                    b.HasOne("IoDit.WebAPI.Persistence.Entities.Company.CompanyFarm", "CompanyFarm")
-                        .WithMany()
-                        .HasForeignKey("CompanyFarmId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("IoDit.WebAPI.Persistence.Entities.Company.Company", "Company")
-                        .WithMany("FarmUsers")
-                        .HasForeignKey("CompanyId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("IoDit.WebAPI.Persistence.Entities.Company.CompanyUser", "CompanyUser")
-                        .WithMany("CompanyFarmUsers")
-                        .HasForeignKey("CompanyUserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Company");
-
-                    b.Navigation("CompanyFarm");
-
-                    b.Navigation("CompanyUser");
-                });
-
-            modelBuilder.Entity("IoDit.WebAPI.Persistence.Entities.Company.CompanyField", b =>
-                {
-                    b.HasOne("IoDit.WebAPI.Persistence.Entities.Company.CompanyFarm", "CompanyFarm")
-                        .WithMany("Fields")
-                        .HasForeignKey("CompanyFarmId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("IoDit.WebAPI.Persistence.Entities.Company.Company", "Company")
-                        .WithMany("Fields")
-                        .HasForeignKey("CompanyId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Company");
-
-                    b.Navigation("CompanyFarm");
-                });
-
-            modelBuilder.Entity("IoDit.WebAPI.Persistence.Entities.Company.CompanyThresholdPreset", b =>
-                {
-                    b.HasOne("IoDit.WebAPI.Persistence.Entities.Company.Company", "Company")
-                        .WithMany("ThresholdPresets")
-                        .HasForeignKey("CompanyId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Company");
-                });
-
-            modelBuilder.Entity("IoDit.WebAPI.Persistence.Entities.Company.CompanyUser", b =>
-                {
-                    b.HasOne("IoDit.WebAPI.Persistence.Entities.Company.Company", "Company")
-                        .WithMany("Users")
-                        .HasForeignKey("CompanyId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("IoDit.WebAPI.Persistence.Entities.User", "User")
-                        .WithMany("CompanyUsers")
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Company");
-
-                    b.Navigation("User");
-                });
-
-            modelBuilder.Entity("IoDit.WebAPI.Persistence.Entities.Company.CompanyUserDeviceData", b =>
-                {
-                    b.HasOne("IoDit.WebAPI.Persistence.Entities.Company.CompanyDevice", "Device")
-                        .WithMany()
-                        .HasForeignKey("DeviceId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("IoDit.WebAPI.Persistence.Entities.Company.CompanyUser", "User")
-                        .WithMany("CompanyUserDeviceData")
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Device");
-
-                    b.Navigation("User");
-                });
-
-            modelBuilder.Entity("IoDit.WebAPI.Persistence.Entities.Company.SubscriptionRequest", b =>
-                {
-                    b.HasOne("IoDit.WebAPI.Persistence.Entities.User", "User")
-                        .WithMany("SubscriptionRequests")
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
 
                     b.Navigation("User");
                 });
@@ -647,54 +557,59 @@ namespace IoDit.WebAPI.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("IoDit.WebAPI.Persistence.Entities.Company.Company", b =>
+            modelBuilder.Entity("IoDit.WebAPI.Persistence.Entities.SubscriptionRequest", b =>
                 {
-                    b.Navigation("Devices");
+                    b.HasOne("IoDit.WebAPI.Persistence.Entities.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("IoDit.WebAPI.Persistence.Entities.ThresholdPreset", b =>
+                {
+                    b.HasOne("IoDit.WebAPI.Persistence.Entities.Farm", "Farm")
+                        .WithMany("ThresholdPresets")
+                        .HasForeignKey("FarmId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Farm");
+                });
+
+            modelBuilder.Entity("IoDit.WebAPI.Persistence.Entities.Farm", b =>
+                {
                     b.Navigation("FarmUsers");
-
-                    b.Navigation("Farms");
 
                     b.Navigation("Fields");
 
                     b.Navigation("ThresholdPresets");
-
-                    b.Navigation("Users");
                 });
 
-            modelBuilder.Entity("IoDit.WebAPI.Persistence.Entities.Company.CompanyDevice", b =>
+            modelBuilder.Entity("IoDit.WebAPI.Persistence.Entities.Field", b =>
                 {
-                    b.Navigation("DeviceData");
-                });
+                    b.Navigation("Alerts");
 
-            modelBuilder.Entity("IoDit.WebAPI.Persistence.Entities.Company.CompanyFarm", b =>
-                {
                     b.Navigation("Devices");
 
-                    b.Navigation("Fields");
+                    b.Navigation("FieldUsers");
                 });
 
-            modelBuilder.Entity("IoDit.WebAPI.Persistence.Entities.Company.CompanyField", b =>
+            modelBuilder.Entity("IoDit.WebAPI.Persistence.Entities.Threshold", b =>
                 {
-                    b.Navigation("Devices");
-                });
-
-            modelBuilder.Entity("IoDit.WebAPI.Persistence.Entities.Company.CompanyUser", b =>
-                {
-                    b.Navigation("CompanyFarmUsers");
-
-                    b.Navigation("CompanyUserDeviceData");
+                    b.Navigation("Field")
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("IoDit.WebAPI.Persistence.Entities.User", b =>
                 {
-                    b.Navigation("Companies");
+                    b.Navigation("FarmUsers");
 
-                    b.Navigation("CompanyUsers");
+                    b.Navigation("FieldUsers");
 
                     b.Navigation("RefreshTokens");
-
-                    b.Navigation("SubscriptionRequests");
                 });
 #pragma warning restore 612, 618
         }

@@ -1,5 +1,6 @@
-﻿using IoDit.WebAPI.Persistence.Entities.Base;
-using IoDit.WebAPI.Persistence.Entities.Company;
+﻿using IoDit.WebAPI.BO;
+using IoDit.WebAPI.DTO.User;
+using IoDit.WebAPI.Persistence.Entities.Base;
 using IoDit.WebAPI.Utilities.Types;
 
 namespace IoDit.WebAPI.Persistence.Entities;
@@ -16,7 +17,35 @@ public class User : EntityBase, IEntity
     public DateTime ConfirmationExpirationDate { get; set; }
     public int ConfirmationTriesCounter { get; set; }
     public ICollection<RefreshToken> RefreshTokens { get; set; } = new List<RefreshToken>();
-    public ICollection<CompanyUser> CompanyUsers { get; set; } = new List<CompanyUser>();
-    public ICollection<Company.Company> Companies { get; set; } = new List<Company.Company>();
-    public ICollection<SubscriptionRequest> SubscriptionRequests { get; set; } = new List<SubscriptionRequest>();
+    public ICollection<FarmUser> FarmUsers { get; set; } = new List<FarmUser>();
+    public ICollection<FieldUser> FieldUsers { get; set; } = new List<FieldUser>();
+
+    public static User FromDTO(UserDto userDto)
+    {
+        return new User
+        {
+            Id = userDto.Id,
+            FirstName = userDto.FirstName,
+            LastName = userDto.LastName,
+            Email = userDto.Email,
+            AppRole = userDto.AppRole,
+        };
+    }
+
+    public static User FromBo(UserBo userBo)
+    {
+        return new User
+        {
+            Id = userBo.Id,
+            FirstName = userBo.FirstName,
+            LastName = userBo.LastName,
+            Password = userBo.Password,
+            IsVerified = userBo.IsVerified,
+            ConfirmationCode = userBo.ConfirmationCode,
+            ConfirmationExpirationDate = userBo.ConfirmationExpirationDate,
+            ConfirmationTriesCounter = userBo.ConfirmationTriesCounter,
+            Email = userBo.Email,
+            AppRole = userBo.AppRole,
+        };
+    }
 }

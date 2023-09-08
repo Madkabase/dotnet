@@ -4,5 +4,6 @@ public enum RegistrationFlowType
 {
     AlreadyVerified = 0,
     RegisteredNotVerified = 1,
-    NewUser = 2
+    NewUser = 2,
+    PasswordsDoNotMatch = 3
 }
