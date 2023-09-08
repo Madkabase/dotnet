@@ -51,10 +51,12 @@ public class Startup
             if (_isDevelopment)
             {
                 connectionString = _configuration.GetConnectionString("PostgresSqlServer");
+                _configuration["BackendUrl"] = _configuration["Development-BackendUrl"];
             }
             else if (_isStaging)
             {
                 connectionString = _configuration.GetConnectionString("AzureAgroditPostgresSqlServer-Staging");
+                _configuration["BackendUrl"] = _configuration["Staging-BackendUrl"];
             }
             else
             {
