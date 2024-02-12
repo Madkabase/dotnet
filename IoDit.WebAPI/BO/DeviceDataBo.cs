@@ -9,17 +9,16 @@ public class DeviceDataBo
     public string DevEUI { get; set; }
     public int Humidity1 { get; set; }
     public int Humidity2 { get; set; }
-    public int BatteryLevel { get; set; }
+    public int? BatteryLevel { get; set; }
     public float Temperature { get; set; }
     public DateTime TimeStamp { get; set; }
 
-    public DeviceDataBo(long id, string devEUI, int humidity1, int humidity2, int batteryLevel, float temperature, DateTime timeStamp)
+    public DeviceDataBo(long id, string devEUI, int humidity1, int humidity2,  float temperature, DateTime timeStamp)
     {
         Id = id;
         DevEUI = devEUI;
         Humidity1 = humidity1;
         Humidity2 = humidity2;
-        BatteryLevel = batteryLevel;
         Temperature = temperature;
         TimeStamp = timeStamp;
     }
@@ -27,13 +26,13 @@ public class DeviceDataBo
     //from entity
     public static DeviceDataBo FromEntity(DeviceData entity)
     {
-        return new DeviceDataBo(entity.Id, entity.DevEUI, entity.Humidity1, entity.Humidity2, entity.BatteryLevel, entity.Temperature, entity.TimeStamp);
+        return new DeviceDataBo(entity.Id, entity.DevEUI, entity.Humidity1, entity.Humidity2, entity.Temperature, entity.TimeStamp);
     }
 
     //from Dto
     public static DeviceDataBo FromDto(DeviceDataDTO dto)
     {
-        return new DeviceDataBo(dto.Id, "", dto.Humidity1, dto.Humidity2, dto.BatteryLevel, dto.Temperature, dto.TimeStamp);
+        return new DeviceDataBo(dto.Id, "", dto.Humidity1, dto.Humidity2, dto.Temperature, dto.TimeStamp);
     }
 
 

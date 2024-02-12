@@ -66,6 +66,10 @@ public class AgroditDbContext : DbContext
             .IsRequired(false)
             .OnDelete(DeleteBehavior.SetNull);
 
+        modelBuilder.Entity<DeviceData>()
+            .Property(dd => dd.BatteryLevel)
+            .IsRequired(false);
+
         // on Threshold, The FieldId is nullable
         modelBuilder.Entity<Threshold>()
             .HasOne(t => t.Field)
