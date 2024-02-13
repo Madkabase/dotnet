@@ -137,6 +137,8 @@ public class FieldService : IFieldService
                     0,
                     0,
                     0,
+                    0,
+                    0,
                     DateTime.Now
                 );
             }

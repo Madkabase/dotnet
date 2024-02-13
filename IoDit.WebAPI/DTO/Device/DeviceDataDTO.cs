@@ -9,6 +9,9 @@ public class DeviceDataDTO
     public int Humidity2 { get; set; }
     public float Temperature1 { get; set; }
     public float Temperature2 { get; set; }
+    public float Salinity1 { get; set; }
+    public float Salinity2 { get; set; }
+
     public DateTime TimeStamp { get; set; }
 
     public static DeviceDataDTO empty()
@@ -19,6 +22,9 @@ public class DeviceDataDTO
             Humidity1 = 0,
             Humidity2 = 0,
             Temperature1 = 0,
+            Temperature2 = 0,
+            Salinity1 = 0,
+            Salinity2 = 0,
             TimeStamp = DateTime.Now
         };
     }
@@ -32,6 +38,8 @@ public class DeviceDataDTO
             Humidity2 = deviceDataBo.Humidity2,
             Temperature1 = deviceDataBo.Temperature1,
             Temperature2 = deviceDataBo.Temperature2,
+            Salinity1 = deviceDataBo.Salinity1,
+            Salinity2 = deviceDataBo.Salinity2,
             TimeStamp = deviceDataBo.TimeStamp
         };
     }

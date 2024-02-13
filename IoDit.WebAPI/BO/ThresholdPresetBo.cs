@@ -22,7 +22,7 @@ public class ThresholdPresetBo : GlobalThresholdPresetBo
         Temperature2Max = 0;
     }
 
-    public ThresholdPresetBo(long id, string name, FarmBo farm, int humidity1Min, int humidity1Max, int humidity2Min, int humidity2Max, double temperature1Min, double temperature1Max, double temperature2Min, double temperature2Max)
+    public ThresholdPresetBo(long id, string name, FarmBo farm, int humidity1Min, int humidity1Max, int humidity2Min, int humidity2Max, float temperature1Min, float temperature1Max, float temperature2Min, float temperature2Max)
     {
         Id = id;
         Name = name;

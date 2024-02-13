@@ -12,10 +12,14 @@ public class ThresholdBo
     public int Humidity1Max { get; set; }
     public int Humidity2Min { get; set; }
     public int Humidity2Max { get; set; }
-    public double Temperature1Min { get; set; }
-    public double Temperature1Max { get; set; }
-    public double Temperature2Min { get; set; }
-    public double Temperature2Max { get; set; }
+    public float Temperature1Min { get; set; }
+    public float Temperature1Max { get; set; }
+    public float Temperature2Min { get; set; }
+    public float Temperature2Max { get; set; }
+    public float Salinity1Min { get; set; }
+    public float Salinity1Max { get; set; }
+    public float Salinity2Min { get; set; }
+    public float Salinity2Max { get; set; }
     public MainSensor MainSensor { get; set; }
 
     public ThresholdBo()
@@ -30,11 +34,29 @@ public class ThresholdBo
         Temperature1Max = 0;
         Temperature2Min = 0;
         Temperature2Max = 0;
+        Salinity1Min = 0;
+        Salinity1Max = 0;
+        Salinity2Min = 0;
+        Salinity2Max = 0;
     }
-    public ThresholdBo(long id,/* FieldBo field,*/ int humidity1Min, int humidity1Max, int humidity2Min, int humidity2Max, double temperature1Min, double temperature1Max, double temperature2Min, double temperature2Max, MainSensor mainSensor)
+    public ThresholdBo(
+        long id,
+        int humidity1Min,
+        int humidity1Max,
+        int humidity2Min,
+        int humidity2Max,
+        float temperature1Min,
+        float temperature1Max,
+        float temperature2Min,
+        float temperature2Max,
+        float salinity1Min,
+        float salinity1Max,
+        float salinity2Min,
+        float salinity2Max,
+        MainSensor mainSensor
+        )
     {
         Id = id;
-        // Field = field;
         Humidity1Min = humidity1Min;
         Humidity1Max = humidity1Max;
         Humidity2Min = humidity2Min;
@@ -44,6 +66,12 @@ public class ThresholdBo
         Temperature1Max = temperature1Max;
         Temperature2Min = temperature2Min;
         Temperature2Max = temperature2Max;
+        
+        Salinity1Min = salinity1Min;
+        Salinity1Max = salinity1Max;
+        Salinity2Min = salinity2Min;
+        Salinity2Max = salinity2Max;
+
         MainSensor = mainSensor;
     }
 
@@ -61,6 +89,10 @@ public class ThresholdBo
             thresholdDto.Temperature1Max,
             thresholdDto.Temperature2Min,
             thresholdDto.Temperature2Max,
+            thresholdDto.Salinity1Min,
+            thresholdDto.Salinity1Max,
+            thresholdDto.Salinity2Min,
+            thresholdDto.Salinity2Max,
             thresholdDto.MainSensor
         );
     }
@@ -79,6 +111,10 @@ public class ThresholdBo
             entity.Temperature1Max,
             entity.Temperature2Min,
             entity.Temperature2Max,
+            entity.Salinity1Min,
+            entity.Salinity1Max,
+            entity.Salinity2Min,
+            entity.Salinity2Max,
             entity.MainSensor
         );
     }

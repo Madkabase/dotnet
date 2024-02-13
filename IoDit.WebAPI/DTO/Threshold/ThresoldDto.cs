@@ -10,10 +10,14 @@ namespace IoDit.WebAPI.DTO.Threshold
         public int Humidity1Max { get; set; }
         public int Humidity2Min { get; set; }
         public int Humidity2Max { get; set; }
-        public double Temperature1Min { get; set; }
-        public double Temperature1Max { get; set; }
-        public double Temperature2Min { get; set; }
-        public double Temperature2Max { get; set; }
+        public float Temperature1Min { get; set; }
+        public float Temperature1Max { get; set; }
+        public float Temperature2Min { get; set; }
+        public float Temperature2Max { get; set; }
+        public float Salinity1Min { get; set; }
+        public float Salinity1Max { get; set; }
+        public float Salinity2Min { get; set; }
+        public float Salinity2Max { get; set; }
         public MainSensor MainSensor { get; set; }
 
         internal static ThresholdDto FromBo(ThresholdBo threshold)
@@ -29,8 +33,12 @@ namespace IoDit.WebAPI.DTO.Threshold
                 Temperature1Max = threshold.Temperature1Max,
                 Temperature2Min = threshold.Temperature2Min,
                 Temperature2Max = threshold.Temperature2Max,
-                MainSensor = threshold.MainSensor
-            };
-        }
+                Salinity1Min = threshold.Salinity1Min,
+                Salinity1Max = threshold.Salinity1Max,
+                Salinity2Min = threshold.Salinity2Min,
+                Salinity2Max = threshold.Salinity2Max,
+        MainSensor = threshold.MainSensor
+    };
+}
     }
 }

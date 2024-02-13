@@ -12,10 +12,10 @@ public class ThresholdPreset : EntityBase, IEntity
     public int Humidity1Max { get; set; }
     public int Humidity2Min { get; set; }
     public int Humidity2Max { get; set; }
-    public double Temperature1Min { get; set; }
-    public double Temperature1Max { get; set; }
-    public double Temperature2Min { get; set; }
-    public double Temperature2Max { get; set; }
+    public float Temperature1Min { get; set; }
+    public float Temperature1Max { get; set; }
+    public float Temperature2Min { get; set; }
+    public float Temperature2Max { get; set; }
 
     internal static ThresholdPreset FromBo(ThresholdPresetBo thresholdPreset)
     {
