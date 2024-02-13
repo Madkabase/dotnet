@@ -17,10 +17,10 @@ public class GlobalThresholdPresetDto : ThresholdDto
             Humidity1Max = globalThresholdPresetBo.Humidity1Max,
             Humidity2Min = globalThresholdPresetBo.Humidity2Min,
             Humidity2Max = globalThresholdPresetBo.Humidity2Max,
-            TemperatureMin = globalThresholdPresetBo.TemperatureMin,
-            TemperatureMax = globalThresholdPresetBo.TemperatureMax,
-            BatteryLevelMin = globalThresholdPresetBo.BatteryLevelMin,
-            BatteryLevelMax = globalThresholdPresetBo.BatteryLevelMax,
+            Temperature1Min = globalThresholdPresetBo.Temperature1Min,
+            Temperature1Max = globalThresholdPresetBo.Temperature1Max,
+            Temperature2Min = globalThresholdPresetBo.Temperature2Min,
+            Temperature2Max = globalThresholdPresetBo.Temperature2Max,
         };
     }
 

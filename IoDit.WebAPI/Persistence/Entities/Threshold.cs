@@ -14,10 +14,10 @@ public class Threshold : EntityBase, IEntity
     public int Humidity1Max { get; set; }
     public int Humidity2Min { get; set; }
     public int Humidity2Max { get; set; }
-    public double TemperatureMin { get; set; }
-    public double TemperatureMax { get; set; }
-    public int BatteryLevelMin { get; set; }
-    public int BatteryLevelMax { get; set; }
+    public double Temperature1Min { get; set; }
+    public double Temperature1Max { get; set; }
+    public double Temperature2Min { get; set; }
+    public double Temperature2Max { get; set; }
     public MainSensor MainSensor { get; set; }
 
     // from dto
@@ -30,10 +30,10 @@ public class Threshold : EntityBase, IEntity
             Humidity1Max = thresholdDto.Humidity1Max,
             Humidity2Min = thresholdDto.Humidity2Min,
             Humidity2Max = thresholdDto.Humidity2Max,
-            TemperatureMin = thresholdDto.TemperatureMin,
-            TemperatureMax = thresholdDto.TemperatureMax,
-            BatteryLevelMin = thresholdDto.BatteryLevelMin,
-            BatteryLevelMax = thresholdDto.BatteryLevelMax,
+            Temperature1Min = thresholdDto.Temperature1Min,
+            Temperature1Max = thresholdDto.Temperature1Max,
+            Temperature2Min = thresholdDto.Temperature2Min,
+            Temperature2Max = thresholdDto.Temperature2Max,
             MainSensor = thresholdDto.MainSensor
         };
     }
@@ -47,10 +47,10 @@ public class Threshold : EntityBase, IEntity
             Humidity1Max = threshold.Humidity1Max,
             Humidity2Min = threshold.Humidity2Min,
             Humidity2Max = threshold.Humidity2Max,
-            TemperatureMin = threshold.TemperatureMin,
-            TemperatureMax = threshold.TemperatureMax,
-            BatteryLevelMin = threshold.BatteryLevelMin,
-            BatteryLevelMax = threshold.BatteryLevelMax,
+            Temperature1Min = threshold.Temperature1Min,
+            Temperature1Max = threshold.Temperature1Max,
+            Temperature2Min = threshold.Temperature2Min,
+            Temperature2Max = threshold.Temperature2Max,
             MainSensor = threshold.MainSensor
         };
     }

@@ -46,10 +46,10 @@ public class ThresholdPresetRespository : IThresholdPresetRespository
         preset.Humidity1Max = thresholdPreset.Humidity1Max;
         preset.Humidity2Min = thresholdPreset.Humidity2Min;
         preset.Humidity2Max = thresholdPreset.Humidity2Max;
-        preset.TemperatureMin = thresholdPreset.TemperatureMin;
-        preset.TemperatureMax = thresholdPreset.TemperatureMax;
-        preset.BatteryLevelMin = thresholdPreset.BatteryLevelMin;
-        preset.BatteryLevelMax = thresholdPreset.BatteryLevelMax;
+        preset.Temperature1Min = thresholdPreset.Temperature1Min;
+        preset.Temperature1Max = thresholdPreset.Temperature1Max;
+        preset.Temperature2Min = thresholdPreset.Temperature2Min;
+        preset.Temperature2Max = thresholdPreset.Temperature2Max;
 
 
         _dbContext.ThresholdPresets.Update(preset);

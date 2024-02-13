@@ -9,10 +9,10 @@ public class GlobalThresholdPresetBo
     public int Humidity1Max { get; set; }
     public int Humidity2Min { get; set; }
     public int Humidity2Max { get; set; }
-    public int BatteryLevelMin { get; set; }
-    public int BatteryLevelMax { get; set; }
-    public double TemperatureMin { get; set; }
-    public double TemperatureMax { get; set; }
+    public double Temperature1Min { get; set; }
+    public double Temperature1Max { get; set; }
+    public double Temperature2Min { get; set; }
+    public double Temperature2Max { get; set; }
 
     public GlobalThresholdPresetBo()
     {
@@ -22,13 +22,13 @@ public class GlobalThresholdPresetBo
         Humidity1Max = 0;
         Humidity2Min = 0;
         Humidity2Max = 0;
-        BatteryLevelMin = 0;
-        BatteryLevelMax = 0;
-        TemperatureMin = 0;
-        TemperatureMax = 0;
+        Temperature1Min = 0;
+        Temperature1Max = 0;
+        Temperature2Min = 0;
+        Temperature2Max = 0;
     }
 
-    public GlobalThresholdPresetBo(long id, string name, int humidity1Min, int humidity1Max, int humidity2Min, int humidity2Max, int batteryLevelMin, int batteryLevelMax, double temperatureMin, double temperatureMax)
+    public GlobalThresholdPresetBo(long id, string name, int humidity1Min, int humidity1Max, int humidity2Min, int humidity2Max, double temperature1Min, double temperature1Max, double temperature2Min, double temperature2Max)
     {
         Id = id;
         Name = name;
@@ -36,10 +36,10 @@ public class GlobalThresholdPresetBo
         Humidity1Max = humidity1Max;
         Humidity2Min = humidity2Min;
         Humidity2Max = humidity2Max;
-        BatteryLevelMin = batteryLevelMin;
-        BatteryLevelMax = batteryLevelMax;
-        TemperatureMin = temperatureMin;
-        TemperatureMax = temperatureMax;
+        Temperature1Min = temperature1Min;
+        Temperature1Max = temperature1Max;
+        Temperature2Min = temperature2Min;
+        Temperature2Max = temperature2Max;
     }
 
     //from Dto
@@ -53,10 +53,10 @@ public class GlobalThresholdPresetBo
             Humidity1Max = globalThresholdPresetDto.Humidity1Max,
             Humidity2Min = globalThresholdPresetDto.Humidity2Min,
             Humidity2Max = globalThresholdPresetDto.Humidity2Max,
-            BatteryLevelMin = globalThresholdPresetDto.BatteryLevelMin,
-            BatteryLevelMax = globalThresholdPresetDto.BatteryLevelMax,
-            TemperatureMin = globalThresholdPresetDto.TemperatureMin,
-            TemperatureMax = globalThresholdPresetDto.TemperatureMax
+            Temperature1Min = globalThresholdPresetDto.Temperature1Min,
+            Temperature1Max = globalThresholdPresetDto.Temperature1Max,
+            Temperature2Min = globalThresholdPresetDto.Temperature2Min,
+            Temperature2Max = globalThresholdPresetDto.Temperature2Max
         };
     }
 
@@ -71,10 +71,10 @@ public class GlobalThresholdPresetBo
             Humidity1Max = globalThresholdPreset.Humidity1Max,
             Humidity2Min = globalThresholdPreset.Humidity2Min,
             Humidity2Max = globalThresholdPreset.Humidity2Max,
-            BatteryLevelMin = globalThresholdPreset.BatteryLevelMin,
-            BatteryLevelMax = globalThresholdPreset.BatteryLevelMax,
-            TemperatureMin = globalThresholdPreset.TemperatureMin,
-            TemperatureMax = globalThresholdPreset.TemperatureMax
+            Temperature1Min = globalThresholdPreset.Temperature1Min,
+            Temperature1Max = globalThresholdPreset.Temperature1Max,
+            Temperature2Min = globalThresholdPreset.Temperature2Min,
+            Temperature2Max = globalThresholdPreset.Temperature2Max
         };
     }
 }

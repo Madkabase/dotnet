@@ -10,10 +10,10 @@ namespace IoDit.WebAPI.DTO.Threshold
         public int Humidity1Max { get; set; }
         public int Humidity2Min { get; set; }
         public int Humidity2Max { get; set; }
-        public double TemperatureMin { get; set; }
-        public double TemperatureMax { get; set; }
-        public int BatteryLevelMin { get; set; }
-        public int BatteryLevelMax { get; set; }
+        public double Temperature1Min { get; set; }
+        public double Temperature1Max { get; set; }
+        public double Temperature2Min { get; set; }
+        public double Temperature2Max { get; set; }
         public MainSensor MainSensor { get; set; }
 
         internal static ThresholdDto FromBo(ThresholdBo threshold)
@@ -25,10 +25,10 @@ namespace IoDit.WebAPI.DTO.Threshold
                 Humidity1Max = threshold.Humidity1Max,
                 Humidity2Min = threshold.Humidity2Min,
                 Humidity2Max = threshold.Humidity2Max,
-                TemperatureMin = threshold.TemperatureMin,
-                TemperatureMax = threshold.TemperatureMax,
-                BatteryLevelMin = threshold.BatteryLevelMin,
-                BatteryLevelMax = threshold.BatteryLevelMax,
+                Temperature1Min = threshold.Temperature1Min,
+                Temperature1Max = threshold.Temperature1Max,
+                Temperature2Min = threshold.Temperature2Min,
+                Temperature2Max = threshold.Temperature2Max,
                 MainSensor = threshold.MainSensor
             };
         }

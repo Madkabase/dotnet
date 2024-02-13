@@ -8,13 +8,14 @@ public class DeviceData : EntityBase, IEntity
     public int Humidity1 { get; set; }
     public int Humidity2 { get; set; }
     public int? BatteryLevel { get; set; }
-    public float Temperature { get; set; }
+    public float Temperature1 { get; set; }
+    public float Temperature2 { get; set; }
     public DateTime TimeStamp { get; set; }
 
     //to string
     public override string ToString()
     {
-        return $"DeviceData: devEUI: {DevEUI}, h1: {Humidity1}, h2: {Humidity2}, batteryLevel: {BatteryLevel}, temp: {Temperature}, ts: {TimeStamp}";
+        return $"DeviceData: devEUI: {DevEUI}, h1: {Humidity1}, h2: {Humidity2}, batteryLevel: {BatteryLevel}, temp1: {Temperature1}, , temp2: {Temperature2} ts: {TimeStamp}";
     }
 
     // from Bo
@@ -25,8 +26,8 @@ public class DeviceData : EntityBase, IEntity
             DevEUI = deviceData.DevEUI,
             Humidity1 = deviceData.Humidity1,
             Humidity2 = deviceData.Humidity2,
-            BatteryLevel = deviceData.BatteryLevel,
-            Temperature = deviceData.Temperature,
+            Temperature1 = deviceData.Temperature1,
+            Temperature2 = deviceData.Temperature2,
             TimeStamp = deviceData.TimeStamp
         };
     }

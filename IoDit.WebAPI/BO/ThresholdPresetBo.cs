@@ -16,13 +16,13 @@ public class ThresholdPresetBo : GlobalThresholdPresetBo
         Humidity1Max = 0;
         Humidity2Min = 0;
         Humidity2Max = 0;
-        BatteryLevelMin = 0;
-        BatteryLevelMax = 0;
-        TemperatureMin = 0;
-        TemperatureMax = 0;
+        Temperature1Min = 0;
+        Temperature1Max = 0;
+        Temperature2Min = 0;
+        Temperature2Max = 0;
     }
 
-    public ThresholdPresetBo(long id, string name, FarmBo farm, int humidity1Min, int humidity1Max, int humidity2Min, int humidity2Max, int batteryLevelMin, int batteryLevelMax, double temperatureMin, double temperatureMax)
+    public ThresholdPresetBo(long id, string name, FarmBo farm, int humidity1Min, int humidity1Max, int humidity2Min, int humidity2Max, double temperature1Min, double temperature1Max, double temperature2Min, double temperature2Max)
     {
         Id = id;
         Name = name;
@@ -31,10 +31,10 @@ public class ThresholdPresetBo : GlobalThresholdPresetBo
         Humidity1Max = humidity1Max;
         Humidity2Min = humidity2Min;
         Humidity2Max = humidity2Max;
-        BatteryLevelMin = batteryLevelMin;
-        BatteryLevelMax = batteryLevelMax;
-        TemperatureMin = temperatureMin;
-        TemperatureMax = temperatureMax;
+        Temperature1Min = temperature1Min;
+        Temperature1Max = temperature1Max;
+        Temperature2Min = temperature2Min;
+        Temperature2Max = temperature2Max;
     }
 
     public static ThresholdPresetBo FromDto(ThresholdPresetDto thresholdPresetDto)
@@ -47,10 +47,10 @@ public class ThresholdPresetBo : GlobalThresholdPresetBo
             Humidity1Max = thresholdPresetDto.Humidity1Max,
             Humidity2Min = thresholdPresetDto.Humidity2Min,
             Humidity2Max = thresholdPresetDto.Humidity2Max,
-            BatteryLevelMin = thresholdPresetDto.BatteryLevelMin,
-            BatteryLevelMax = thresholdPresetDto.BatteryLevelMax,
-            TemperatureMin = thresholdPresetDto.TemperatureMin,
-            TemperatureMax = thresholdPresetDto.TemperatureMax
+            Temperature1Min = thresholdPresetDto.Temperature1Min,
+            Temperature1Max = thresholdPresetDto.Temperature1Max,
+            Temperature2Min = thresholdPresetDto.Temperature2Min,
+            Temperature2Max = thresholdPresetDto.Temperature2Max,
         };
     }
 
@@ -65,10 +65,10 @@ public class ThresholdPresetBo : GlobalThresholdPresetBo
             Humidity1Max = thresholdPreset.Humidity1Max,
             Humidity2Min = thresholdPreset.Humidity2Min,
             Humidity2Max = thresholdPreset.Humidity2Max,
-            BatteryLevelMin = thresholdPreset.BatteryLevelMin,
-            BatteryLevelMax = thresholdPreset.BatteryLevelMax,
-            TemperatureMin = thresholdPreset.TemperatureMin,
-            TemperatureMax = thresholdPreset.TemperatureMax
+            Temperature1Min = thresholdPreset.Temperature1Min,
+            Temperature1Max = thresholdPreset.Temperature1Max,
+            Temperature2Min = thresholdPreset.Temperature2Min,
+            Temperature2Max = thresholdPreset.Temperature2Max,
         };
     }
 

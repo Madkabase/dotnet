@@ -12,10 +12,10 @@ public class ThresholdPreset : EntityBase, IEntity
     public int Humidity1Max { get; set; }
     public int Humidity2Min { get; set; }
     public int Humidity2Max { get; set; }
-    public int BatteryLevelMin { get; set; }
-    public int BatteryLevelMax { get; set; }
-    public double TemperatureMin { get; set; }
-    public double TemperatureMax { get; set; }
+    public double Temperature1Min { get; set; }
+    public double Temperature1Max { get; set; }
+    public double Temperature2Min { get; set; }
+    public double Temperature2Max { get; set; }
 
     internal static ThresholdPreset FromBo(ThresholdPresetBo thresholdPreset)
     {
@@ -27,10 +27,10 @@ public class ThresholdPreset : EntityBase, IEntity
             Humidity1Max = thresholdPreset.Humidity1Max,
             Humidity2Min = thresholdPreset.Humidity2Min,
             Humidity2Max = thresholdPreset.Humidity2Max,
-            BatteryLevelMin = thresholdPreset.BatteryLevelMin,
-            BatteryLevelMax = thresholdPreset.BatteryLevelMax,
-            TemperatureMin = thresholdPreset.TemperatureMin,
-            TemperatureMax = thresholdPreset.TemperatureMax
+            Temperature1Min = thresholdPreset.Temperature1Min,
+            Temperature1Max = thresholdPreset.Temperature1Max,
+            Temperature2Min = thresholdPreset.Temperature2Min,
+            Temperature2Max = thresholdPreset.Temperature2Max
         };
     }
 }

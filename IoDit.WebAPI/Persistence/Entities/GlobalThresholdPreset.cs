@@ -9,8 +9,8 @@ public class GlobalThresholdPreset : EntityBase, IEntity
     public int Humidity1Max { get; set; }
     public int Humidity2Min { get; set; }
     public int Humidity2Max { get; set; }
-    public int BatteryLevelMin { get; set; }
-    public int BatteryLevelMax { get; set; }
-    public double TemperatureMin { get; set; }
-    public double TemperatureMax { get; set; }
+    public double Temperature1Min { get; set; }
+    public double Temperature1Max { get; set; }
+    public double Temperature2Min { get; set; }
+    public double Temperature2Max { get; set; }
 }

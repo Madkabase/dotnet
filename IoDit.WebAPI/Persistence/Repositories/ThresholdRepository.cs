@@ -17,7 +17,7 @@ public class ThresholdRepository : IThresholdRepository
 
     public async Task CreateThreshold(ThresholdBo threshold)
     {
-        await context.AddAsync<Threshold>(Threshold.FromBo(threshold));
+        await context.AddAsync(Threshold.FromBo(threshold));
         await context.SaveChangesAsync();
     }
 
@@ -28,14 +28,14 @@ public class ThresholdRepository : IThresholdRepository
         {
             return null;
         }
-        uThreshold.BatteryLevelMax = threshold.BatteryLevelMax;
-        uThreshold.BatteryLevelMin = threshold.BatteryLevelMin;
         uThreshold.Humidity1Max = threshold.Humidity1Max;
         uThreshold.Humidity1Min = threshold.Humidity1Min;
         uThreshold.Humidity2Max = threshold.Humidity2Max;
         uThreshold.Humidity2Min = threshold.Humidity2Min;
-        uThreshold.TemperatureMax = threshold.TemperatureMax;
-        uThreshold.TemperatureMin = threshold.TemperatureMin;
+        uThreshold.Temperature1Max = threshold.Temperature1Max;
+        uThreshold.Temperature1Min = threshold.Temperature1Min;
+        uThreshold.Temperature2Max = threshold.Temperature2Max;
+        uThreshold.Temperature2Min = threshold.Temperature2Min;
         uThreshold.MainSensor = threshold.MainSensor;
 
         context.Thresholds.Update(uThreshold);
