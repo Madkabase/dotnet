@@ -11,14 +11,14 @@ namespace IoDit.WebAPI.DTO.Threshold
         {
             Id = thresholdPresetBo.Id,
             Name = thresholdPresetBo.Name,
-            BatteryLevelMax = thresholdPresetBo.BatteryLevelMax,
-            BatteryLevelMin = thresholdPresetBo.BatteryLevelMin,
             Humidity1Max = thresholdPresetBo.Humidity1Max,
             Humidity1Min = thresholdPresetBo.Humidity1Min,
             Humidity2Max = thresholdPresetBo.Humidity2Max,
             Humidity2Min = thresholdPresetBo.Humidity2Min,
-            TemperatureMax = thresholdPresetBo.TemperatureMax,
-            TemperatureMin = thresholdPresetBo.TemperatureMin
+            Temperature1Max = thresholdPresetBo.Temperature1Max,
+            Temperature1Min = thresholdPresetBo.Temperature1Min,
+            Temperature2Max = thresholdPresetBo.Temperature2Max,
+            Temperature2Min = thresholdPresetBo.Temperature2Min
         };
     }
 }

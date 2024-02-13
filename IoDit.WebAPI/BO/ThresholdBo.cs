@@ -12,10 +12,10 @@ public class ThresholdBo
     public int Humidity1Max { get; set; }
     public int Humidity2Min { get; set; }
     public int Humidity2Max { get; set; }
-    public int BatteryLevelMin { get; set; }
-    public int BatteryLevelMax { get; set; }
-    public double TemperatureMin { get; set; }
-    public double TemperatureMax { get; set; }
+    public double Temperature1Min { get; set; }
+    public double Temperature1Max { get; set; }
+    public double Temperature2Min { get; set; }
+    public double Temperature2Max { get; set; }
     public MainSensor MainSensor { get; set; }
 
     public ThresholdBo()
@@ -26,12 +26,12 @@ public class ThresholdBo
         Humidity1Max = 0;
         Humidity2Min = 0;
         Humidity2Max = 0;
-        BatteryLevelMin = 0;
-        BatteryLevelMax = 0;
-        TemperatureMin = 0;
-        TemperatureMax = 0;
+        Temperature1Min = 0;
+        Temperature1Max = 0;
+        Temperature2Min = 0;
+        Temperature2Max = 0;
     }
-    public ThresholdBo(long id,/* FieldBo field,*/ int humidity1Min, int humidity1Max, int humidity2Min, int humidity2Max, int batteryLevelMin, int batteryLevelMax, double temperatureMin, double temperatureMax, MainSensor mainSensor)
+    public ThresholdBo(long id,/* FieldBo field,*/ int humidity1Min, int humidity1Max, int humidity2Min, int humidity2Max, double temperature1Min, double temperature1Max, double temperature2Min, double temperature2Max, MainSensor mainSensor)
     {
         Id = id;
         // Field = field;
@@ -39,10 +39,11 @@ public class ThresholdBo
         Humidity1Max = humidity1Max;
         Humidity2Min = humidity2Min;
         Humidity2Max = humidity2Max;
-        BatteryLevelMin = batteryLevelMin;
-        BatteryLevelMax = batteryLevelMax;
-        TemperatureMin = temperatureMin;
-        TemperatureMax = temperatureMax;
+
+        Temperature1Min = temperature1Min;
+        Temperature1Max = temperature1Max;
+        Temperature2Min = temperature2Min;
+        Temperature2Max = temperature2Max;
         MainSensor = mainSensor;
     }
 
@@ -56,10 +57,10 @@ public class ThresholdBo
             thresholdDto.Humidity1Max,
             thresholdDto.Humidity2Min,
             thresholdDto.Humidity2Max,
-            thresholdDto.BatteryLevelMin,
-            thresholdDto.BatteryLevelMax,
-            thresholdDto.TemperatureMin,
-            thresholdDto.TemperatureMax,
+            thresholdDto.Temperature1Min,
+            thresholdDto.Temperature1Max,
+            thresholdDto.Temperature2Min,
+            thresholdDto.Temperature2Max,
             thresholdDto.MainSensor
         );
     }
@@ -74,10 +75,10 @@ public class ThresholdBo
             entity.Humidity1Max,
             entity.Humidity2Min,
             entity.Humidity2Max,
-            entity.BatteryLevelMin,
-            entity.BatteryLevelMax,
-            entity.TemperatureMin,
-            entity.TemperatureMax,
+            entity.Temperature1Min,
+            entity.Temperature1Max,
+            entity.Temperature2Min,
+            entity.Temperature2Max,
             entity.MainSensor
         );
     }
