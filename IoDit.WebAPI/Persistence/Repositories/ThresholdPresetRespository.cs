@@ -42,10 +42,10 @@ public class ThresholdPresetRespository : IThresholdPresetRespository
     {
         ThresholdPreset preset = _dbContext.ThresholdPresets.Find(thresholdPreset.Id) ?? throw new ArgumentException("Threshold preset not found");
         preset.Name = thresholdPreset.Name;
-        preset.Humidity1Min = thresholdPreset.Humidity1Min;
-        preset.Humidity1Max = thresholdPreset.Humidity1Max;
-        preset.Humidity2Min = thresholdPreset.Humidity2Min;
-        preset.Humidity2Max = thresholdPreset.Humidity2Max;
+        preset.Moisture1Min = thresholdPreset.Moisture1Min;
+        preset.Moisture1Max = thresholdPreset.Moisture1Max;
+        preset.Moisture2Min = thresholdPreset.Moisture2Min;
+        preset.Moisture2Max = thresholdPreset.Moisture2Max;
         preset.Temperature1Min = thresholdPreset.Temperature1Min;
         preset.Temperature1Max = thresholdPreset.Temperature1Max;
         preset.Temperature2Min = thresholdPreset.Temperature2Min;

@@ -5,8 +5,8 @@ namespace IoDit.WebAPI.DTO.Device;
 public class DeviceDataDTO
 {
     public long Id { get; set; }
-    public int Humidity1 { get; set; }
-    public int Humidity2 { get; set; }
+    public int Moisture1 { get; set; }
+    public int Moisture2 { get; set; }
     public float Temperature1 { get; set; }
     public float Temperature2 { get; set; }
     public float Salinity1 { get; set; }
@@ -19,8 +19,8 @@ public class DeviceDataDTO
         return new DeviceDataDTO
         {
             Id = 0,
-            Humidity1 = 0,
-            Humidity2 = 0,
+            Moisture1 = 0,
+            Moisture2 = 0,
             Temperature1 = 0,
             Temperature2 = 0,
             Salinity1 = 0,
@@ -34,8 +34,8 @@ public class DeviceDataDTO
         return new DeviceDataDTO
         {
             Id = deviceDataBo.Id,
-            Humidity1 = deviceDataBo.Humidity1,
-            Humidity2 = deviceDataBo.Humidity2,
+            Moisture1 = deviceDataBo.Moisture1,
+            Moisture2 = deviceDataBo.Moisture2,
             Temperature1 = deviceDataBo.Temperature1,
             Temperature2 = deviceDataBo.Temperature2,
             Salinity1 = deviceDataBo.Salinity1,

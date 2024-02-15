@@ -6,10 +6,10 @@ namespace IoDit.WebAPI.DTO.Threshold
     public class ThresholdDto
     {
         public long Id { get; set; }
-        public int Humidity1Min { get; set; }
-        public int Humidity1Max { get; set; }
-        public int Humidity2Min { get; set; }
-        public int Humidity2Max { get; set; }
+        public int Moisture1Min { get; set; }
+        public int Moisture1Max { get; set; }
+        public int Moisture2Min { get; set; }
+        public int Moisture2Max { get; set; }
         public float Temperature1Min { get; set; }
         public float Temperature1Max { get; set; }
         public float Temperature2Min { get; set; }
@@ -25,10 +25,10 @@ namespace IoDit.WebAPI.DTO.Threshold
             return new ThresholdDto
             {
                 Id = threshold.Id,
-                Humidity1Min = threshold.Humidity1Min,
-                Humidity1Max = threshold.Humidity1Max,
-                Humidity2Min = threshold.Humidity2Min,
-                Humidity2Max = threshold.Humidity2Max,
+                Moisture1Min = threshold.Moisture1Min,
+                Moisture1Max = threshold.Moisture1Max,
+                Moisture2Min = threshold.Moisture2Min,
+                Moisture2Max = threshold.Moisture2Max,
                 Temperature1Min = threshold.Temperature1Min,
                 Temperature1Max = threshold.Temperature1Max,
                 Temperature2Min = threshold.Temperature2Min,

@@ -142,12 +142,12 @@ public class DeviceController : ControllerBase, IBaseController
         if (threshold.MainSensor == Utilities.Types.MainSensor.SensorUp)
         {
             // if humidity is going up return Ok()
-            if (device.DeviceData.First().Humidity1 > device.DeviceData.Last().Humidity1)
+            if (device.DeviceData.First().Moisture1 > device.DeviceData.Last().Moisture1)
             {
                 return Ok();
             }
             // if humidity1 is near the low threshold on a 10% margin send notification
-            if (device.DeviceData.First().Humidity1 <= threshold.Humidity1Min * 1.1)
+            if (device.DeviceData.First().Moisture1 <= threshold.Moisture1Min * 1.1)
             {
                 await _fieldService.NotifyFarmAdmins(field, notificaitonMessage);
             }
@@ -155,12 +155,12 @@ public class DeviceController : ControllerBase, IBaseController
         else
         {
             // if humidity is going up return Ok()
-            if (device.DeviceData.First().Humidity2 > device.DeviceData.Last().Humidity2)
+            if (device.DeviceData.First().Moisture2 > device.DeviceData.Last().Moisture2)
             {
                 return Ok();
             }
             // if humidity2 is near the low threshold on a 10% margin send notification
-            if (device.DeviceData.First().Humidity2 <= threshold.Humidity2Min * 1.1)
+            if (device.DeviceData.First().Moisture2 <= threshold.Moisture2Min * 1.1)
             {
                 await _fieldService.NotifyFarmAdmins(field, notificaitonMessage);
             }

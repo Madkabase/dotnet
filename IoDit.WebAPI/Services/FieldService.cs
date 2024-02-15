@@ -150,11 +150,11 @@ public class FieldService : IFieldService
         }
         if (threshold.MainSensor == Utilities.Types.MainSensor.SensorDown)
         {
-            return lastDatas.Select(d => d.Humidity2).Min();
+            return lastDatas.Select(d => d.Moisture2).Min();
         }
         else
         {
-            return lastDatas.Select(d => d.Humidity1).Min();
+            return lastDatas.Select(d => d.Moisture1).Min();
         }
     }
 

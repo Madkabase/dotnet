@@ -8,10 +8,10 @@ public class ThresholdBo
 {
     public long Id { get; set; }
     // public FieldBo Field { get; set; }
-    public int Humidity1Min { get; set; }
-    public int Humidity1Max { get; set; }
-    public int Humidity2Min { get; set; }
-    public int Humidity2Max { get; set; }
+    public int Moisture1Min { get; set; }
+    public int Moisture1Max { get; set; }
+    public int Moisture2Min { get; set; }
+    public int Moisture2Max { get; set; }
     public float Temperature1Min { get; set; }
     public float Temperature1Max { get; set; }
     public float Temperature2Min { get; set; }
@@ -26,10 +26,10 @@ public class ThresholdBo
     {
         // Field = new FieldBo();
         MainSensor = MainSensor.SensorDown;
-        Humidity1Min = 0;
-        Humidity1Max = 0;
-        Humidity2Min = 0;
-        Humidity2Max = 0;
+        Moisture1Min = 0;
+        Moisture1Max = 0;
+        Moisture2Min = 0;
+        Moisture2Max = 0;
         Temperature1Min = 0;
         Temperature1Max = 0;
         Temperature2Min = 0;
@@ -57,10 +57,10 @@ public class ThresholdBo
         )
     {
         Id = id;
-        Humidity1Min = humidity1Min;
-        Humidity1Max = humidity1Max;
-        Humidity2Min = humidity2Min;
-        Humidity2Max = humidity2Max;
+        Moisture1Min = humidity1Min;
+        Moisture1Max = humidity1Max;
+        Moisture2Min = humidity2Min;
+        Moisture2Max = humidity2Max;
 
         Temperature1Min = temperature1Min;
         Temperature1Max = temperature1Max;
@@ -81,10 +81,10 @@ public class ThresholdBo
         return new ThresholdBo(
             thresholdDto.Id,
             // new FieldBo(),
-            thresholdDto.Humidity1Min,
-            thresholdDto.Humidity1Max,
-            thresholdDto.Humidity2Min,
-            thresholdDto.Humidity2Max,
+            thresholdDto.Moisture1Min,
+            thresholdDto.Moisture1Max,
+            thresholdDto.Moisture2Min,
+            thresholdDto.Moisture2Max,
             thresholdDto.Temperature1Min,
             thresholdDto.Temperature1Max,
             thresholdDto.Temperature2Min,
@@ -103,10 +103,10 @@ public class ThresholdBo
         return new ThresholdBo(
             entity.Id,
             // FieldBo.FromEntity(entity.Field),
-            entity.Humidity1Min,
-            entity.Humidity1Max,
-            entity.Humidity2Min,
-            entity.Humidity2Max,
+            entity.Moisture1Min,
+            entity.Moisture1Max,
+            entity.Moisture2Min,
+            entity.Moisture2Max,
             entity.Temperature1Min,
             entity.Temperature1Max,
             entity.Temperature2Min,

@@ -5,8 +5,8 @@ namespace IoDit.WebAPI.Persistence.Entities;
 public class DeviceData : EntityBase, IEntity
 {
     public string DevEUI { get; set; }
-    public int Humidity1 { get; set; }
-    public int Humidity2 { get; set; }
+    public int Moisture1 { get; set; }
+    public int Moisture2 { get; set; }
     public int? BatteryLevel { get; set; }
     public float Temperature1 { get; set; }
     public float Temperature2 { get; set; }
@@ -17,7 +17,7 @@ public class DeviceData : EntityBase, IEntity
     //to string
     public override string ToString()
     {
-        return $"DeviceData: devEUI: {DevEUI}, h1: {Humidity1}, h2: {Humidity2}, batteryLevel: {BatteryLevel}, temp1: {Temperature1}, temp2: {Temperature2}, salinity1: {Salinity1}, salinity2: {Salinity2}, ts: {TimeStamp}";
+        return $"DeviceData: devEUI: {DevEUI}, h1: {Moisture1}, h2: {Moisture2}, batteryLevel: {BatteryLevel}, temp1: {Temperature1}, temp2: {Temperature2}, salinity1: {Salinity1}, salinity2: {Salinity2}, ts: {TimeStamp}";
     }
 
     // from Bo
@@ -26,8 +26,8 @@ public class DeviceData : EntityBase, IEntity
         return new DeviceData
         {
             DevEUI = deviceData.DevEUI,
-            Humidity1 = deviceData.Humidity1,
-            Humidity2 = deviceData.Humidity2,
+            Moisture1 = deviceData.Moisture1,
+            Moisture2 = deviceData.Moisture2,
             Temperature1 = deviceData.Temperature1,
             Temperature2 = deviceData.Temperature2,
             Salinity1 = deviceData.Salinity1,

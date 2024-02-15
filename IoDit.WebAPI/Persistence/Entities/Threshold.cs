@@ -10,10 +10,10 @@ namespace IoDit.WebAPI.Persistence.Entities;
 public class Threshold : EntityBase, IEntity
 {
     public Field Field { get; set; }
-    public int Humidity1Min { get; set; }
-    public int Humidity1Max { get; set; }
-    public int Humidity2Min { get; set; }
-    public int Humidity2Max { get; set; }
+    public int Moisture1Min { get; set; }
+    public int Moisture1Max { get; set; }
+    public int Moisture2Min { get; set; }
+    public int Moisture2Max { get; set; }
     public float Temperature1Min { get; set; }
     public float Temperature1Max { get; set; }
     public float Temperature2Min { get; set; }
@@ -30,10 +30,10 @@ public class Threshold : EntityBase, IEntity
         return new Threshold
         {
             Id = thresholdDto.Id,
-            Humidity1Min = thresholdDto.Humidity1Min,
-            Humidity1Max = thresholdDto.Humidity1Max,
-            Humidity2Min = thresholdDto.Humidity2Min,
-            Humidity2Max = thresholdDto.Humidity2Max,
+            Moisture1Min = thresholdDto.Moisture1Min,
+            Moisture1Max = thresholdDto.Moisture1Max,
+            Moisture2Min = thresholdDto.Moisture2Min,
+            Moisture2Max = thresholdDto.Moisture2Max,
             Temperature1Min = thresholdDto.Temperature1Min,
             Temperature1Max = thresholdDto.Temperature1Max,
             Temperature2Min = thresholdDto.Temperature2Min,
@@ -47,10 +47,10 @@ public class Threshold : EntityBase, IEntity
         return new Threshold
         {
             Id = threshold.Id,
-            Humidity1Min = threshold.Humidity1Min,
-            Humidity1Max = threshold.Humidity1Max,
-            Humidity2Min = threshold.Humidity2Min,
-            Humidity2Max = threshold.Humidity2Max,
+            Moisture1Min = threshold.Moisture1Min,
+            Moisture1Max = threshold.Moisture1Max,
+            Moisture2Min = threshold.Moisture2Min,
+            Moisture2Max = threshold.Moisture2Max,
             Temperature1Min = threshold.Temperature1Min,
             Temperature1Max = threshold.Temperature1Max,
             Temperature2Min = threshold.Temperature2Min,

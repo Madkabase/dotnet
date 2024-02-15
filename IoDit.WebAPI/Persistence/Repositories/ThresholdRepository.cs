@@ -28,10 +28,10 @@ public class ThresholdRepository : IThresholdRepository
         {
             return null;
         }
-        uThreshold.Humidity1Max = threshold.Humidity1Max;
-        uThreshold.Humidity1Min = threshold.Humidity1Min;
-        uThreshold.Humidity2Max = threshold.Humidity2Max;
-        uThreshold.Humidity2Min = threshold.Humidity2Min;
+        uThreshold.Moisture1Max = threshold.Moisture1Max;
+        uThreshold.Moisture1Min = threshold.Moisture1Min;
+        uThreshold.Moisture2Max = threshold.Moisture2Max;
+        uThreshold.Moisture2Min = threshold.Moisture2Min;
         uThreshold.Temperature1Max = threshold.Temperature1Max;
         uThreshold.Temperature1Min = threshold.Temperature1Min;
         uThreshold.Temperature2Max = threshold.Temperature2Max;

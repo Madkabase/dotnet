@@ -8,10 +8,10 @@ public class ThresholdPreset : EntityBase, IEntity
     public string Name { get; set; }
     public long FarmId { get; set; }
     public Farm Farm { get; set; }
-    public int Humidity1Min { get; set; }
-    public int Humidity1Max { get; set; }
-    public int Humidity2Min { get; set; }
-    public int Humidity2Max { get; set; }
+    public int Moisture1Min { get; set; }
+    public int Moisture1Max { get; set; }
+    public int Moisture2Min { get; set; }
+    public int Moisture2Max { get; set; }
     public float Temperature1Min { get; set; }
     public float Temperature1Max { get; set; }
     public float Temperature2Min { get; set; }
@@ -23,10 +23,10 @@ public class ThresholdPreset : EntityBase, IEntity
         {
             Name = thresholdPreset.Name,
             FarmId = thresholdPreset.Farm.Id,
-            Humidity1Min = thresholdPreset.Humidity1Min,
-            Humidity1Max = thresholdPreset.Humidity1Max,
-            Humidity2Min = thresholdPreset.Humidity2Min,
-            Humidity2Max = thresholdPreset.Humidity2Max,
+            Moisture1Min = thresholdPreset.Moisture1Min,
+            Moisture1Max = thresholdPreset.Moisture1Max,
+            Moisture2Min = thresholdPreset.Moisture2Min,
+            Moisture2Max = thresholdPreset.Moisture2Max,
             Temperature1Min = thresholdPreset.Temperature1Min,
             Temperature1Max = thresholdPreset.Temperature1Max,
             Temperature2Min = thresholdPreset.Temperature2Min,

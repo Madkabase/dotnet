@@ -5,10 +5,10 @@ public class GlobalThresholdPresetBo
 {
     public long Id { get; set; }
     public string Name { get; set; }
-    public int Humidity1Min { get; set; }
-    public int Humidity1Max { get; set; }
-    public int Humidity2Min { get; set; }
-    public int Humidity2Max { get; set; }
+    public int Moisture1Min { get; set; }
+    public int Moisture1Max { get; set; }
+    public int Moisture2Min { get; set; }
+    public int Moisture2Max { get; set; }
     public float Temperature1Min { get; set; }
     public float Temperature1Max { get; set; }
     public float Temperature2Min { get; set; }
@@ -23,10 +23,10 @@ public class GlobalThresholdPresetBo
     {
         Id = 0;
         Name = "";
-        Humidity1Min = 0;
-        Humidity1Max = 0;
-        Humidity2Min = 0;
-        Humidity2Max = 0;
+        Moisture1Min = 0;
+        Moisture1Max = 0;
+        Moisture2Min = 0;
+        Moisture2Max = 0;
         Temperature1Min = 0;
         Temperature1Max = 0;
         Temperature2Min = 0;
@@ -41,10 +41,10 @@ public class GlobalThresholdPresetBo
     {
         Id = id;
         Name = name;
-        Humidity1Min = humidity1Min;
-        Humidity1Max = humidity1Max;
-        Humidity2Min = humidity2Min;
-        Humidity2Max = humidity2Max;
+        Moisture1Min = humidity1Min;
+        Moisture1Max = humidity1Max;
+        Moisture2Min = humidity2Min;
+        Moisture2Max = humidity2Max;
         Temperature1Min = temperature1Min;
         Temperature1Max = temperature1Max;
         Temperature2Min = temperature2Min;
@@ -62,10 +62,10 @@ public class GlobalThresholdPresetBo
         {
             Id = globalThresholdPresetDto.Id,
             Name = globalThresholdPresetDto.Name,
-            Humidity1Min = globalThresholdPresetDto.Humidity1Min,
-            Humidity1Max = globalThresholdPresetDto.Humidity1Max,
-            Humidity2Min = globalThresholdPresetDto.Humidity2Min,
-            Humidity2Max = globalThresholdPresetDto.Humidity2Max,
+            Moisture1Min = globalThresholdPresetDto.Moisture1Min,
+            Moisture1Max = globalThresholdPresetDto.Moisture1Max,
+            Moisture2Min = globalThresholdPresetDto.Moisture2Min,
+            Moisture2Max = globalThresholdPresetDto.Moisture2Max,
             Temperature1Min = globalThresholdPresetDto.Temperature1Min,
             Temperature1Max = globalThresholdPresetDto.Temperature1Max,
             Temperature2Min = globalThresholdPresetDto.Temperature2Min,
@@ -84,10 +84,10 @@ public class GlobalThresholdPresetBo
         {
             Id = globalThresholdPreset.Id,
             Name = globalThresholdPreset.Name,
-            Humidity1Min = globalThresholdPreset.Humidity1Min,
-            Humidity1Max = globalThresholdPreset.Humidity1Max,
-            Humidity2Min = globalThresholdPreset.Humidity2Min,
-            Humidity2Max = globalThresholdPreset.Humidity2Max,
+            Moisture1Min = globalThresholdPreset.Moisture1Min,
+            Moisture1Max = globalThresholdPreset.Moisture1Max,
+            Moisture2Min = globalThresholdPreset.Moisture2Min,
+            Moisture2Max = globalThresholdPreset.Moisture2Max,
             Temperature1Min = globalThresholdPreset.Temperature1Min,
             Temperature1Max = globalThresholdPreset.Temperature1Max,
             Temperature2Min = globalThresholdPreset.Temperature2Min,
