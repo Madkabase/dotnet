@@ -8,7 +8,7 @@ public class DeviceBo
     public string DevEUI { get; set; }
     public string Name { get; set; }
     public string JoinEUI { get; set; }
-    public string AppKey { get; set; }
+    public string AppKey { get; set; }  
     // virtual link on the deviceEUI property in the DeviceData class with no db link
 
     public ICollection<DeviceDataBo> DeviceData { get; set; }
