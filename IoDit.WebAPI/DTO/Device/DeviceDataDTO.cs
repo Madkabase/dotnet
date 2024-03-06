@@ -5,12 +5,12 @@ namespace IoDit.WebAPI.DTO.Device;
 public class DeviceDataDTO
 {
     public long Id { get; set; }
-    public int Moisture1 { get; set; }
-    public int Moisture2 { get; set; }
+    public float Moisture1 { get; set; }
+    public float Moisture2 { get; set; }
     public float Temperature1 { get; set; }
     public float Temperature2 { get; set; }
-    public float Salinity1 { get; set; }
-    public float Salinity2 { get; set; }
+    public int Salinity1 { get; set; }
+    public int Salinity2 { get; set; }
 
     public DateTime TimeStamp { get; set; }
 

@@ -120,7 +120,7 @@ public class FieldService : IFieldService
         }
     }
 
-    public int CalculateOverAllMoistureLevel(List<DeviceBo> devices, ThresholdBo threshold)
+    public float CalculateOverAllMoistureLevel(List<DeviceBo> devices, ThresholdBo threshold)
     {
         if (devices.Count == 0)
         {
@@ -133,10 +133,10 @@ public class FieldService : IFieldService
                 return new DeviceDataBo(
                     0,
                     device.DevEUI,
-                    0,
-                    0,
-                    0,
-                    0,
+                    0f,
+                    0f,
+                    0f,
+                    0f,
                     0,
                     0,
                     DateTime.Now

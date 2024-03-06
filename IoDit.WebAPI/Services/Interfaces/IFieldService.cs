@@ -31,7 +31,7 @@ public interface IFieldService
     /// <param name="devices"></param>
     /// <param name="threshold"></param>
     /// <returns>the overall level moisture in pourcentage</returns>
-    public int CalculateOverAllMoistureLevel(List<DeviceBo> devices, ThresholdBo threshold);
+    public float CalculateOverAllMoistureLevel(List<DeviceBo> devices, ThresholdBo threshold);
     /// <summary>
     /// gets the field where a given device EUI is
     /// </summary>

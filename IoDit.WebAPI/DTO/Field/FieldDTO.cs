@@ -15,7 +15,7 @@ public class FieldDto
     public List<DeviceDto> Devices { get; set; } = new List<DeviceDto>();
 
     public ThresholdDto Threshold { get; set; }
-    public long OverallMoistureLevel { get; set; } = 0;
+    public float OverallMoistureLevel { get; set; } = 0;
     public bool IsRequesterAdmin { get; set; } = false;
 
     internal static FieldDto FromBo(FieldBo f)

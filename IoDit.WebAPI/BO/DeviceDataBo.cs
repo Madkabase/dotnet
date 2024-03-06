@@ -7,15 +7,15 @@ public class DeviceDataBo
 {
     public long Id;
     public string DevEUI { get; set; }
-    public int Moisture1 { get; set; }
-    public int Moisture2 { get; set; }
+    public float Moisture1 { get; set; }
+    public float Moisture2 { get; set; }
     public float Temperature1 { get; set; }
     public float Temperature2 { get; set; }
-    public float Salinity1 { get; set; }
-    public float Salinity2 { get; set; }
+    public int Salinity1 { get; set; }
+    public int Salinity2 { get; set; }
     public DateTime TimeStamp { get; set; }
 
-    public DeviceDataBo(long id, string devEUI, int humidity1, int humidity2, float temperature1, float temperature2, float salinity1, float salinity2, DateTime timeStamp)
+    public DeviceDataBo(long id, string devEUI, float humidity1, float humidity2, float temperature1, float temperature2, int salinity1, int salinity2, DateTime timeStamp)
     {
         Id = id;
         DevEUI = devEUI;
