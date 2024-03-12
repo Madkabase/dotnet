@@ -61,7 +61,7 @@ public class FieldService : IFieldService
     public async Task<List<FieldBo>> GetFieldsWithDevicesForFarm(FarmBo farm)
     {
 
-        var fields = (await _fieldRepository.GetFieldsWithDevicesByFarm(farm)).Select(f => FieldBo.FromEntity(f)).ToList();
+        var fields = (await _fieldRepository.GetFieldsWithDevicesByFarm(farm)).Select(FieldBo.FromEntity).ToList();
         if (fields == null)
         {
             return new List<FieldBo>();

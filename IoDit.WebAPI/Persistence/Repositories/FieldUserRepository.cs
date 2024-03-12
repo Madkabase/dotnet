@@ -81,6 +81,7 @@ public class FieldUserRepository : IFieldUserRepository
         {
             foreach (var device in uf.Field.Devices)
             {
+                
                 device.DeviceDatas = await _context.DeviceData
                     .Where(dd => dd.DevEUI == device.DevEUI)
                     .Where(dd => dd.TimeStamp.ToUniversalTime() > DateTime.Now.ToUniversalTime().AddDays(-1))

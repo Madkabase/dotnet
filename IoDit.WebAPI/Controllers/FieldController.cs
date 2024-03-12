@@ -47,7 +47,7 @@ public class FieldController : ControllerBase, IBaseController
     {
         List<FieldBo> fields = await _fieldService.GetFieldsWithDevicesForFarm(new BO.FarmBo { Id = farmId });
 
-        List<FieldDto> fieldDtos = fields.Select(f => FieldDto.FromBo(f)).ToList();
+        List<FieldDto> fieldDtos = fields.Select(FieldDto.FromBo).ToList();
 
         foreach (var (fieldDto, i) in fieldDtos.Select((value, i) => (value, i)))
         {
@@ -73,11 +73,7 @@ public class FieldController : ControllerBase, IBaseController
             fieldDto.IsRequesterAdmin = await _fieldService.UserCanChangeField(fieldDto.Id, await GetRequestDetails());
         }
 
-        return Ok(fieldDtos.Select(f =>
-        {
-            f.Devices.RemoveAll(d => true);
-            return f;
-        }));
+        return Ok(fieldDtos);
     }
 
     [HttpPost("createField")]
@@ -248,7 +244,7 @@ public class FieldController : ControllerBase, IBaseController
     public async Task<ActionResult<List<DeviceDto>>> GetDevicesForField(int fieldId)
     {
         return await _deviceService.GetFieldDevices(new FieldBo { Id = fieldId })
-            .ContinueWith(res => res.Result.Select(d => DeviceDto.FromBo(d)).ToList());
+            .ContinueWith(res => res.Result.Select(DeviceDto.FromBo).ToList());
     }
 
     [HttpGet("{fieldId}/threshold")]

@@ -44,7 +44,7 @@ public class FieldBo
             entity.Geofence,
             entity.ThresholdId,
             ThresholdBo.FromEntity(entity.Threshold ?? new Threshold() { Id = entity.ThresholdId }),
-            entity.Devices.Select(d => DeviceBo.FromEntity(d)).ToList()
+            entity.Devices.Select(DeviceBo.FromEntity).ToList()
         );
     }
 

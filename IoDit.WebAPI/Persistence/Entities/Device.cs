@@ -16,6 +16,7 @@ public class Device : IEntity
     public string Name { get; set; }
     public string JoinEUI { get; set; }
     public string AppKey { get; set; }
+    public NetTopologySuite.Geometries.Point Location { get; set; }
     public long FieldId { get; set; }
     public Field Field { get; set; }
     public int? CalibrationMoisture1Min { get; set; }
@@ -51,7 +52,7 @@ public class Device : IEntity
             JoinEUI = device.JoinEUI,
             AppKey = device.AppKey,
             DeviceDatas = device.DeviceData.Select(dd => DeviceData.FromBo(dd)).ToList(),
-            
+            Location = device.Location,
         };
     }
     // tostring override for the device class

@@ -42,6 +42,7 @@ public class FieldRepository : IFieldRepository
                 AppKey = d.AppKey,
                 JoinEUI = d.JoinEUI,
                 Field = f,
+                Location = d.Location,
                 DeviceDatas = _context.DeviceData
                     .Where(dd => dd.TimeStamp.ToUniversalTime() > DateTime.Now.AddDays(-1).ToUniversalTime() && dd.DevEUI == d.DevEUI)
                     .OrderByDescending(d => d.TimeStamp)
@@ -76,6 +77,7 @@ public class FieldRepository : IFieldRepository
                 AppKey = d.AppKey,
                 JoinEUI = d.JoinEUI,
                 Field = field,
+                Location = d.Location,
                 DeviceDatas = _context.DeviceData
                     .Where(dd => dd.DevEUI == d.DevEUI)
                     .Where(dd => dd.TimeStamp.ToLocalTime() > DateTime.Now.AddDays(-1).ToLocalTime())
